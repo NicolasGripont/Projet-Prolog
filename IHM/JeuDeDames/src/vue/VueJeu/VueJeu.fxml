@@ -6,8 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="vue.VueJeu.VueJeu">
    <top>
       <Label text="Jeu de Dames" textAlignment="CENTER" BorderPane.alignment="CENTER">
          <font>
@@ -15,4 +14,38 @@
          </font>
       </Label>
    </top>
+   <center>
+      <StackPane fx:id="stackPanePlateau" prefHeight="363.0" prefWidth="391.0" BorderPane.alignment="CENTER" />
+   </center>
+   <right>
+      <VBox prefHeight="363.0" prefWidth="165.0" BorderPane.alignment="CENTER">
+         <children>
+            <HBox prefHeight="17.0" prefWidth="165.0">
+               <children>
+                  <Label text="Timer : " />
+                  <Label fx:id="labelTimer" text="0" />
+               </children>
+            </HBox>
+            <HBox prefHeight="20.0" prefWidth="165.0">
+               <children>
+                  <Label text="Nombres de coups : " />
+                  <Label fx:id="labelNbCoups" text="0" />
+               </children>
+            </HBox>
+            <HBox prefHeight="20.0" prefWidth="165.0">
+               <children>
+                  <Label text="Joueur 1 : " />
+                  <Label fx:id="labelJoueur1" text="J1" />
+               </children>
+            </HBox>
+            <HBox prefHeight="20.0" prefWidth="165.0">
+               <children>
+                  <Label text="Joueur 2 : " />
+                  <Label fx:id="labelJoueur2" text="J2" />
+               </children>
+            </HBox>
+            <Button fx:id="buttonQuitterPartie" mnemonicParsing="false" text="Quitter Partie" />
+         </children>
+      </VBox>
+   </right>
 </BorderPane>

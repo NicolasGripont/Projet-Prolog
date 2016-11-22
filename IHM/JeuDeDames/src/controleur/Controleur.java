@@ -25,6 +25,7 @@ public class Controleur extends Application {
 			Parent root;
 			root = fxmlLoader.load();
 			this.vueJeu = (VueJeu) fxmlLoader.getController();
+			this.vueJeu.setControleur(this);
 			Scene scene = new Scene(root, this.stage.getWidth(), this.stage.getHeight());
 			this.stage.setTitle("Jeu De Dames");
 			this.stage.setScene(scene);
