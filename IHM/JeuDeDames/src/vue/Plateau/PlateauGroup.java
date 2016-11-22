@@ -3,6 +3,8 @@ package vue.Plateau;
 import java.util.ArrayList;
 import java.util.List;
 
+import javafx.animation.PathTransition;
+import javafx.animation.PathTransition.OrientationType;
 import javafx.event.EventHandler;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
@@ -10,6 +12,10 @@ import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.paint.Paint;
+import javafx.scene.shape.CubicCurveTo;
+import javafx.scene.shape.MoveTo;
+import javafx.scene.shape.Path;
+import javafx.util.Duration;
 import modele.Case;
 import modele.Couleur;
 import modele.Dame;
@@ -127,7 +133,7 @@ public class PlateauGroup extends Group {
 						}
 					}
 				}
-				PlateauGroup.this.vueJeu.deplacerPiece(piece, nouvellePosition);
+				PlateauGroup.this.vueJeu.dragAndDropPiece(piece, nouvellePosition);
 			}
 		});
 		return pieceVue;
@@ -172,6 +178,44 @@ public class PlateauGroup extends Group {
 
 				this.getChildren().add(pieceVue);
 			}
+		}
+	}
+
+	public void deplacerPiece(Piece piece) {
+		double largeurCase = this.plateauCanvas.getPlateauWidth() / Plateau.NB_LIGNES;
+		double hauteurCase = this.plateauCanvas.getPlateauHeight() / Plateau.NB_COLONNES;
+		double margin = 5;
+		PieceVue pieceVue = null;
+		for (PieceVue p : this.pieces) {
+			if (p.getPiece().equals(piece)) {
+				pieceVue = p;
+				break;
+			}
+		}
+		if (pieceVue != null) {
+			System.out.println("Animation");
+			double xStart = pieceVue.getCenterX();
+			double yStart = pieceVue.getCenterY();
+			double xEnd = (largeurCase * piece.getPosition().getColonne()) + this.plateauCanvas.getOffsetX()
+					+ (largeurCase / 2);
+			double yEnd = (hauteurCase * piece.getPosition().getLigne()) + this.plateauCanvas.getOffsetY()
+					+ (hauteurCase / 2);
+			Path path = new Path();
+
+			// path.getElements().add(new MoveTo(pieceVue.getCenterX(),
+			// pieceVue.getCenterY()));
+			path.getElements().add(new MoveTo(xStart, yStart));
+			path.getElements().add(new CubicCurveTo(xStart, yStart, xStart, yStart, xEnd, yEnd));
+
+			PathTransition pathTransition = new PathTransition();
+			pathTransition.setDuration(Duration.millis(3000));
+			pathTransition.setNode(pieceVue);
+			pathTransition.setPath(path);
+			pathTransition.setOrientation(OrientationType.ORTHOGONAL_TO_TANGENT);
+			pathTransition.setCycleCount(1);
+			pathTransition.setAutoReverse(false);
+
+			pathTransition.play();
 		}
 	}
 

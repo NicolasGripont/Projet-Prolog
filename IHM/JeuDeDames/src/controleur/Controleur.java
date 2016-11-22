@@ -8,6 +8,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import modele.Case;
+import modele.Couleur;
 import modele.Piece;
 import modele.Plateau;
 import vue.VueJeu.VueJeu;
@@ -49,12 +50,11 @@ public class Controleur extends Application {
 	}
 
 	public void deplacerPiece(Piece piece, Case nouvellePosition) {
-		if ((nouvellePosition != null) && nouvellePosition.estVide()) {
+		if ((nouvellePosition != null) && nouvellePosition.estVide()
+				&& (nouvellePosition.getCouleur() == Couleur.NOIRE)) {
 			piece.getPosition().setPiece(null);
 			piece.setPosition(nouvellePosition);
 			nouvellePosition.setPiece(piece);
-		} else {
-			System.out.println("test");
 		}
 		this.vueJeu.dessinerPlateau();
 	}

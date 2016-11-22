@@ -106,8 +106,22 @@ public class VueJeu implements Initializable {
 		this.plateauGroup.setPlateau(plateau);
 	}
 
-	public void deplacerPiece(Piece piece, Case nouvellePosition) {
+	public void dragAndDropPiece(Piece piece, Case nouvellePosition) {
 		this.controleur.deplacerPiece(piece, nouvellePosition);
+	}
+
+	public void deplacerPiece(Piece piece) {
+		this.plateauGroup.deplacerPiece(piece);
+	}
+
+	@FXML
+	public void onButtonQuitterPartieClicked() {
+		// Case nouvellePosition = this.plateau.getCases()[5][8];
+		// Piece piece = this.plateau.getCases()[0][1].getPiece();
+		// piece.getPosition().setPiece(null);
+		// piece.setPosition(nouvellePosition);
+		// nouvellePosition.setPiece(piece);
+		// this.plateauGroup.deplacerPiece(piece);
 	}
 
 }

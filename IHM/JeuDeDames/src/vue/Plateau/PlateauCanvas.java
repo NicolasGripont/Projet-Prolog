@@ -216,7 +216,6 @@ public class PlateauCanvas extends Canvas {
 				double y2 = y1 + hauteurCase;
 				if ((x >= x1) && (x < x2) && (y >= y1) && (y < y2)) {
 					this.caseSelectionnee = this.plateau.getCases()[i][j];
-					System.out.println(i + " " + j);
 					System.out.println(this.caseSelectionnee);
 					break;
 				}

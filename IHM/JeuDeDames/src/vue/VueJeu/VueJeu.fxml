@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="600.0" prefHeight="437.0" prefWidth="625.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="vue.VueJeu.VueJeu">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="600.0" prefHeight="460.0" prefWidth="661.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="vue.VueJeu.VueJeu">
    <top>
       <Label text="Jeu de Dames" textAlignment="CENTER" BorderPane.alignment="CENTER">
          <font>
@@ -95,7 +95,7 @@
                   </HBox>
                </children>
             </VBox>
-            <Button fx:id="buttonQuitterPartie" mnemonicParsing="false" text="Quitter Partie" />
+            <Button fx:id="buttonQuitterPartie" mnemonicParsing="false" onMouseClicked="#onButtonQuitterPartieClicked" text="Quitter Partie" />
          </children>
          <padding>
             <Insets top="10.0" />
