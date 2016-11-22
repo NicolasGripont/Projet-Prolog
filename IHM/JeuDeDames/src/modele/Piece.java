@@ -6,6 +6,12 @@ public abstract class Piece {
 
 	private Case position;
 
+	public Piece(Couleur couleur, Case position) {
+		super();
+		this.couleur = couleur;
+		this.position = position;
+	}
+
 	public Couleur getCouleur() {
 		return this.couleur;
 	}

@@ -7,6 +7,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import modele.Plateau;
 import vue.VueJeu.VueJeu;
 
 public class Controleur extends Application {
@@ -26,6 +27,9 @@ public class Controleur extends Application {
 			root = fxmlLoader.load();
 			this.vueJeu = (VueJeu) fxmlLoader.getController();
 			this.vueJeu.setControleur(this);
+			Plateau plateau = new Plateau();
+			plateau.initPions();
+			this.vueJeu.dessinerPlateau(plateau);
 			Scene scene = new Scene(root, this.stage.getWidth(), this.stage.getHeight());
 			this.stage.setTitle("Jeu De Dames");
 			this.stage.setScene(scene);
