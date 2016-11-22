@@ -1,2 +1,16 @@
 # Mac OS X hidden files
 .DS_Store
+
+IHM/.metadata/
+IHM/.recommenders/
+IHM/.settings/
+IHM/JeuDeDames/.settings/
+
+*.class
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+*.war
+*.ear
