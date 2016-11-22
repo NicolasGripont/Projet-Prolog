@@ -32,6 +32,7 @@ public class PlateauCanvas extends Canvas {
 			@Override
 			public void handle(MouseEvent mouseEvent) {
 				PlateauCanvas.this.onCaseClicked(mouseEvent.getX(), mouseEvent.getY());
+				PlateauCanvas.this.dessinerPlateau();
 			}
 		});
 	}
@@ -63,6 +64,7 @@ public class PlateauCanvas extends Canvas {
 		this.dessinerFondPlateau();
 		this.dessinerCases();
 		this.dessinerPions();
+		this.dessinerCaseSelectionnee();
 	}
 
 	@Override
@@ -148,8 +150,8 @@ public class PlateauCanvas extends Canvas {
 			GraphicsContext gc = this.getGraphicsContext2D();
 
 			gc.setFill(new Color(0, 0, 1, 0.5));
-			gc.fillRect((this.caseSelectionnee.getLigne() * largeurCase) + this.offsetX,
-					(this.caseSelectionnee.getColonne() * hauteurCase) + this.offsetY, largeurCase, hauteurCase);
+			gc.fillRect((this.caseSelectionnee.getColonne() * largeurCase) + this.offsetX,
+					(this.caseSelectionnee.getLigne() * hauteurCase) + this.offsetY, largeurCase, hauteurCase);
 		}
 	}
 
