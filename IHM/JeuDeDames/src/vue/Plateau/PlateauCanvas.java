@@ -53,6 +53,38 @@ public class PlateauCanvas extends Canvas {
 		this.caseSelectionnee = caseSelectionnee;
 	}
 
+	public double getPlateauWidth() {
+		return this.plateauWidth;
+	}
+
+	public void setPlateauWidth(double plateauWidth) {
+		this.plateauWidth = plateauWidth;
+	}
+
+	public double getPlateauHeight() {
+		return this.plateauHeight;
+	}
+
+	public void setPlateauHeight(double plateauHeight) {
+		this.plateauHeight = plateauHeight;
+	}
+
+	public double getOffsetX() {
+		return this.offsetX;
+	}
+
+	public void setOffsetX(double offsetX) {
+		this.offsetX = offsetX;
+	}
+
+	public double getOffsetY() {
+		return this.offsetY;
+	}
+
+	public void setOffsetY(double offsetY) {
+		this.offsetY = offsetY;
+	}
+
 	private void effacer() {
 		GraphicsContext gc = this.getGraphicsContext2D();
 		gc.clearRect(0, 0, this.getWidth(), this.getHeight());
@@ -60,11 +92,13 @@ public class PlateauCanvas extends Canvas {
 
 	public void dessinerPlateau() {
 		this.effacer();
-		this.dessinerFond();
-		this.dessinerFondPlateau();
-		this.dessinerCases();
-		this.dessinerPions();
-		this.dessinerCaseSelectionnee();
+		if (this.plateau != null) {
+			this.dessinerFond();
+			this.dessinerFondPlateau();
+			this.dessinerCases();
+			// this.dessinerPions();
+			// this.dessinerCaseSelectionnee();
+		}
 	}
 
 	@Override

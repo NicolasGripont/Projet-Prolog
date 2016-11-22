@@ -14,7 +14,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import modele.Plateau;
-import vue.Plateau.PlateauCanvas;
+import vue.Plateau.PlateauGroup;
 
 public class VueJeu implements Initializable {
 
@@ -52,26 +52,28 @@ public class VueJeu implements Initializable {
 	@FXML
 	private ImageView imageViewDamesJoueur2;
 
-	private PlateauCanvas plateauCanvas;
+	private PlateauGroup plateauGroup;
 
 	private Plateau plateau;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		this.plateauCanvas = new PlateauCanvas(this.stackPanePlateau.getPrefWidth(),
+
+		this.plateauGroup = new PlateauGroup(this.stackPanePlateau.getPrefWidth(),
 				this.stackPanePlateau.getPrefHeight());
-		this.stackPanePlateau.getChildren().add(this.plateauCanvas);
+		this.stackPanePlateau.getChildren().add(this.plateauGroup);
 
 		final ChangeListener<Number> listener = new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
 				// TODO Auto-generated method stub
-				VueJeu.this.plateauCanvas.resize(VueJeu.this.stackPanePlateau.getWidth(),
+				VueJeu.this.plateauGroup.resize(VueJeu.this.stackPanePlateau.getWidth(),
 						VueJeu.this.stackPanePlateau.getHeight());
 				VueJeu.this.dessinerPlateau();
 			}
 
 		};
+
 		this.stackPanePlateau.widthProperty().addListener(listener);
 		this.stackPanePlateau.heightProperty().addListener(listener);
 
@@ -90,7 +92,7 @@ public class VueJeu implements Initializable {
 	}
 
 	public void dessinerPlateau() {
-		this.plateauCanvas.dessinerPlateau();
+		this.plateauGroup.dessinerPlateau();
 	}
 
 	public Plateau getPlateau() {
@@ -99,7 +101,7 @@ public class VueJeu implements Initializable {
 
 	public void setPlateau(Plateau plateau) {
 		this.plateau = plateau;
-		this.plateauCanvas.setPlateau(plateau);
+		this.plateauGroup.setPlateau(plateau);
 	}
 
 }
