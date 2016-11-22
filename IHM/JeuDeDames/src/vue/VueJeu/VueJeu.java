@@ -13,6 +13,8 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
+import modele.Case;
+import modele.Piece;
 import modele.Plateau;
 import vue.Plateau.PlateauGroup;
 
@@ -60,7 +62,7 @@ public class VueJeu implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 
 		this.plateauGroup = new PlateauGroup(this.stackPanePlateau.getPrefWidth(),
-				this.stackPanePlateau.getPrefHeight());
+				this.stackPanePlateau.getPrefHeight(), this);
 		this.stackPanePlateau.getChildren().add(this.plateauGroup);
 
 		final ChangeListener<Number> listener = new ChangeListener<Number>() {
@@ -102,6 +104,10 @@ public class VueJeu implements Initializable {
 	public void setPlateau(Plateau plateau) {
 		this.plateau = plateau;
 		this.plateauGroup.setPlateau(plateau);
+	}
+
+	public void deplacerPiece(Piece piece, Case nouvellePosition) {
+		this.controleur.deplacerPiece(piece, nouvellePosition);
 	}
 
 }

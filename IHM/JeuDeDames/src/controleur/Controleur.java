@@ -7,6 +7,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import modele.Case;
+import modele.Piece;
 import modele.Plateau;
 import vue.VueJeu.VueJeu;
 
@@ -15,6 +17,8 @@ public class Controleur extends Application {
 	protected Stage stage;
 
 	private VueJeu vueJeu;
+
+	private Plateau plateau;
 
 	@Override
 	public void start(Stage primaryStage) {
@@ -27,9 +31,9 @@ public class Controleur extends Application {
 			root = fxmlLoader.load();
 			this.vueJeu = (VueJeu) fxmlLoader.getController();
 			this.vueJeu.setControleur(this);
-			Plateau plateau = new Plateau();
-			plateau.initPions();
-			this.vueJeu.setPlateau(plateau);
+			this.plateau = new Plateau();
+			this.plateau.initPions();
+			this.vueJeu.setPlateau(this.plateau);
 			this.vueJeu.dessinerPlateau();
 			Scene scene = new Scene(root, this.stage.getWidth(), this.stage.getHeight());
 			this.stage.setTitle("Jeu De Dames");
@@ -43,4 +47,25 @@ public class Controleur extends Application {
 	public static void main(String[] args) {
 		launch(args);
 	}
+
+	public void deplacerPiece(Piece piece, Case nouvellePosition) {
+		if ((nouvellePosition != null) && nouvellePosition.estVide()) {
+			piece.getPosition().setPiece(null);
+			piece.setPosition(nouvellePosition);
+			nouvellePosition.setPiece(piece);
+		} else {
+			System.out.println("test");
+		}
+		this.vueJeu.dessinerPlateau();
+	}
+
+	public Plateau getPlateau() {
+		return this.plateau;
+	}
+
+	public void setPlateau(Plateau plateau) {
+		this.plateau = plateau;
+		this.vueJeu.setPlateau(plateau);
+	}
+
 }
