@@ -2,9 +2,9 @@ package modele;
 
 public abstract class Piece {
 
-	private Couleur couleur;
+	protected Couleur couleur;
 
-	private Case position;
+	protected Case position;
 
 	public Piece(Couleur couleur, Case position) {
 		super();

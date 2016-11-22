@@ -19,8 +19,8 @@ public class Controleur extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		this.stage = primaryStage;
-		// this.stage.setMinWidth(900); // Largeur minimum fixée
-		// this.stage.setMinHeight(620); // Hauteur minimum fixée
+		this.stage.setMinWidth(900); // Largeur minimum fixée
+		this.stage.setMinHeight(620); // Hauteur minimum fixée
 		try {
 			FXMLLoader fxmlLoader = new FXMLLoader(this.getClass().getResource("/vue/vueJeu/VueJeu.fxml"));
 			Parent root;

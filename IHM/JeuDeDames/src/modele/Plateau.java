@@ -37,9 +37,9 @@ public class Plateau {
 	public void initPions() {
 		for (int i = 0; i < NB_LIGNES; i++) {
 			for (int j = 0; j < NB_COLONNES; j++) {
-				if ((j <= 3) && (this.cases[i][j].getCouleur() == Couleur.NOIRE)) {
+				if ((i <= 3) && (this.cases[i][j].getCouleur() == Couleur.NOIRE)) {
 					this.cases[i][j].setPiece(new Pion(Couleur.NOIRE, this.cases[i][j]));
-				} else if ((j >= 6) && (this.cases[i][j].getCouleur() == Couleur.NOIRE)) {
+				} else if ((i >= 6) && (this.cases[i][j].getCouleur() == Couleur.NOIRE)) {
 					this.cases[i][j].setPiece(new Pion(Couleur.BLANCHE, this.cases[i][j]));
 				}
 			}

@@ -54,4 +54,10 @@ public class Case {
 		return this.piece == null;
 	}
 
+	@Override
+	public String toString() {
+		return "Case [couleur=" + this.couleur + ", ligne=" + this.ligne + ", colonne=" + this.colonne + ", piece="
+				+ this.piece + "]";
+	}
+
 }

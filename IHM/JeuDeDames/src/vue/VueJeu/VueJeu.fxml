@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.image.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.scene.control.*?>
@@ -7,7 +8,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="600.0" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="vue.VueJeu.VueJeu">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="600.0" prefHeight="437.0" prefWidth="625.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="vue.VueJeu.VueJeu">
    <top>
       <Label text="Jeu de Dames" textAlignment="CENTER" BorderPane.alignment="CENTER">
          <font>
@@ -16,11 +17,11 @@
       </Label>
    </top>
    <right>
-      <VBox prefHeight="363.0" prefWidth="165.0" BorderPane.alignment="CENTER">
+      <VBox prefHeight="363.0" prefWidth="165.0" spacing="30.0" BorderPane.alignment="CENTER">
          <children>
             <HBox prefHeight="17.0" prefWidth="165.0">
                <children>
-                  <Label text="Timer : " />
+                  <Label prefHeight="17.0" prefWidth="54.0" text="Temps : " />
                   <Label fx:id="labelTimer" text="0" />
                </children>
             </HBox>
@@ -30,20 +31,75 @@
                   <Label fx:id="labelNbCoups" text="0" />
                </children>
             </HBox>
-            <HBox prefHeight="20.0" prefWidth="165.0">
+            <VBox prefHeight="59.0" prefWidth="165.0">
                <children>
-                  <Label text="Joueur 1 : " />
-                  <Label fx:id="labelJoueur1" text="J1" />
+                  <HBox prefHeight="20.0" prefWidth="165.0">
+                     <children>
+                        <Label text="Joueur 1 : " />
+                        <Label fx:id="labelJoueur1" text="J1" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="20.0" prefWidth="165.0">
+                     <children>
+                        <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
+                           <children>
+                              <ImageView fx:id="imageViewPionsJoueur1" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
+                                 <VBox.margin>
+                                    <Insets top="5.0" />
+                                 </VBox.margin></ImageView>
+                              <Label fx:id="labelJoueur12" text="Pions" />
+                           </children>
+                        </VBox>
+                        <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
+                           <children>
+                              <ImageView fx:id="imageViewDamesJoueur1" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
+                                 <VBox.margin>
+                                    <Insets top="5.0" />
+                                 </VBox.margin></ImageView>
+                              <Label text="Dames" />
+                           </children>
+                        </VBox>
+                     </children>
+                  </HBox>
                </children>
-            </HBox>
-            <HBox prefHeight="20.0" prefWidth="165.0">
+            </VBox>
+            <VBox prefHeight="59.0" prefWidth="165.0">
                <children>
-                  <Label text="Joueur 2 : " />
-                  <Label fx:id="labelJoueur2" text="J2" />
+                  <HBox prefHeight="20.0" prefWidth="165.0">
+                     <children>
+                        <Label text="Joueur 2 : " />
+                        <Label fx:id="labelJoueur2" text="J2" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="20.0" prefWidth="165.0">
+                     <children>
+                        <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
+                           <children>
+                              <ImageView fx:id="imageViewPionsJoueur2" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
+                                 <VBox.margin>
+                                    <Insets top="5.0" />
+                                 </VBox.margin></ImageView>
+                              <Label fx:id="labelJoueur121" text="Pions" />
+                           </children>
+                        </VBox>
+                        <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
+                           <children>
+                              <ImageView fx:id="imageViewDamesJoueur2" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
+                                 <VBox.margin>
+                                    <Insets top="5.0" />
+                                 </VBox.margin></ImageView>
+                              <Label text="Dames" />
+                           </children>
+                        </VBox>
+                     </children>
+                  </HBox>
                </children>
-            </HBox>
+            </VBox>
             <Button fx:id="buttonQuitterPartie" mnemonicParsing="false" text="Quitter Partie" />
          </children>
+         <padding>
+            <Insets top="10.0" />
+         </padding>
       </VBox>
    </right>
    <center>

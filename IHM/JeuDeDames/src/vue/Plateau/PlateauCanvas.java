@@ -1,8 +1,10 @@
 package vue.Plateau;
 
+import javafx.event.EventHandler;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import modele.Case;
 import modele.Couleur;
@@ -19,9 +21,35 @@ public class PlateauCanvas extends Canvas {
 	private double offsetX;
 	private double offsetY;
 
+	private Plateau plateau;
+
+	private Case caseSelectionnee = null;
+
 	public PlateauCanvas(double width, double height) {
 		super(width, height);
 		this.calculerZoom();
+		this.addEventFilter(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent mouseEvent) {
+				PlateauCanvas.this.onCaseClicked(mouseEvent.getX(), mouseEvent.getY());
+			}
+		});
+	}
+
+	public Plateau getPlateau() {
+		return this.plateau;
+	}
+
+	public void setPlateau(Plateau plateau) {
+		this.plateau = plateau;
+	}
+
+	public Case getCaseSelectionnee() {
+		return this.caseSelectionnee;
+	}
+
+	public void setCaseSelectionnee(Case caseSelectionnee) {
+		this.caseSelectionnee = caseSelectionnee;
 	}
 
 	private void effacer() {
@@ -29,12 +57,12 @@ public class PlateauCanvas extends Canvas {
 		gc.clearRect(0, 0, this.getWidth(), this.getHeight());
 	}
 
-	public void dessinerPlateau(Plateau plateau) {
+	public void dessinerPlateau() {
 		this.effacer();
 		this.dessinerFond();
 		this.dessinerFondPlateau();
-		this.dessinerCases(plateau);
-		this.dessinerPions(plateau);
+		this.dessinerCases();
+		this.dessinerPions();
 	}
 
 	@Override
@@ -46,8 +74,6 @@ public class PlateauCanvas extends Canvas {
 
 	private void dessinerFond() {
 		GraphicsContext gc = this.getGraphicsContext2D();
-		// gc.setFill(new Color(0, 0, 0, 1));
-		// gc.fillRect(0, 0, this.getWidth(), this.getHeight());
 		String imagePath = this.classLoader.getResource("fond.png").toString();
 		gc.drawImage(new Image(imagePath, this.getWidth(), this.getHeight(), false, false), 0, 0);
 	}
@@ -61,35 +87,35 @@ public class PlateauCanvas extends Canvas {
 				false, false), this.offsetX - borderWidth, this.offsetY - borderWidth);
 	}
 
-	private void dessinerCases(Plateau plateau) {
+	private void dessinerCases() {
 		double largeurCase = this.plateauWidth / Plateau.NB_LIGNES;
 		double longueurCase = this.plateauHeight / Plateau.NB_COLONNES;
 		GraphicsContext gc = this.getGraphicsContext2D();
 
 		for (int i = 0; i < Plateau.NB_LIGNES; i++) {
 			for (int j = 0; j < Plateau.NB_COLONNES; j++) {
-				Case caseCourante = plateau.getCases()[i][j];
+				Case caseCourante = this.plateau.getCases()[i][j];
 				if (caseCourante.getCouleur() == Couleur.BLANCHE) {
 					gc.setFill(new Color(1, 1, 1, 0.5));
 
 				} else {
 					gc.setFill(new Color(0, 0, 0, 0.5));
 				}
-				gc.fillRect((i * largeurCase) + this.offsetX, (j * longueurCase) + this.offsetY, largeurCase,
+				gc.fillRect((j * largeurCase) + this.offsetX, (i * longueurCase) + this.offsetY, largeurCase,
 						longueurCase);
 			}
 		}
 	}
 
-	private void dessinerPions(Plateau plateau) {
+	private void dessinerPions() {
 		double largeurCase = this.plateauWidth / Plateau.NB_LIGNES;
-		double longueurCase = this.plateauHeight / Plateau.NB_COLONNES;
+		double hauteurCase = this.plateauHeight / Plateau.NB_COLONNES;
 		GraphicsContext gc = this.getGraphicsContext2D();
 		double margin = 5;
 
 		for (int i = 0; i < Plateau.NB_LIGNES; i++) {
 			for (int j = 0; j < Plateau.NB_COLONNES; j++) {
-				Case caseCourante = plateau.getCases()[i][j];
+				Case caseCourante = this.plateau.getCases()[i][j];
 
 				if (!caseCourante.estVide()) {
 					String imagePath = null;
@@ -108,10 +134,22 @@ public class PlateauCanvas extends Canvas {
 						}
 					}
 					gc.drawImage(
-							new Image(imagePath, largeurCase - (2 * margin), longueurCase - (2 * margin), false, false),
-							(largeurCase * i) + this.offsetX + margin, (longueurCase * j) + this.offsetY + margin);
+							new Image(imagePath, largeurCase - (2 * margin), hauteurCase - (2 * margin), false, false),
+							(largeurCase * j) + this.offsetX + margin, (hauteurCase * i) + this.offsetY + margin);
 				}
 			}
+		}
+	}
+
+	private void dessinerCaseSelectionnee() {
+		if (this.caseSelectionnee != null) {
+			double largeurCase = this.plateauWidth / Plateau.NB_LIGNES;
+			double hauteurCase = this.plateauHeight / Plateau.NB_COLONNES;
+			GraphicsContext gc = this.getGraphicsContext2D();
+
+			gc.setFill(new Color(0, 0, 1, 0.5));
+			gc.fillRect((this.caseSelectionnee.getLigne() * largeurCase) + this.offsetX,
+					(this.caseSelectionnee.getColonne() * hauteurCase) + this.offsetY, largeurCase, hauteurCase);
 		}
 	}
 
@@ -128,6 +166,25 @@ public class PlateauCanvas extends Canvas {
 			this.plateauWidth = height - (2 * margin);
 			this.offsetX = margin + ((width - height) / 2);
 			this.offsetY = margin;
+		}
+	}
+
+	private void onCaseClicked(double x, double y) {
+		double largeurCase = this.plateauWidth / Plateau.NB_LIGNES;
+		double hauteurCase = this.plateauHeight / Plateau.NB_COLONNES;
+		for (int i = 0; i < Plateau.NB_LIGNES; i++) {
+			for (int j = 0; j < Plateau.NB_COLONNES; j++) {
+				double x1 = (j * largeurCase) + this.offsetX;
+				double x2 = x1 + largeurCase;
+				double y1 = (i * hauteurCase) + this.offsetY;
+				double y2 = y1 + hauteurCase;
+				if ((x >= x1) && (x < x2) && (y >= y1) && (y < y2)) {
+					this.caseSelectionnee = this.plateau.getCases()[i][j];
+					System.out.println(i + " " + j);
+					System.out.println(this.caseSelectionnee);
+					break;
+				}
+			}
 		}
 	}
 

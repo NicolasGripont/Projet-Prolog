@@ -10,6 +10,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import modele.Plateau;
 import vue.Plateau.PlateauCanvas;
@@ -17,6 +19,8 @@ import vue.Plateau.PlateauCanvas;
 public class VueJeu implements Initializable {
 
 	private Controleur controleur;
+
+	private final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 
 	@FXML
 	private StackPane stackPanePlateau;
@@ -35,6 +39,18 @@ public class VueJeu implements Initializable {
 
 	@FXML
 	private Label labelJoueur2;
+
+	@FXML
+	private ImageView imageViewPionsJoueur1;
+
+	@FXML
+	private ImageView imageViewDamesJoueur1;
+
+	@FXML
+	private ImageView imageViewPionsJoueur2;
+
+	@FXML
+	private ImageView imageViewDamesJoueur2;
 
 	private PlateauCanvas plateauCanvas;
 
@@ -58,6 +74,11 @@ public class VueJeu implements Initializable {
 		};
 		this.stackPanePlateau.widthProperty().addListener(listener);
 		this.stackPanePlateau.heightProperty().addListener(listener);
+
+		this.imageViewDamesJoueur1.setImage(new Image(this.classLoader.getResource("dame_blanche.png").toString()));
+		this.imageViewPionsJoueur1.setImage(new Image(this.classLoader.getResource("pion_blanc.png").toString()));
+		this.imageViewDamesJoueur2.setImage(new Image(this.classLoader.getResource("dame_noire.png").toString()));
+		this.imageViewPionsJoueur2.setImage(new Image(this.classLoader.getResource("pion_noir.png").toString()));
 	}
 
 	public Controleur getControleur() {
@@ -69,7 +90,7 @@ public class VueJeu implements Initializable {
 	}
 
 	public void dessinerPlateau() {
-		this.plateauCanvas.dessinerPlateau(this.plateau);
+		this.plateauCanvas.dessinerPlateau();
 	}
 
 	public Plateau getPlateau() {
@@ -78,6 +99,7 @@ public class VueJeu implements Initializable {
 
 	public void setPlateau(Plateau plateau) {
 		this.plateau = plateau;
+		this.plateauCanvas.setPlateau(plateau);
 	}
 
 }

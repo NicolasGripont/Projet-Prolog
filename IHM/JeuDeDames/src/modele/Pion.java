@@ -7,4 +7,9 @@ public class Pion extends Piece {
 		// TODO Auto-generated constructor stub
 	}
 
+	@Override
+	public String toString() {
+		return "Pion [couleur=" + this.couleur + "]";
+	}
+
 }
