@@ -29,7 +29,8 @@ public class Controleur extends Application {
 			this.vueJeu.setControleur(this);
 			Plateau plateau = new Plateau();
 			plateau.initPions();
-			this.vueJeu.dessinerPlateau(plateau);
+			this.vueJeu.setPlateau(plateau);
+			this.vueJeu.dessinerPlateau();
 			Scene scene = new Scene(root, this.stage.getWidth(), this.stage.getHeight());
 			this.stage.setTitle("Jeu De Dames");
 			this.stage.setScene(scene);
