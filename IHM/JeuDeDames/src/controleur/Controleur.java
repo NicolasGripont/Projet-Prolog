@@ -51,7 +51,7 @@ public class Controleur extends Application {
 
 	public void deplacerPiece(Piece piece, Case nouvellePosition) {
 		if ((nouvellePosition != null) && nouvellePosition.estVide()
-				&& (nouvellePosition.getCouleur() == Couleur.NOIRE)) {
+				&& (nouvellePosition.getCouleur() == Couleur.NOIR)) {
 			piece.getPosition().setPiece(null);
 			piece.setPosition(nouvellePosition);
 			nouvellePosition.setPiece(piece);

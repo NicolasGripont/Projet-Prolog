@@ -33,7 +33,7 @@ public class PlateauGroup extends Group {
 
 	private final PlateauCanvas plateauCanvas;
 
-	private List<PieceVue> pieces;
+	private List<PieceVue> pieceVues;
 
 	private final VueJeu vueJeu;
 
@@ -69,74 +69,86 @@ public class PlateauGroup extends Group {
 	}
 
 	public void creerPieces() {
-		this.pieces = new ArrayList<>();
+		this.pieceVues = new ArrayList<>();
 		for (int i = 0; i < Plateau.NB_LIGNES; i++) {
 			for (int j = 0; j < Plateau.NB_COLONNES; j++) {
 				Case caseCourante = this.plateau.getCases()[i][j];
 				if (!caseCourante.estVide()) {
-					PieceVue circle = this.creerPiece(caseCourante.getPiece());
+					PieceVue circle = new PieceVue(caseCourante.getPiece());
 					this.getChildren().add(circle);
-					this.pieces.add(circle);
+					this.pieceVues.add(circle);
+					this.setPieceVueDragable(circle, true);
 				}
 			}
 		}
 	}
 
-	private PieceVue creerPiece(Piece piece) {
-		PieceVue pieceVue = new PieceVue(piece);
+	private void setPieceVueDragable(PieceVue pieceVue, boolean dragable) {
+		if (dragable) {
+			pieceVue.setCursor(Cursor.HAND);
 
-		pieceVue.setCursor(Cursor.HAND);
+			pieceVue.setOnMousePressed(new EventHandler<MouseEvent>() {
+				@Override
+				public void handle(MouseEvent t) {
+					PlateauGroup.this.orgSceneX = t.getSceneX();
+					PlateauGroup.this.orgSceneY = t.getSceneY();
 
-		pieceVue.setOnMousePressed(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent t) {
-				PlateauGroup.this.orgSceneX = t.getSceneX();
-				PlateauGroup.this.orgSceneY = t.getSceneY();
+					PieceVue c = (PieceVue) (t.getSource());
+					c.toFront();
+				}
+			});
 
-				PieceVue c = (PieceVue) (t.getSource());
-				c.toFront();
-			}
-		});
-		pieceVue.setOnMouseDragged(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent t) {
-				double offsetX = t.getSceneX() - PlateauGroup.this.orgSceneX;
-				double offsetY = t.getSceneY() - PlateauGroup.this.orgSceneY;
+			pieceVue.setOnMouseDragged(new EventHandler<MouseEvent>() {
+				@Override
+				public void handle(MouseEvent t) {
+					double largeurCase = PlateauGroup.this.plateauCanvas.getPlateauWidth() / Plateau.NB_LIGNES;
+					double hauteurCase = PlateauGroup.this.plateauCanvas.getPlateauHeight() / Plateau.NB_COLONNES;
+					double offsetX = t.getSceneX() - PlateauGroup.this.orgSceneX;
+					double offsetY = t.getSceneY() - PlateauGroup.this.orgSceneY;
 
-				PieceVue c = (PieceVue) (t.getSource());
+					PieceVue c = (PieceVue) (t.getSource());
 
-				c.setCenterX(c.getCenterX() + offsetX);
-				c.setCenterY(c.getCenterY() + offsetY);
+					if (((c.getCenterX() + offsetX) > (largeurCase / 2))
+							&& ((c.getCenterX() + offsetX) < (PlateauGroup.this.plateauCanvas.getWidth()
+									- (largeurCase / 2)))
+							&& ((c.getCenterY() + offsetY) > (hauteurCase / 2)) && ((c.getCenterY()
+									+ offsetY) < (PlateauGroup.this.plateauCanvas.getHeight() - (hauteurCase / 2)))) {
+						c.setCenterX(c.getCenterX() + offsetX);
+						c.setCenterY(c.getCenterY() + offsetY);
 
-				PlateauGroup.this.orgSceneX = t.getSceneX();
-				PlateauGroup.this.orgSceneY = t.getSceneY();
-			}
-		});
-
-		pieceVue.setOnMouseClicked(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent t) {
-				double x = t.getX();
-				double y = t.getY();
-				double largeurCase = PlateauGroup.this.plateauCanvas.getPlateauWidth() / Plateau.NB_LIGNES;
-				double hauteurCase = PlateauGroup.this.plateauCanvas.getPlateauHeight() / Plateau.NB_COLONNES;
-				Case nouvellePosition = null;
-				for (int i = 0; i < Plateau.NB_LIGNES; i++) {
-					for (int j = 0; j < Plateau.NB_COLONNES; j++) {
-						double x1 = (j * largeurCase) + PlateauGroup.this.plateauCanvas.getOffsetX();
-						double x2 = x1 + largeurCase;
-						double y1 = (i * hauteurCase) + PlateauGroup.this.plateauCanvas.getOffsetY();
-						double y2 = y1 + hauteurCase;
-						if ((x >= x1) && (x < x2) && (y >= y1) && (y < y2)) {
-							nouvellePosition = PlateauGroup.this.plateau.getCases()[i][j];
-							break;
-						}
+						PlateauGroup.this.orgSceneX = t.getSceneX();
+						PlateauGroup.this.orgSceneY = t.getSceneY();
 					}
 				}
-				PlateauGroup.this.vueJeu.dragAndDropPiece(piece, nouvellePosition);
-			}
-		});
-		return pieceVue;
+			});
+
+			pieceVue.setOnMouseClicked(new EventHandler<MouseEvent>() {
+				@Override
+				public void handle(MouseEvent t) {
+
+					double x = t.getX();
+					double y = t.getY();
+					double largeurCase = PlateauGroup.this.plateauCanvas.getPlateauWidth() / Plateau.NB_LIGNES;
+					double hauteurCase = PlateauGroup.this.plateauCanvas.getPlateauHeight() / Plateau.NB_COLONNES;
+					Case nouvellePosition = null;
+					for (int i = 0; i < Plateau.NB_LIGNES; i++) {
+						for (int j = 0; j < Plateau.NB_COLONNES; j++) {
+							double x1 = (j * largeurCase) + PlateauGroup.this.plateauCanvas.getOffsetX();
+							double x2 = x1 + largeurCase;
+							double y1 = (i * hauteurCase) + PlateauGroup.this.plateauCanvas.getOffsetY();
+							double y2 = y1 + hauteurCase;
+							if ((x >= x1) && (x < x2) && (y >= y1) && (y < y2)) {
+								nouvellePosition = PlateauGroup.this.plateau.getCases()[i][j];
+								break;
+							}
+						}
+					}
+					PlateauGroup.this.vueJeu.dragAndDropPiece(pieceVue.getPiece(), nouvellePosition);
+				}
+			});
+		} else {
+			pieceVue.setCursor(Cursor.HAND);
+		}
 	}
 
 	private void dessinerPions() {
@@ -144,19 +156,19 @@ public class PlateauGroup extends Group {
 		double hauteurCase = this.plateauCanvas.getPlateauHeight() / Plateau.NB_COLONNES;
 		double margin = 5;
 
-		for (PieceVue pieceVue : this.pieces) {
+		for (PieceVue pieceVue : this.pieceVues) {
 			Case caseCourante = pieceVue.getPiece().getPosition();
 			if (!caseCourante.estVide()) {
 				String imagePath = null;
 				Piece piece = caseCourante.getPiece();
 				if (Dame.class.isInstance(caseCourante.getPiece())) {
-					if (piece.getCouleur() == Couleur.BLANCHE) {
+					if (piece.getCouleur() == Couleur.BLANC) {
 						imagePath = this.classLoader.getResource("dame_blanche.png").toString();
 					} else {
 						imagePath = this.classLoader.getResource("dame_noire.png").toString();
 					}
 				} else {
-					if (piece.getCouleur() == Couleur.BLANCHE) {
+					if (piece.getCouleur() == Couleur.BLANC) {
 						imagePath = this.classLoader.getResource("pion_blanc.png").toString();
 					} else {
 						imagePath = this.classLoader.getResource("pion_noir.png").toString();
@@ -186,14 +198,13 @@ public class PlateauGroup extends Group {
 		double hauteurCase = this.plateauCanvas.getPlateauHeight() / Plateau.NB_COLONNES;
 		double margin = 5;
 		PieceVue pieceVue = null;
-		for (PieceVue p : this.pieces) {
+		for (PieceVue p : this.pieceVues) {
 			if (p.getPiece().equals(piece)) {
 				pieceVue = p;
 				break;
 			}
 		}
 		if (pieceVue != null) {
-			System.out.println("Animation");
 			double xStart = pieceVue.getCenterX();
 			double yStart = pieceVue.getCenterY();
 			double xEnd = (largeurCase * piece.getPosition().getColonne()) + this.plateauCanvas.getOffsetX()
@@ -202,21 +213,35 @@ public class PlateauGroup extends Group {
 					+ (hauteurCase / 2);
 			Path path = new Path();
 
-			// path.getElements().add(new MoveTo(pieceVue.getCenterX(),
-			// pieceVue.getCenterY()));
 			path.getElements().add(new MoveTo(xStart, yStart));
 			path.getElements().add(new CubicCurveTo(xStart, yStart, xStart, yStart, xEnd, yEnd));
-
 			PathTransition pathTransition = new PathTransition();
-			pathTransition.setDuration(Duration.millis(3000));
+			pathTransition.setDuration(Duration.millis(1000));
 			pathTransition.setNode(pieceVue);
 			pathTransition.setPath(path);
 			pathTransition.setOrientation(OrientationType.ORTHOGONAL_TO_TANGENT);
 			pathTransition.setCycleCount(1);
 			pathTransition.setAutoReverse(false);
-
 			pathTransition.play();
+
 		}
+	}
+
+	public void resetPosition(PieceVue pieceVue) {
+		// double largeurCase = this.plateauCanvas.getPlateauWidth() /
+		// Plateau.NB_LIGNES;
+		// double hauteurCase = this.plateauCanvas.getPlateauHeight() /
+		// Plateau.NB_COLONNES;
+		// double x = (largeurCase *
+		// pieceVue.getPiece().getPosition().getColonne()) +
+		// this.plateauCanvas.getOffsetX()
+		// + (largeurCase / 2);
+		// double y = (hauteurCase *
+		// pieceVue.getPiece().getPosition().getLigne()) +
+		// this.plateauCanvas.getOffsetY()
+		// + (hauteurCase / 2);
+		// pieceVue.setCenterX(x);
+		// pieceVue.setCenterY(y);
 	}
 
 }

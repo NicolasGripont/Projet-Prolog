@@ -14,9 +14,9 @@ public class Plateau {
 		for (int i = 0; i < NB_LIGNES; i++) {
 			for (int j = 0; j < NB_COLONNES; j++) {
 				if (((i + j) % 2) == 0) {
-					this.cases[i][j] = new Case(Couleur.BLANCHE, i, j);
+					this.cases[i][j] = new Case(Couleur.BLANC, i, j);
 				} else {
-					this.cases[i][j] = new Case(Couleur.NOIRE, i, j);
+					this.cases[i][j] = new Case(Couleur.NOIR, i, j);
 				}
 			}
 		}
@@ -37,10 +37,10 @@ public class Plateau {
 	public void initPions() {
 		for (int i = 0; i < NB_LIGNES; i++) {
 			for (int j = 0; j < NB_COLONNES; j++) {
-				if ((i <= 3) && (this.cases[i][j].getCouleur() == Couleur.NOIRE)) {
-					this.cases[i][j].setPiece(new Pion(Couleur.NOIRE, this.cases[i][j]));
-				} else if ((i >= 6) && (this.cases[i][j].getCouleur() == Couleur.NOIRE)) {
-					this.cases[i][j].setPiece(new Pion(Couleur.BLANCHE, this.cases[i][j]));
+				if ((i <= 3) && (this.cases[i][j].getCouleur() == Couleur.NOIR)) {
+					this.cases[i][j].setPiece(new Pion(Couleur.NOIR, this.cases[i][j]));
+				} else if ((i >= 6) && (this.cases[i][j].getCouleur() == Couleur.NOIR)) {
+					this.cases[i][j].setPiece(new Pion(Couleur.BLANC, this.cases[i][j]));
 				}
 			}
 		}

@@ -131,7 +131,7 @@ public class PlateauCanvas extends Canvas {
 		for (int i = 0; i < Plateau.NB_LIGNES; i++) {
 			for (int j = 0; j < Plateau.NB_COLONNES; j++) {
 				Case caseCourante = this.plateau.getCases()[i][j];
-				if (caseCourante.getCouleur() == Couleur.BLANCHE) {
+				if (caseCourante.getCouleur() == Couleur.BLANC) {
 					gc.setFill(new Color(1, 1, 1, 0.5));
 
 				} else {
@@ -157,13 +157,13 @@ public class PlateauCanvas extends Canvas {
 					String imagePath = null;
 					Piece piece = caseCourante.getPiece();
 					if (Dame.class.isInstance(caseCourante.getPiece())) {
-						if (piece.getCouleur() == Couleur.BLANCHE) {
+						if (piece.getCouleur() == Couleur.BLANC) {
 							imagePath = this.classLoader.getResource("dame_blanche.png").toString();
 						} else {
 							imagePath = this.classLoader.getResource("dame_noire.png").toString();
 						}
 					} else {
-						if (piece.getCouleur() == Couleur.BLANCHE) {
+						if (piece.getCouleur() == Couleur.BLANC) {
 							imagePath = this.classLoader.getResource("pion_blanc.png").toString();
 						} else {
 							imagePath = this.classLoader.getResource("pion_noir.png").toString();
