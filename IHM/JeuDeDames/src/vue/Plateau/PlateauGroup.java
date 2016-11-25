@@ -3,6 +3,9 @@ package vue.Plateau;
 import java.util.ArrayList;
 import java.util.List;
 
+import javafx.animation.PathTransition;
+import javafx.animation.PathTransition.OrientationType;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
@@ -10,6 +13,10 @@ import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.paint.Paint;
+import javafx.scene.shape.CubicCurveTo;
+import javafx.scene.shape.MoveTo;
+import javafx.scene.shape.Path;
+import javafx.util.Duration;
 import modele.Case;
 import modele.Couleur;
 import modele.Dame;
@@ -187,7 +194,7 @@ public class PlateauGroup extends Group {
 		}
 	}
 
-	public void deplacerPiece(Piece piece, List<Case> deplacement) {
+	public void deplacerPiece(Piece piece, List<Case> deplacement, int dureeDeplacement) {
 		double largeurCase = this.plateauCanvas.getPlateauWidth() / Plateau.NB_LIGNES;
 		double hauteurCase = this.plateauCanvas.getPlateauHeight() / Plateau.NB_COLONNES;
 		double margin = 5;
@@ -204,35 +211,36 @@ public class PlateauGroup extends Group {
 			double xEnd = xStart;
 			double yEnd = yStart;
 
-			// Path path = new Path();
-			//
-			// path.getElements().add(new MoveTo(xStart, yStart));
-			//
+			pieceVue.toFront();
+
+			Path path = new Path();
+
+			path.getElements().add(new MoveTo(xStart, yStart));
+
 			for (Case c : deplacement) {
 				xEnd = (largeurCase * c.getColonne()) + this.plateauCanvas.getOffsetX() + (largeurCase / 2);
 				yEnd = (hauteurCase * c.getLigne()) + this.plateauCanvas.getOffsetY() + (hauteurCase / 2);
-				// path.getElements().add(new CubicCurveTo(xStart, yStart,
-				// xStart, yStart, xEnd, yEnd));
+				path.getElements().add(new CubicCurveTo(xStart, yStart, xStart, yStart, xEnd, yEnd));
 				xStart = xEnd;
 				yStart = yEnd;
 			}
-			//
-			// PathTransition pathTransition = new PathTransition();
-			// pathTransition.setDuration(Duration.millis(deplacement.size() *
-			// 1000));
-			// pathTransition.setNode(pieceVue);
-			// pathTransition.setPath(path);
-			// pathTransition.setOrientation(OrientationType.ORTHOGONAL_TO_TANGENT);
-			// pathTransition.setCycleCount(1);
-			// pathTransition.setAutoReverse(false);
-			// pathTransition.play();
+
+			PathTransition pathTransition = new PathTransition();
+			pathTransition.setDuration(Duration.millis(dureeDeplacement));
+			pathTransition.setNode(pieceVue);
+			pathTransition.setPath(path);
+			pathTransition.setOrientation(OrientationType.ORTHOGONAL_TO_TANGENT);
+			pathTransition.setCycleCount(1);
+			pathTransition.setAutoReverse(false);
+			pathTransition.play();
 
 			pieceVue.setCenterX(xEnd);
 			pieceVue.setCenterY(yEnd);
 		}
 	}
 
-	public void tuerPiece(Piece piece) {
+	public void tuerPiece(Piece piece, int dureeDattente) {
+
 		PieceVue pieceATuer = null;
 		for (PieceVue pieceVue : this.pieceVues) {
 			if (pieceVue.getPiece() == piece) {
@@ -242,7 +250,27 @@ public class PlateauGroup extends Group {
 		}
 
 		if (pieceATuer != null) {
-			this.getChildren().remove(pieceATuer);
+			Path path = new Path();
+
+			path.getElements().add(new MoveTo(pieceATuer.getCenterX(), pieceATuer.getCenterY()));
+			path.getElements()
+					.add(new CubicCurveTo(pieceATuer.getCenterX(), pieceATuer.getCenterY(), pieceATuer.getCenterX(),
+							pieceATuer.getCenterY(), pieceATuer.getCenterX(), pieceATuer.getCenterY()));
+			PathTransition pathTransition = new PathTransition();
+			pathTransition.setDelay(Duration.millis(dureeDattente));
+			pathTransition.setDuration(Duration.millis(1));
+			pathTransition.setNode(pieceATuer);
+			pathTransition.setPath(path);
+			pathTransition.setOrientation(OrientationType.ORTHOGONAL_TO_TANGENT);
+			pathTransition.setCycleCount(1);
+			pathTransition.setAutoReverse(false);
+			pathTransition.play();
+			pathTransition.setOnFinished(new EventHandler<ActionEvent>() {
+				@Override
+				public void handle(ActionEvent arg0) {
+					PlateauGroup.this.getChildren().remove(pathTransition.getNode());
+				}
+			});
 		}
 	}
 

@@ -143,8 +143,8 @@ public class Controleur extends Application {
 		}
 
 		// appelle vue
-		this.vueJeu.deplacerPiece(piecePlateau, deplacement);
-		this.vueJeu.tuerPieces(piecesMortes);
+		this.vueJeu.deplacerPiece(piecePlateau, deplacement, deplacement.size() * 1000);
+		this.vueJeu.tuerPieces(piecesMortes, (deplacement.size() * 1000) + 500);
 	}
 
 	private boolean contains(List<Piece> pieces, Piece piece) {

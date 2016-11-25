@@ -1,6 +1,7 @@
 package vue.VueJeu;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -110,13 +111,13 @@ public class VueJeu implements Initializable {
 		this.controleur.deplacerPiece(piece, nouvellePosition);
 	}
 
-	public void deplacerPiece(Piece piece, List<Case> deplacement) {
-		this.plateauGroup.deplacerPiece(piece, deplacement);
+	public void deplacerPiece(Piece piece, List<Case> deplacement, int dureeDeplacement) {
+		this.plateauGroup.deplacerPiece(piece, deplacement, dureeDeplacement);
 	}
 
-	public void tuerPieces(List<Piece> pieces) {
+	public void tuerPieces(List<Piece> pieces, int dureeDAttente) {
 		for (Piece p : pieces) {
-			this.plateauGroup.tuerPiece(p);
+			this.plateauGroup.tuerPiece(p, dureeDAttente);
 		}
 	}
 
@@ -124,9 +125,58 @@ public class VueJeu implements Initializable {
 
 	Plateau plateauTmp = new Plateau();
 
+	// @FXML
+	// public void onButtonQuitterPartieClicked() {
+	// this.controleur.cliquerSurQuitter();
+	// }
+
 	@FXML
 	public void onButtonQuitterPartieClicked() {
-		this.controleur.cliquerSurQuitter();
+		// this.controleur.cliquerSurQuitter();
+		if (this.i == 0) {
+			this.plateauTmp.initPions();
+
+			Piece piece = this.plateau.getCases()[6][1].getPiece();
+
+			this.plateauTmp.getCases()[5][0].setPiece(this.plateauTmp.getCases()[6][1].getPiece());
+			this.plateauTmp.getCases()[6][1].setPiece(null);
+			this.plateauTmp.getCases()[5][0].getPiece().setPosition(this.plateauTmp.getCases()[5][0]);
+
+			List<Case> coups = new ArrayList<>();
+			coups.add(this.plateauTmp.getCases()[5][0]);
+			this.controleur.jouerCoup(this.plateauTmp.getBlanches(), this.plateauTmp.getNoires(), piece, coups);
+			this.i++;
+		} else if (this.i == 1) {
+			this.plateauTmp.getCases()[4][1].setPiece(this.plateauTmp.getCases()[3][2].getPiece());
+			this.plateauTmp.getCases()[3][2].setPiece(null);
+			this.plateauTmp.getCases()[4][1].getPiece().setPosition(this.plateauTmp.getCases()[4][1]);
+			Piece piece = this.plateau.getCases()[3][2].getPiece();
+			List<Case> coups = new ArrayList<>();
+			coups.add(this.plateauTmp.getCases()[4][1]);
+			this.controleur.jouerCoup(this.plateauTmp.getBlanches(), this.plateauTmp.getNoires(), piece, coups);
+			this.i++;
+		} else if (this.i == 2) {
+			this.plateauTmp.getCases()[3][2].setPiece(this.plateauTmp.getCases()[5][0].getPiece());
+			this.plateauTmp.getCases()[5][0].setPiece(null);
+			this.plateauTmp.getCases()[3][2].getPiece().setPosition(this.plateauTmp.getCases()[3][2]);
+			Piece piece = this.plateau.getCases()[5][0].getPiece();
+			List<Case> coups = new ArrayList<>();
+			coups.add(this.plateauTmp.getCases()[3][2]);
+			this.plateauTmp.supprimerPiece(this.plateauTmp.getCases()[4][1].getPiece());
+			this.controleur.jouerCoup(this.plateauTmp.getBlanches(), this.plateauTmp.getNoires(), piece, coups);
+			this.i++;
+		} else if (this.i == 3) {
+			this.plateauTmp.getCases()[6][1].setPiece(this.plateauTmp.getCases()[2][1].getPiece());
+			this.plateauTmp.getCases()[2][1].setPiece(null);
+			this.plateauTmp.getCases()[6][1].getPiece().setPosition(this.plateauTmp.getCases()[6][1]);
+			Piece piece = this.plateau.getCases()[2][1].getPiece();
+			List<Case> coups = new ArrayList<>();
+			coups.add(this.plateauTmp.getCases()[4][3]);
+			coups.add(this.plateauTmp.getCases()[6][1]);
+			this.plateauTmp.supprimerPiece(this.plateauTmp.getCases()[3][2].getPiece());
+			this.controleur.jouerCoup(this.plateauTmp.getBlanches(), this.plateauTmp.getNoires(), piece, coups);
+			this.i++;
+		}
 	}
 
 }
