@@ -6,8 +6,8 @@
 %%%% Test is the game is finished %%%
 gameover(Winner) :- noirs(Noirs), blancs(Blancs), winner(Winner, Blancs, Noirs), !.  % There exists a winning configuration: We cut!
 gameover('Draw', NewNoirs, NewBlancs) :- noirs(Noirs), blancs(Blancs), (length(Noirs, X), length(NewNoirs, X), length(Blancs, Y), length(NewBlancs, Y),
-    										cptDraw(CptDraw), NewCptDraw is CptDraw+1, retract(cptDraw(CptDraw)), assert(cptDraw(NewCptDraw)),!,
-    										NewCptDraw == 10).
+										cptDraw(CptDraw), NewCptDraw is CptDraw+1, retract(cptDraw(CptDraw)), assert(cptDraw(NewCptDraw)),!,
+										NewCptDraw == 10).
 gameover('Draw', _, _) :- cptDraw(CptDraw), retract(cptDraw(CptDraw)), assert(cptDraw(0)), false.
 
 %%%% Test de victoire pour les joueurs.
@@ -68,10 +68,12 @@ mangeHautDroite(_,_,_,_,[]).
 
 creerMouvement(B,N,[],[[B,N,[]]]):-!.
 creerMouvement(_,_,S,S).
+%tests
 %creerMouvement([],[],[],R).
 
 ajoutMouvement(Pos,[[Blancs,Noirs,ListeMouvement]|Suite],[[Blancs,Noirs,[Pos|ListeMouvement]]|R]):-!,ajoutMouvement(Pos,Suite,R).
 ajoutMouvement(_,[],[]).
+%Tests
 %ajoutMouvement([1,2],[[[],[],[[0,0]]],[[],[],[[1,1]]]],R).
 %ajoutMouvement([1,2],[[[],[],[[0,0]]],[[],[],[[1,1]]]],R).
 
@@ -92,14 +94,13 @@ maxSolution(R1,R2,R3,R4,S):-longueurChaine(R1,X),longueurChaine(R2,Y),longueurCh
 
 
 % cherche les possiblités pour manger un pion dans chaque direction et
-% retourne le chemin + l'etat du jeu.
-% pour un Pion blanc
-% il faut ajouter un predicat qui definit quel est le resultat a choisir
-% (liste de meme longueur, que faire ?)
-mangeTouteDirection([X,Y,pion],blanc,Blancs,Noirs,R):-mangeHautGauche([X,Y,pion],blanc,Blancs,Noirs,R1),mangeHautDroite([X,Y,pion],blanc,Blancs,Noirs,R2),mangeBasGauche([X,Y,pion],blanc,Blancs,Noirs,R3),mangeBasDroite([X,Y,pion],blanc,Blancs,Noirs,R4),maxSolution(R1,R2,R3,R4,R).
+% retourne les solutions possibles comprenant : le chemin + l'etat du
+% jeu.
+%pour un Pion
+mangeTouteDirection([X,Y,pion],Couleur,Blancs,Noirs,R):-mangeHautGauche([X,Y,pion],Couleur,Blancs,Noirs,R1),mangeHautDroite([X,Y,pion],Couleur,Blancs,Noirs,R2),mangeBasGauche([X,Y,pion],Couleur,Blancs,Noirs,R3),mangeBasDroite([X,Y,pion],Couleur,Blancs,Noirs,R4),maxSolution(R1,R2,R3,R4,R).
 
 
-%mouvement pour un pion blanc
+%mouvement pour un pion
 moveHautGauche([X,_,_],_,_,_,[]):- X2 is X-1,X2<0,!.
 moveHautGauche([_,Y,_],_,_,_,[]):- Y2 is Y-1,Y2<0,!.
 moveHautGauche([X,Y,pion],Player,Blancs,Noirs,R):- mangeHautGauche([X,Y,pion],Player,Blancs,Noirs,R), R\==[],!.
@@ -112,18 +113,8 @@ moveHautGauche(_,_,_,_,[]).
 %
 %
 
-
-=======
-moveHautGauche([X,Y,pion],blanc,Blancs,Noirs,[[X2,Y2,pion]|Blancs]):- mangeHautGauche().%a finir
-moveHautGauche([X,Y,pion],blanc,Blancs,Noirs,[Blancs3,Noirs,[[X2,Y2]]]):- X2 is X-1, Y2 is Y-1,
-    																		not(member([X2,Y2,_],Noirs)),not(member([X2,Y2,_],Blancs)),!,
-    																		delete(Blancs,[X,Y,pion],Blancs2),
-    																		append(Blancs2, [X2, Y2, pion], Blancs3).
-
-%mouvement pour une dame blanche (a faire)
+%mouvement pour une dame (a faire)
 moveHautGauche([X,Y,dame],blanc,Blancs,Noirs,[[X2,Y2,dame]|Blancs]):-X2 is X-1, Y2 is Y-1, X2>=0,Y2>=0,not(member([X2,Y2,_],Blancs)),!,not(member([X2,Y2,_],Noirs)).
-
-%faire mouvement pour un pion noir et dame noire
 
 % R est du type [[Blancs,Noirs,Elem,[[posX,posY],...]],...]
 % a changer S par R1 quand les predicats seront créés
@@ -153,25 +144,25 @@ changePionDame(_, Noirs, Blancs, _, _, Blancs, Noirs).
 applyMoves(Blancs, Noirs, Blancs2, Noirs2) :- retract(blancs(Blancs)), retract(noirs(Noirs)), assert(blancs(Blancs2)), assert(noirs(Noirs2)).
 
 play(Player):-  write('New turn for: '), ((Player==blancs, writeln('Blancs'));(Player==noirs, writeln('Noirs'))),
-    		noirs(Noirs),
-    		blancs(Blancs),
+		noirs(Noirs),
+		blancs(Blancs),
 
-    		display1(0,10,_),
+		display1(0,10,_),
 
             ia(Player,Noirs,Blancs,Noirs2,Blancs2,ListeMouvement, E),
-    
-    		%TODO
-    		%Envoi données
-    
+
+		%TODO
+		%Envoi données
+
 			changePionDame(Player, Noirs2, Blancs2, ListeMouvement, E, Blancs3, Noirs3),
-    	    
+
 			not(((gameover(blancs), !, write('Game is Over. Winner: '), writeln('Blancs'));
 				(gameover(noirs), !, write('Game is Over. Winner: '), writeln('Noirs'));
-            	(gameover('Draw', Blancs, Noirs), !, writeln('Game is Over. Draw')))),
-		    
-    		applyMoves(Blancs, Noirs, Blancs3, Noirs3),
+		(gameover('Draw', Blancs, Noirs), !, writeln('Game is Over. Draw')))),
 
-    	    changePlayer(Player,NextPlayer), % Change the player before next turn
+		applyMoves(Blancs, Noirs, Blancs3, Noirs3),
+
+	    changePlayer(Player,NextPlayer), % Change the player before next turn
             play(NextPlayer). % next turn!
 
 
