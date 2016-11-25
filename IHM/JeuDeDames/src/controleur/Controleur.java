@@ -6,12 +6,14 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import modele.Case;
 import modele.Couleur;
 import modele.Piece;
 import modele.Plateau;
 import vue.VueJeu.VueJeu;
+import vue.VuePopUpQuitter.VuePopUpQuitter;
 
 public class Controleur extends Application {
 
@@ -20,6 +22,10 @@ public class Controleur extends Application {
 	private VueJeu vueJeu;
 
 	private Plateau plateau;
+
+	private VuePopUpQuitter myVuePopUpQuitter;
+
+	private Stage stagePopUpQuitter;
 
 	@Override
 	public void start(Stage primaryStage) {
@@ -43,6 +49,29 @@ public class Controleur extends Application {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public void cliquerSurQuitter() {
+		try {
+			this.myVuePopUpQuitter = new VuePopUpQuitter();
+			this.myVuePopUpQuitter.setMyControleur(this);
+			FXMLLoader fxmlLoader = new FXMLLoader(
+					this.getClass().getResource("/vue/VuePopUpQuitter/VuePopUpQuitter.fxml"));
+			Parent root;
+			root = fxmlLoader.load();
+			this.stagePopUpQuitter = new Stage();
+			this.stagePopUpQuitter.initModality(Modality.APPLICATION_MODAL);
+			Scene myScene = new Scene(root);
+			this.stagePopUpQuitter.setScene(myScene);
+			this.stagePopUpQuitter.show();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public void cliquerSurNonQuitter() throws IOException {
+		this.stagePopUpQuitter.close();
 	}
 
 	public static void main(String[] args) {

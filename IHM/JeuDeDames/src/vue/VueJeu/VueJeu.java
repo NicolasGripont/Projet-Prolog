@@ -116,12 +116,8 @@ public class VueJeu implements Initializable {
 
 	@FXML
 	public void onButtonQuitterPartieClicked() {
-		// Case nouvellePosition = this.plateau.getCases()[5][8];
-		// Piece piece = this.plateau.getCases()[0][1].getPiece();
-		// piece.getPosition().setPiece(null);
-		// piece.setPosition(nouvellePosition);
-		// nouvellePosition.setPiece(piece);
-		// this.plateauGroup.deplacerPiece(piece);
+		this.controleur.cliquerSurQuitter();
+
 	}
 
 }
