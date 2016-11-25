@@ -1,12 +1,3 @@
-/application/
-/vue/
-/vues/
 /controleur/
 /modele/
-/dame_blanche.png
-/dame_noire.png
-/pion_blanc.png
-/pion_noir.png
-/fond.png
-/plateau.png
-/pion_blanc.svg
+/vue/
