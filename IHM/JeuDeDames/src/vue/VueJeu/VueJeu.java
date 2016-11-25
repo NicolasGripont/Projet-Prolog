@@ -120,10 +120,6 @@ public class VueJeu implements Initializable {
 		}
 	}
 
-	int i = 0;
-
-	Plateau plateauTmp = new Plateau();
-
 	@FXML
 	public void onButtonQuitterPartieClicked() {
 		this.controleur.cliquerSurQuitter();
