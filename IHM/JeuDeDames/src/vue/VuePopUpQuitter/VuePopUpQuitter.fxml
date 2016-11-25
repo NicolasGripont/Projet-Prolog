@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="vue.VuePopUpQuitter.VuePopUpQuitter">
+   <children>
+      <BorderPane prefHeight="104.0" prefWidth="341.0">
+         <top>
+            <Label prefHeight="29.0" prefWidth="217.0" text="Êtes-vous sûr de vouloir quiter la partie ?" BorderPane.alignment="CENTER" />
+         </top>
+         <center>
+            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+               <children>
+                  <Button fx:id="buttonOui" mnemonicParsing="false" prefHeight="25.0" prefWidth="75.0" text="Oui">
+                     <HBox.margin>
+                        <Insets right="50.0" />
+                     </HBox.margin>
+                  </Button>
+                  <Button fx:id="buttonNon" mnemonicParsing="false" onMouseClicked="#onButtonNon" prefHeight="25.0" prefWidth="81.0" text="Non" />
+               </children>
+               <BorderPane.margin>
+                  <Insets />
+               </BorderPane.margin>
+            </HBox>
+         </center>
+      </BorderPane>
+   </children>
+</AnchorPane>
