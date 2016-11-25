@@ -1,6 +1,8 @@
 package controleur;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -81,9 +83,7 @@ public class Controleur extends Application {
 	public void deplacerPiece(Piece piece, Case nouvellePosition) {
 		if ((nouvellePosition != null) && nouvellePosition.estVide()
 				&& (nouvellePosition.getCouleur() == Couleur.NOIR)) {
-			piece.getPosition().setPiece(null);
-			piece.setPosition(nouvellePosition);
-			nouvellePosition.setPiece(piece);
+			this.plateau.deplacerPiece(piece, nouvellePosition);
 		}
 		this.vueJeu.dessinerPlateau();
 	}
@@ -95,6 +95,64 @@ public class Controleur extends Application {
 	public void setPlateau(Plateau plateau) {
 		this.plateau = plateau;
 		this.vueJeu.setPlateau(plateau);
+	}
+
+	/**
+	 * 
+	 * @param blancs
+	 *            liste des pieces blancs avec leur position finale
+	 * @param noirs
+	 *            liste des pieces noirs avec leur position finale
+	 * @param piece
+	 *            la piece avec sa position initiale
+	 * @param deplacement
+	 *            liste des cases qui par lesquelles passe la piece 'piece'
+	 * 
+	 */
+	public void jouerCoup(List<Piece> blanches, List<Piece> noires, Piece piece, List<Case> deplacement) {
+		Case positionInitiale = this.plateau.getCases()[piece.getPosition().getLigne()][piece.getPosition()
+				.getColonne()];
+		Piece piecePlateau = positionInitiale.getPiece();
+		List<Piece> piecesMortes = new ArrayList<>();
+
+		// on check les pieces mortes
+		if (piecePlateau.getCouleur() == Couleur.NOIR) {
+			for (Piece p : this.plateau.getBlanches()) {
+				if (!this.contains(blanches, p)) {
+					piecesMortes.add(p);
+				}
+			}
+		} else {
+			for (Piece p : this.plateau.getNoires()) {
+				if (!this.contains(noires, p)) {
+					piecesMortes.add(p);
+				}
+			}
+		}
+
+		// on set la nouvelle position au pion qui bouge
+		this.plateau.deplacerPiece(piecePlateau, deplacement.get(deplacement.size() - 1));
+
+		// supprimer piece de l'objet plateau et fire le deplacement 2 sens
+		for (Piece p : piecesMortes) {
+			this.plateau.supprimerPiece(p);
+		}
+
+		// appelle vue
+		this.vueJeu.deplacerPiece(piecePlateau);
+		this.vueJeu.tuerPieces(piecesMortes);
+	}
+
+	private boolean contains(List<Piece> pieces, Piece piece) {
+		boolean result = false;
+
+		for (Piece p : pieces) {
+			if (p.getPosition().equals(piece.getPosition())) {
+				result = true;
+			}
+		}
+
+		return result;
 	}
 
 }

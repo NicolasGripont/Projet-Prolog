@@ -1,6 +1,7 @@
 package vue.VueJeu;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import controleur.Controleur;
@@ -112,6 +113,12 @@ public class VueJeu implements Initializable {
 
 	public void deplacerPiece(Piece piece) {
 		this.plateauGroup.deplacerPiece(piece);
+	}
+
+	public void tuerPieces(List<Piece> pieces) {
+		for (Piece p : pieces) {
+			this.plateauGroup.tuerPiece(p);
+		}
 	}
 
 	@FXML

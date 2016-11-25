@@ -3,8 +3,6 @@ package vue.Plateau;
 import java.util.ArrayList;
 import java.util.List;
 
-import javafx.animation.PathTransition;
-import javafx.animation.PathTransition.OrientationType;
 import javafx.event.EventHandler;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
@@ -12,10 +10,6 @@ import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.paint.Paint;
-import javafx.scene.shape.CubicCurveTo;
-import javafx.scene.shape.MoveTo;
-import javafx.scene.shape.Path;
-import javafx.util.Duration;
 import modele.Case;
 import modele.Couleur;
 import modele.Dame;
@@ -199,7 +193,7 @@ public class PlateauGroup extends Group {
 		double margin = 5;
 		PieceVue pieceVue = null;
 		for (PieceVue p : this.pieceVues) {
-			if (p.getPiece().equals(piece)) {
+			if (p.getPiece() == piece) {
 				pieceVue = p;
 				break;
 			}
@@ -211,37 +205,37 @@ public class PlateauGroup extends Group {
 					+ (largeurCase / 2);
 			double yEnd = (hauteurCase * piece.getPosition().getLigne()) + this.plateauCanvas.getOffsetY()
 					+ (hauteurCase / 2);
-			Path path = new Path();
+			// Path path = new Path();
+			//
+			// path.getElements().add(new MoveTo(xStart, yStart));
+			// path.getElements().add(new CubicCurveTo(xStart, yStart, xStart,
+			// yStart, xEnd, yEnd));
+			// PathTransition pathTransition = new PathTransition();
+			// pathTransition.setDuration(Duration.millis(1000));
+			// pathTransition.setNode(pieceVue);
+			// pathTransition.setPath(path);
+			// pathTransition.setOrientation(OrientationType.ORTHOGONAL_TO_TANGENT);
+			// pathTransition.setCycleCount(1);
+			// pathTransition.setAutoReverse(false);
+			// pathTransition.play();
 
-			path.getElements().add(new MoveTo(xStart, yStart));
-			path.getElements().add(new CubicCurveTo(xStart, yStart, xStart, yStart, xEnd, yEnd));
-			PathTransition pathTransition = new PathTransition();
-			pathTransition.setDuration(Duration.millis(1000));
-			pathTransition.setNode(pieceVue);
-			pathTransition.setPath(path);
-			pathTransition.setOrientation(OrientationType.ORTHOGONAL_TO_TANGENT);
-			pathTransition.setCycleCount(1);
-			pathTransition.setAutoReverse(false);
-			pathTransition.play();
-
+			pieceVue.setCenterX(xEnd);
+			pieceVue.setCenterY(yEnd);
 		}
 	}
 
-	public void resetPosition(PieceVue pieceVue) {
-		// double largeurCase = this.plateauCanvas.getPlateauWidth() /
-		// Plateau.NB_LIGNES;
-		// double hauteurCase = this.plateauCanvas.getPlateauHeight() /
-		// Plateau.NB_COLONNES;
-		// double x = (largeurCase *
-		// pieceVue.getPiece().getPosition().getColonne()) +
-		// this.plateauCanvas.getOffsetX()
-		// + (largeurCase / 2);
-		// double y = (hauteurCase *
-		// pieceVue.getPiece().getPosition().getLigne()) +
-		// this.plateauCanvas.getOffsetY()
-		// + (hauteurCase / 2);
-		// pieceVue.setCenterX(x);
-		// pieceVue.setCenterY(y);
+	public void tuerPiece(Piece piece) {
+		PieceVue pieceATuer = null;
+		for (PieceVue pieceVue : this.pieceVues) {
+			if (pieceVue.getPiece() == piece) {
+				pieceATuer = pieceVue;
+				break;
+			}
+		}
+
+		if (pieceATuer != null) {
+			this.getChildren().remove(pieceATuer);
+		}
 	}
 
 }
