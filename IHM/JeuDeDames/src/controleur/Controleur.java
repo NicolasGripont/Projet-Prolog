@@ -55,12 +55,12 @@ public class Controleur extends Application {
 
 	public void cliquerSurQuitter() {
 		try {
-			this.myVuePopUpQuitter = new VuePopUpQuitter();
-			this.myVuePopUpQuitter.setMyControleur(this);
 			FXMLLoader fxmlLoader = new FXMLLoader(
 					this.getClass().getResource("/vue/VuePopUpQuitter/VuePopUpQuitter.fxml"));
 			Parent root;
 			root = fxmlLoader.load();
+			this.myVuePopUpQuitter = (VuePopUpQuitter) fxmlLoader.getController();
+			this.myVuePopUpQuitter.setMyControleur(this);
 			this.stagePopUpQuitter = new Stage();
 			this.stagePopUpQuitter.initModality(Modality.APPLICATION_MODAL);
 			Scene myScene = new Scene(root);

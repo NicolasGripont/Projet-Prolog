@@ -5,6 +5,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import controleur.Controleur;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -21,13 +22,13 @@ public class VuePopUpQuitter implements Initializable {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		// // TODO Auto-generated method stub
-		// Platform.runLater(new Runnable() {
-		// @Override
-		// public void run() {
-		// VuePopUpQuitter.this.buttonNon.requestFocus();
-		// }
-		// });
+		// TODO Auto-generated method stub
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				VuePopUpQuitter.this.buttonNon.requestFocus();
+			}
+		});
 	}
 
 	@FXML
@@ -37,7 +38,6 @@ public class VuePopUpQuitter implements Initializable {
 
 	@FXML
 	public void onButtonNon() {
-		System.out.println(this.myControleur);
 		try {
 			this.myControleur.cliquerSurNonQuitter();
 		} catch (IOException e) {
@@ -52,6 +52,5 @@ public class VuePopUpQuitter implements Initializable {
 
 	public void setMyControleur(Controleur myControleur) {
 		this.myControleur = myControleur;
-		System.out.println(this.myControleur);
 	}
 }
