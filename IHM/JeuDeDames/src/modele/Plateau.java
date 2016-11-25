@@ -16,7 +16,6 @@ public class Plateau {
 	private final List<Piece> blanches;
 
 	public Plateau() {
-		// TODO Auto-generated constructor stub
 		this.cases = new Case[NB_LIGNES][NB_COLONNES];
 		for (int i = 0; i < NB_LIGNES; i++) {
 			for (int j = 0; j < NB_COLONNES; j++) {
