@@ -96,8 +96,10 @@ maxSolution(R1,R2,R3,R4,S):-longueurChaine(R1,X),longueurChaine(R2,Y),longueurCh
 % cherche les possiblités pour manger un pion dans chaque direction et
 % retourne les solutions possibles comprenant : le chemin + l'etat du
 % jeu.
-%pour un Pion
+% pour un Pion
 mangeTouteDirection([X,Y,pion],Couleur,Blancs,Noirs,R):-mangeHautGauche([X,Y,pion],Couleur,Blancs,Noirs,R1),mangeHautDroite([X,Y,pion],Couleur,Blancs,Noirs,R2),mangeBasGauche([X,Y,pion],Couleur,Blancs,Noirs,R3),mangeBasDroite([X,Y,pion],Couleur,Blancs,Noirs,R4),maxSolution(R1,R2,R3,R4,R).
+%tests
+% mangeTouteDirection([4,2,pion],blanc,[[4,2,pion]],[[5,1,pion],[3,1,pion],[1,1,pion],[1,3,pion],[3,3,pion]],R),writeln(R).
 
 
 %mouvement pour un pion
@@ -107,26 +109,53 @@ moveHautGauche([X,Y,pion],Player,Blancs,Noirs,R):- mangeHautGauche([X,Y,pion],Pl
 moveHautGauche([X,Y,pion],blanc,Blancs,Noirs,[[Blancs3, Noirs, [[X2,Y2]]]]):-  X2 is X-1,Y2 is Y-1,not(member(Blancs,[X2,Y2,pion])), not(member(Noirs,[X2,Y2,pion])),!, delete(Blancs, [X,Y,pion], Blancs2), append(Blancs2, [[X2,Y2,pion]], Blancs3).
 moveHautGauche(_,_,_,_,[]).
 
+moveHautDroite([X,_,_],_,_,_,[]):- X2 is X+1,X2>9,!.
+moveHautDroite([_,Y,_],_,_,_,[]):- Y2 is Y-1,Y2<0,!.
+moveHautDroite([X,Y,pion],Player,Blancs,Noirs,R):- mangeHautDroite([X,Y,pion],Player,Blancs,Noirs,R), R\==[],!.
+moveHautDroite([X,Y,pion],blanc,Blancs,Noirs,[[Blancs3, Noirs, [[X2,Y2]]]]):-  X2 is X+1,Y2 is Y-1,not(member(Blancs,[X2,Y2,pion])), not(member(Noirs,[X2,Y2,pion])),!, delete(Blancs, [X,Y,pion], Blancs2), append(Blancs2, [[X2,Y2,pion]], Blancs3).
+moveHautDroite(_,_,_,_,[]).
+
+moveBasGauche([X,_,_],_,_,_,[]):- X2 is X-1,X2<0,!.
+moveBasGauche([_,Y,_],_,_,_,[]):- Y2 is Y+1,Y2>9,!.
+moveBasGauche([X,Y,pion],Player,Blancs,Noirs,R):- mangeBasGauche([X,Y,pion],Player,Blancs,Noirs,R), R\==[],!.
+moveBasGauche([X,Y,pion],noir,Blancs,Noirs,[[Blancs, Noirs3, [[X2,Y2]]]]):-  X2 is X-1,Y2 is Y+1,not(member(Blancs,[X2,Y2,pion])), not(member(Noirs,[X2,Y2,pion])),!, delete(Noirs, [X,Y,pion], Noirs2), append(Noirs2, [[X2,Y2,pion]], Noirs3).
+moveBasGauche(_,_,_,_,[]).
+
+moveBasDroite([X,_,_],_,_,_,[]):- X2 is X+1,X2>9,!.
+moveBasDroite([_,Y,_],_,_,_,[]):- Y2 is Y+1,Y2>9,!.
+moveBasDroite([X,Y,pion],Player,Blancs,Noirs,R):- mangeBasDroite([X,Y,pion],Player,Blancs,Noirs,R), R\==[],!.
+moveBasDroite([X,Y,pion],noir,Blancs,Noirs,[[Blancs, Noirs3, [[X2,Y2]]]]):-  X2 is X+1,Y2 is Y+1,not(member(Blancs,[X2,Y2,pion])), not(member(Noirs,[X2,Y2,pion])),!, delete(Noirs, [X,Y,pion], Noirs2), append(Noirs2, [[X2,Y2,pion]], Noirs3).
+moveBasDroite(_,_,_,_,[]).
+%test
+% moveBasDroite([4,2,pion],blanc,[[4,2,pion]],[[5,1,pion],[3,1,pion],[5,3,pion],[3,3,pion]],R),writeln(R).
+
+
+
+
 %moveHautGauche([
 % moveHautGauche([4,4,pion],blanc,[[4,4,pion]],[[1,1,pion],[2,2,pion]],R).
-%  moveHautGauche([4,4,pion],blanc,[[4,4,pion]],[[1,1,pion],[3,3,pion]],R).
+% moveHautGauche([4,4,pion],blanc,[[4,4,pion]],[[1,1,pion],[3,3,pion]],R).
 %
 %
 
 %mouvement pour une dame (a faire)
-moveHautGauche([X,Y,dame],blanc,Blancs,Noirs,[[X2,Y2,dame]|Blancs]):-X2 is X-1, Y2 is Y-1, X2>=0,Y2>=0,not(member([X2,Y2,_],Blancs)),!,not(member([X2,Y2,_],Noirs)).
+% moveHautGauche([X,Y,dame],blanc,Blancs,Noirs,[[X2,Y2,dame]|Blancs]):-X2
+% is X-1, Y2 is Y-1,
+% X2>=0,Y2>=0,not(member([X2,Y2,_],Blancs)),!,not(member([X2,Y2,_],Noirs)).
+%
 
-% R est du type [[Blancs,Noirs,Elem,[[posX,posY],...]],...]
-% a changer S par R1 quand les predicats seront créés
-movePossible(E,Camp,Blancs,Noirs,S):-moveHautGauche(E,Camp,Blancs,Noirs,S).%,moveHautDroite(R2),moveBasGauche(R3),moveBasDroite(R4),append(R1,R2,R5),append(R5,R3,R6),append(R6,R4,S).
-
+% S est du type [[Blancs,Noirs,[[posX,posY],...]],...]
+movePossible(E,Camp,Blancs,Noirs,S):-moveHautGauche(E,Camp,Blancs,Noirs,R1),moveHautDroite(E,Camp,Blancs,Noirs,R2),moveBasGauche(E,Camp,Blancs,Noirs,R3),moveBasDroite(E,Camp,Blancs,Noirs,R4),maxSolution(R1,R2,R3,R4,S).
+%tests
+% movePossible([4,2,pion],blanc,[[4,2,pion]],[[5,1,pion],[3,1,pion],[1,1,pion],[1,3,pion],[3,3,pion]],R),writeln(R).
+% movePossible([4,2,pion],blanc,[[4,2,pion]],[[5,1,pion],[3,1,pion],[5,3,pion],[3,3,pion]],R),writeln(R).
 
 %methode naive on prend la premiere solution trouvee
 choixMove([_,_,_],[[Blancs,Noirs,ListeMouvement]|_],Noirs,Blancs,ListeMouvement):-!.
 choixMove(_,[],Noirs,Blancs,[]):- blancs(Blancs),noirs(Noirs).
 
 
-ia(blanc,Noirs,Blancs,Noirs2,Blancs2,ListeMouvement,E):-repeat,length(Blancs,X),Index is random(X),nth0(Index,Blancs,E),subtract(Blancs,[E],Blancs3),movePossible(E,blanc,Blancs3,Noirs,L),choixMove(E,L,Noirs2,Blancs2,ListeMouvement).
+ia(blanc,Noirs,Blancs,Noirs2,Blancs2,ListeMouvement,E):-repeat,length(Blancs,X),Index is random(X),nth0(Index,Blancs,E),subtract(Blancs,[E],Blancs3),movePossible(E,blanc,Blancs3,Noirs,L),L \== [],choixMove(E,L,Noirs2,Blancs2,ListeMouvement).
 
 %ia(noir,Noirs,Blancs,Noirs2,Blancs2,ListeMouvement,E).
 
