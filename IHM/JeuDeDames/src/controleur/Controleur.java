@@ -143,7 +143,7 @@ public class Controleur extends Application {
 		}
 
 		// appelle vue
-		this.vueJeu.deplacerPiece(piecePlateau);
+		this.vueJeu.deplacerPiece(piecePlateau, deplacement);
 		this.vueJeu.tuerPieces(piecesMortes);
 	}
 

@@ -110,8 +110,8 @@ public class VueJeu implements Initializable {
 		this.controleur.deplacerPiece(piece, nouvellePosition);
 	}
 
-	public void deplacerPiece(Piece piece) {
-		this.plateauGroup.deplacerPiece(piece);
+	public void deplacerPiece(Piece piece, List<Case> deplacement) {
+		this.plateauGroup.deplacerPiece(piece, deplacement);
 	}
 
 	public void tuerPieces(List<Piece> pieces) {

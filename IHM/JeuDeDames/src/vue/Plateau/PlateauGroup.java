@@ -187,7 +187,7 @@ public class PlateauGroup extends Group {
 		}
 	}
 
-	public void deplacerPiece(Piece piece) {
+	public void deplacerPiece(Piece piece, List<Case> deplacement) {
 		double largeurCase = this.plateauCanvas.getPlateauWidth() / Plateau.NB_LIGNES;
 		double hauteurCase = this.plateauCanvas.getPlateauHeight() / Plateau.NB_COLONNES;
 		double margin = 5;
@@ -201,17 +201,25 @@ public class PlateauGroup extends Group {
 		if (pieceVue != null) {
 			double xStart = pieceVue.getCenterX();
 			double yStart = pieceVue.getCenterY();
-			double xEnd = (largeurCase * piece.getPosition().getColonne()) + this.plateauCanvas.getOffsetX()
-					+ (largeurCase / 2);
-			double yEnd = (hauteurCase * piece.getPosition().getLigne()) + this.plateauCanvas.getOffsetY()
-					+ (hauteurCase / 2);
+			double xEnd = xStart;
+			double yEnd = yStart;
+
 			// Path path = new Path();
 			//
 			// path.getElements().add(new MoveTo(xStart, yStart));
-			// path.getElements().add(new CubicCurveTo(xStart, yStart, xStart,
-			// yStart, xEnd, yEnd));
+			//
+			for (Case c : deplacement) {
+				xEnd = (largeurCase * c.getColonne()) + this.plateauCanvas.getOffsetX() + (largeurCase / 2);
+				yEnd = (hauteurCase * c.getLigne()) + this.plateauCanvas.getOffsetY() + (hauteurCase / 2);
+				// path.getElements().add(new CubicCurveTo(xStart, yStart,
+				// xStart, yStart, xEnd, yEnd));
+				xStart = xEnd;
+				yStart = yEnd;
+			}
+			//
 			// PathTransition pathTransition = new PathTransition();
-			// pathTransition.setDuration(Duration.millis(1000));
+			// pathTransition.setDuration(Duration.millis(deplacement.size() *
+			// 1000));
 			// pathTransition.setNode(pieceVue);
 			// pathTransition.setPath(path);
 			// pathTransition.setOrientation(OrientationType.ORTHOGONAL_TO_TANGENT);
