@@ -37,6 +37,10 @@ ajouterListe(_,_,[]).
 creerListe(noir,L):-ajouterListe(0,3,L).
 creerListe(blanc,L):-ajouterListe(6,9,L).
 
+mangeHautGauche([X,Y,pion],blanc,Blancs,Noirs,R):- X2 is X-1, Y2 is Y-1,X3 is X2-1,Y3 is Y2-1,X3 >= 0,Y3 >= 0,member([X2,Y2,_],Noirs),not(member([X3,Y3,_],Noirs)),not(member([X3,Y3,_],Blancs)),subtract(Noirs,[X2,Y2,_],Noirs2),subtract(Blancs,[X,Y,pion],Blancs2),mangeTouteDirection([X3,Y3,pion],blanc,[[X3,Y3,pion]|Blancs2],Noirs2,R2),.
+mangeHautGauche(_,_,_,_,[]).
+
+
 % cherche les possiblités pour manger un pion dans chaque direction et
 % retourne le chemin + l'etat du jeu.
 % pour un Pion blanc
@@ -50,8 +54,10 @@ moveHautGauche([X,Y,pion],blanc,Blancs,_,[]):-X2 is X-1, Y2 is Y-1,member([X2,Y2
 moveHautGauche([X,Y,pion],blanc,Blancs,Noirs,[[X2,Y2,pion]|Blancs]):-X2 is X-1, Y2 is Y-1,member([X2,Y2,_],Noirs),mangeHautGauche().%a finir
 
 
-%mouvement pour une dame blanc (a faire)
+%mouvement pour une dame blanche (a faire)
 moveHautGauche([X,Y,dame],blanc,Blancs,Noirs,[[X2,Y2,dame]|Blancs]):-X2 is X-1, Y2 is Y-1, X2>=0,Y2>=0,not(member([X2,Y2,_],Blancs)),!,not(member([X2,Y2,_],Noirs)).
+
+%faire mouvement pour un pion noir et dame noire
 
 % R est du type [[Blancs,Noirs,Elem,[[posX,posY],...]],...]
 % a changer S par R1 quand les predicats seront créés
@@ -59,13 +65,13 @@ movePossible(E,Camp,Blancs,Noirs,S):-moveHautGauche(E,Camp,Blancs,Noirs,S).%,mov
 
 
 %methode naive on prend la premiere solution trouvee
-choixMove([[Noirs,Blancs]|_],Noirs,Blancs):-!.
-choixMove(_,[],[]).
+choixMove([X,Y,_],[[Blancs,Noirs,ListeMouvement]|_],Noirs,Blancs,ListeMouvement):-!.
+choixMove(_,[],[],[]).
 
 
-ia(blanc,Noirs,Blancs,Noirs2,Blancs2):-repeat,length(Blancs,X),Index is random(X),nth0(Index,Blancs,E),subtract(Blancs,[E],Blancs3),movePossible(E,blanc,Blancs3,Noirs,L),choixMove(L,Noirs2,Blancs2).
+ia(blanc,Noirs,Blancs,Noirs2,Blancs2,ListeMouvement):-repeat,length(Blancs,X),Index is random(X),nth0(Index,Blancs,E),subtract(Blancs,[E],Blancs3),movePossible(E,blanc,Blancs3,Noirs,L),choixMove(E,L,Noirs2,Blancs2,ListeMouvement).
 
-ia(noir,Noirs,Blancs,Noirs2,Blancs2).
+ia(noir,Noirs,Blancs,Noirs2,Blancs2,ListeMouvement).
 
 
 init :-creerListe(noir,L1),creerListe(blanc,L2),assert(noirs(L1)),assert(blancs(L2)).%, play('b').
