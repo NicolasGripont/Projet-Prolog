@@ -60,4 +60,39 @@ public class Case {
 				+ this.piece + "]";
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = (prime * result) + this.colonne;
+		result = (prime * result) + ((this.couleur == null) ? 0 : this.couleur.hashCode());
+		result = (prime * result) + this.ligne;
+		result = (prime * result) + ((this.piece == null) ? 0 : this.piece.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (this.getClass() != obj.getClass()) {
+			return false;
+		}
+		Case other = (Case) obj;
+		if (this.colonne != other.colonne) {
+			return false;
+		}
+		if (this.couleur != other.couleur) {
+			return false;
+		}
+		if (this.ligne != other.ligne) {
+			return false;
+		}
+		return true;
+	}
+
 }
