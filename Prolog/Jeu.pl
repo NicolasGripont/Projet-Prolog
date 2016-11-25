@@ -53,8 +53,7 @@ mangeTouteDirection([X,Y,pion],blanc,Blancs,Noirs,R):-mangeHautGauche([X,Y,pion]
 %mouvement pour un pion blanc
 moveHautGauche([X,_,_],_,_,_,[]):- X2 is X-1,X2<0,!.
 moveHautGauche([_,Y,_],_,_,_,[]):- Y2 is Y-1,Y2<0,!.
-moveHautGauche([X,Y,pion],blanc,Blancs,_,[]):-X2 is X-1, Y2 is Y-1,member([X2,Y2,_],Blancs),!.
-moveHautGauche([X,Y,pion],blanc,Blancs,Noirs,[[X2,Y2,pion]|Blancs]):-mangeHautGauche().%a finir
+moveHautGauche([X,Y,pion],blanc,Blancs,Noirs,[[X2,Y2,pion]|Blancs]):- mangeHautGauche().%a finir
 
 %mouvement pour une dame blanche (a faire)
 moveHautGauche([X,Y,dame],blanc,Blancs,Noirs,[[X2,Y2,dame]|Blancs]):-X2 is X-1, Y2 is Y-1, X2>=0,Y2>=0,not(member([X2,Y2,_],Blancs)),!,not(member([X2,Y2,_],Noirs)).
@@ -68,7 +67,7 @@ movePossible(E,Camp,Blancs,Noirs,S):-moveHautGauche(E,Camp,Blancs,Noirs,S).%,mov
 
 %methode naive on prend la premiere solution trouvee
 choixMove([_,_,_],[[Blancs,Noirs,ListeMouvement]|_],Noirs,Blancs,ListeMouvement):-!.
-choixMove(_,[],[],[]).
+choixMove(_,[],Noirs,Blancs,[]):- blancs(Blancs),noirs(Noirs).
 
 
 ia(blanc,Noirs,Blancs,Noirs2,Blancs2,ListeMouvement,E):-repeat,length(Blancs,X),Index is random(X),nth0(Index,Blancs,E),subtract(Blancs,[E],Blancs3),movePossible(E,blanc,Blancs3,Noirs,L),choixMove(E,L,Noirs2,Blancs2,ListeMouvement).
