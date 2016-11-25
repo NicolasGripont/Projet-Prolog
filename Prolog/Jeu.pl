@@ -54,22 +54,66 @@ ajouterListe(_,_,[]).
 creerListe(noir,L):-ajouterListe(0,3,L).
 creerListe(blanc,L):-ajouterListe(6,9,L).
 
-mangeHautGauche([X,Y,pion],blanc,Blancs,Noirs,[Blancs3,Noirs3,[[X3,Y3]|ListeMouvement]]):- X2 is X-1, Y2 is Y-1,X3 is X-2,Y3 is Y-2,X3 >= 0,Y3 >= 0,member([X2,Y2,_],Noirs),not(member([X3,Y3,_],Noirs)),not(member([X3,Y3,_],Blancs)),!,delete(Noirs,[X2,Y2,_],Noirs2),delete(Blancs,[X,Y,pion],Blancs2),mangeTouteDirection([X3,Y3,pion],blanc,[[X3,Y3,pion]|Blancs2],Noirs2,[Blancs3,Noirs3,ListeMouvement]).
-mangeHautGauche([X,Y,pion],noir,Blancs,Noirs,[Blancs3,Noirs3,[[X3,Y3]|ListeMouvement]]):- X2 is X-1, Y2 is Y-1,X3 is X-2,Y3 is Y-2,X3 >= 0,Y3 >= 0,member([X2,Y2,_],Blancs),not(member([X3,Y3,_],Noirs)),not(member([X3,Y3,_],Blancs)),!,delete(Blancs,[X2,Y2,_],Blancs2),delete(Noirs,[X,Y,pion],Noirs2),mangeTouteDirection([X3,Y3,pion],noir,Blancs2,[[X3,Y3,pion]|Noirs2],[Blancs3,Noirs3,ListeMouvement]).
-mangeHautGauche(_,_,Blancs,Noirs,[Blancs,Noirs,[]]).
+mangeBasGauche([X,Y,pion],blanc,Blancs,Noirs,Retour):- X2 is X-1, Y2 is Y+1,X3 is X-2,Y3 is Y+2,X3 >= 0 ,Y3 =< 9,member([X2,Y2,_],Noirs),not(member([X3,Y3,_],Noirs)),not(member([X3,Y3,_],Blancs)),!,delete(Noirs,[X2,Y2,_],Noirs2),delete(Blancs,[X,Y,pion],Blancs2),mangeTouteDirection([X3,Y3,pion],blanc,[[X3,Y3,pion]|Blancs2],Noirs2,R),creerMouvement([[X3,Y3,pion]|Blancs2],Noirs2,R,Sortie),ajoutMouvement([X3,Y3],Sortie,Retour).
+mangeBasGauche([X,Y,pion],noir,Blancs,Noirs,Retour):- X2 is X-1, Y2 is Y+1,X3 is X-2,Y3 is Y+2,X3 >= 0 ,Y3 =< 9,member([X2,Y2,_],Blancs),not(member([X3,Y3,_],Noirs)),not(member([X3,Y3,_],Blancs)),!,delete(Blancs,[X2,Y2,_],Blancs2),delete(Noirs,[X,Y,pion],Noirs2),mangeTouteDirection([X3,Y3,pion],noir,Blancs2,[[X3,Y3,pion]|Noirs2],R),creerMouvement(Blancs2,[[X3,Y3,pion]|Noirs2],R,Sortie),ajoutMouvement([X3,Y3],Sortie,Retour).
+mangeBasGauche(_,_,_,_,[]).
+
+mangeBasDroite([X,Y,pion],blanc,Blancs,Noirs,Retour):- X2 is X+1, Y2 is Y+1,X3 is X+2,Y3 is Y+2,X3 =< 9 ,Y3 =< 9,member([X2,Y2,_],Noirs),not(member([X3,Y3,_],Noirs)),not(member([X3,Y3,_],Blancs)),!,delete(Noirs,[X2,Y2,_],Noirs2),delete(Blancs,[X,Y,pion],Blancs2),mangeTouteDirection([X3,Y3,pion],blanc,[[X3,Y3,pion]|Blancs2],Noirs2,R),creerMouvement([[X3,Y3,pion]|Blancs2],Noirs2,R,Sortie),ajoutMouvement([X3,Y3],Sortie,Retour).
+mangeBasDroite([X,Y,pion],noir,Blancs,Noirs,Retour):- X2 is X+1, Y2 is Y+1,X3 is X+2,Y3 is Y+2,X3 =< 9 ,Y3 =< 9,member([X2,Y2,_],Blancs),not(member([X3,Y3,_],Noirs)),not(member([X3,Y3,_],Blancs)),!,delete(Blancs,[X2,Y2,_],Blancs2),delete(Noirs,[X,Y,pion],Noirs2),mangeTouteDirection([X3,Y3,pion],noir,Blancs2,[[X3,Y3,pion]|Noirs2],R),creerMouvement(Blancs2,[[X3,Y3,pion]|Noirs2],R,Sortie),ajoutMouvement([X3,Y3],Sortie,Retour).
+mangeBasDroite(_,_,_,_,[]).
+
+mangeHautDroite([X,Y,pion],blanc,Blancs,Noirs,Retour):- X2 is X+1, Y2 is Y-1,X3 is X+2,Y3 is Y-2,X3 =< 9 ,Y3 >= 0,member([X2,Y2,_],Noirs),not(member([X3,Y3,_],Noirs)),not(member([X3,Y3,_],Blancs)),!,delete(Noirs,[X2,Y2,_],Noirs2),delete(Blancs,[X,Y,pion],Blancs2),mangeTouteDirection([X3,Y3,pion],blanc,[[X3,Y3,pion]|Blancs2],Noirs2,R),creerMouvement([[X3,Y3,pion]|Blancs2],Noirs2,R,Sortie),ajoutMouvement([X3,Y3],Sortie,Retour).
+mangeHautDroite([X,Y,pion],noir,Blancs,Noirs,Retour):- X2 is X+1, Y2 is Y-1,X3 is X+2,Y3 is Y-2,X3 =< 9 ,Y3 >= 0,member([X2,Y2,_],Blancs),not(member([X3,Y3,_],Noirs)),not(member([X3,Y3,_],Blancs)),!,delete(Blancs,[X2,Y2,_],Blancs2),delete(Noirs,[X,Y,pion],Noirs2),mangeTouteDirection([X3,Y3,pion],noir,Blancs2,[[X3,Y3,pion]|Noirs2],R),creerMouvement(Blancs2,[[X3,Y3,pion]|Noirs2],R,Sortie),ajoutMouvement([X3,Y3],Sortie,Retour).
+mangeHautDroite(_,_,_,_,[]).
+
+creerMouvement(B,N,[],[[B,N,[]]]):-!.
+creerMouvement(_,_,S,S).
+%creerMouvement([],[],[],R).
+
+ajoutMouvement(Pos,[[Blancs,Noirs,ListeMouvement]|Suite],[[Blancs,Noirs,[Pos|ListeMouvement]]|R]):-!,ajoutMouvement(Pos,Suite,R).
+ajoutMouvement(_,[],[]).
+%ajoutMouvement([1,2],[[[],[],[[0,0]]],[[],[],[[1,1]]]],R).
+%ajoutMouvement([1,2],[[[],[],[[0,0]]],[[],[],[[1,1]]]],R).
+
+mangeHautGauche([X,Y,pion],blanc,Blancs,Noirs,Retour):- X2 is X-1, Y2 is Y-1,X3 is X-2,Y3 is Y-2,X3 >= 0,Y3 >= 0,member([X2,Y2,_],Noirs),not(member([X3,Y3,_],Noirs)),not(member([X3,Y3,_],Blancs)),!,delete(Noirs,[X2,Y2,_],Noirs2),delete(Blancs,[X,Y,pion],Blancs2),mangeTouteDirection([X3,Y3,pion],blanc,[[X3,Y3,pion]|Blancs2],Noirs2,R),creerMouvement([[X3,Y3,pion]|Blancs2],Noirs2,R,Sortie),ajoutMouvement([X3,Y3],Sortie,Retour).
+mangeHautGauche([X,Y,pion],noir,Blancs,Noirs,Retour):- X2 is X-1, Y2 is Y-1,X3 is X-2,Y3 is Y-2,X3 >= 0,Y3 >= 0,member([X2,Y2,_],Blancs),not(member([X3,Y3,_],Noirs)),not(member([X3,Y3,_],Blancs)),!,delete(Blancs,[X2,Y2,_],Blancs2),delete(Noirs,[X,Y,pion],Noirs2),mangeTouteDirection([X3,Y3,pion],noir,Blancs2,[[X3,Y3,pion]|Noirs2],R),creerMouvement(Blancs2,[[X3,Y3,pion]|Noirs2],R,Sortie),ajoutMouvement([X3,Y3],Sortie,Retour).
+mangeHautGauche(_,_,_,_,[]).
 %test mangehautgauche
 % mangeHautGauche([4,4,pion],blanc,[[4,4,pion]],[[1,1,pion],[3,3,pion]],R).
+
+longueurChaine([],0).
+longueurChaine([[_,_,T]|_],X):-length(T,X).
+
+estSolution(Liste,Maxi,Maxi,Liste):-!.
+estSolution(_,_,_,[]).
+
+
+maxSolution(R1,R2,R3,R4,S):-longueurChaine(R1,X),longueurChaine(R2,Y),longueurChaine(R3,Z),longueurChaine(R4,W),max_list([X,Y,Z,W],Maxi),estSolution(R1,X,Maxi,S1),estSolution(R2,Y,Maxi,S2),estSolution(R3,Z,Maxi,S3),estSolution(R4,W,Maxi,S4),append(S1,S2,S5),append(S5,S3,S6),append(S6,S4,S).
 
 
 % cherche les possiblités pour manger un pion dans chaque direction et
 % retourne le chemin + l'etat du jeu.
 % pour un Pion blanc
-mangeTouteDirection([X,Y,pion],blanc,Blancs,Noirs,R):-mangeHautGauche([X,Y,pion],blanc,Blancs,Noirs,R).%,mangeHautDroite(),mangeBasGauche(),mangeBasDroite().
+% il faut ajouter un predicat qui definit quel est le resultat a choisir
+% (liste de meme longueur, que faire ?)
+mangeTouteDirection([X,Y,pion],blanc,Blancs,Noirs,R):-mangeHautGauche([X,Y,pion],blanc,Blancs,Noirs,R1),mangeHautDroite([X,Y,pion],blanc,Blancs,Noirs,R2),mangeBasGauche([X,Y,pion],blanc,Blancs,Noirs,R3),mangeBasDroite([X,Y,pion],blanc,Blancs,Noirs,R4),maxSolution(R1,R2,R3,R4,R).
 
 
 %mouvement pour un pion blanc
 moveHautGauche([X,_,_],_,_,_,[]):- X2 is X-1,X2<0,!.
 moveHautGauche([_,Y,_],_,_,_,[]):- Y2 is Y-1,Y2<0,!.
+moveHautGauche([X,Y,pion],Player,Blancs,Noirs,R):- mangeHautGauche([X,Y,pion],Player,Blancs,Noirs,R), R\==[],!.
+moveHautGauche([X,Y,pion],blanc,Blancs,Noirs,[[Blancs3, Noirs, [[X2,Y2]]]]):-  X2 is X-1,Y2 is Y-1,not(member(Blancs,[X2,Y2,pion])), not(member(Noirs,[X2,Y2,pion])),!, delete(Blancs, [X,Y,pion], Blancs2), append(Blancs2, [[X2,Y2,pion]], Blancs3).
+moveHautGauche(_,_,_,_,[]).
+
+%moveHautGauche([
+% moveHautGauche([4,4,pion],blanc,[[4,4,pion]],[[1,1,pion],[2,2,pion]],R).
+%  moveHautGauche([4,4,pion],blanc,[[4,4,pion]],[[1,1,pion],[3,3,pion]],R).
+%
+%
+
+
+=======
 moveHautGauche([X,Y,pion],blanc,Blancs,Noirs,[[X2,Y2,pion]|Blancs]):- mangeHautGauche().%a finir
 moveHautGauche([X,Y,pion],blanc,Blancs,Noirs,[Blancs3,Noirs,[[X2,Y2]]]):- X2 is X-1, Y2 is Y-1,
     																		not(member([X2,Y2,_],Noirs)),not(member([X2,Y2,_],Blancs)),!,
