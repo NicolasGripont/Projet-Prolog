@@ -1,6 +1,7 @@
 package vue.VueJeu;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -74,7 +75,6 @@ public class VueJeu implements Initializable {
 						VueJeu.this.stackPanePlateau.getHeight());
 				VueJeu.this.dessinerPlateau();
 			}
-
 		};
 
 		this.stackPanePlateau.widthProperty().addListener(listener);
@@ -121,8 +121,49 @@ public class VueJeu implements Initializable {
 		}
 	}
 
+	int i = 0;
+
+	Plateau plateauTmp = new Plateau();
+
 	@FXML
-	public void onButtonQuitterPartieClicked() {
+	public void onButtonQuitterPartieClicked() throws InterruptedException {
+		if (this.i == 0) {
+			this.plateauTmp.initPions();
+
+			Piece piece = this.plateau.getCases()[6][1].getPiece();
+
+			this.plateauTmp.getCases()[5][0].setPiece(this.plateauTmp.getCases()[6][1].getPiece());
+			this.plateauTmp.getCases()[6][1].setPiece(null);
+			this.plateauTmp.getCases()[5][0].getPiece().setPosition(this.plateauTmp.getCases()[5][0]);
+
+			List<Case> coups = new ArrayList<>();
+			coups.add(this.plateauTmp.getCases()[5][0]);
+			this.controleur.jouerCoup(this.plateauTmp.getBlanches(), this.plateauTmp.getNoires(), piece, coups);
+			this.i++;
+		} else if (this.i == 1) {
+			this.plateauTmp.getCases()[4][1].setPiece(this.plateauTmp.getCases()[3][2].getPiece());
+			this.plateauTmp.getCases()[3][2].setPiece(null);
+			this.plateauTmp.getCases()[4][1].getPiece().setPosition(this.plateauTmp.getCases()[4][1]);
+			Piece piece = this.plateau.getCases()[3][2].getPiece();
+			List<Case> coups = new ArrayList<>();
+			coups.add(this.plateauTmp.getCases()[4][1]);
+			this.controleur.jouerCoup(this.plateauTmp.getBlanches(), this.plateauTmp.getNoires(), piece, coups);
+			this.i++;
+		} else if (this.i == 2) {
+			this.plateauTmp.getCases()[3][2].setPiece(this.plateauTmp.getCases()[5][0].getPiece());
+			this.plateauTmp.getCases()[5][0].setPiece(null);
+			this.plateauTmp.getCases()[3][2].getPiece().setPosition(this.plateauTmp.getCases()[3][2]);
+			Piece piece = this.plateau.getCases()[5][0].getPiece();
+			List<Case> coups = new ArrayList<>();
+			coups.add(this.plateauTmp.getCases()[3][2]);
+			this.plateauTmp.supprimerPiece(this.plateauTmp.getCases()[4][1].getPiece());
+
+			if (piece == null) {
+				System.out.println(this.plateau.getCases()[5][0].getPiece());
+			}
+			this.controleur.jouerCoup(this.plateauTmp.getBlanches(), this.plateauTmp.getNoires(), piece, coups);
+			this.i++;
+		}
 
 	}
 

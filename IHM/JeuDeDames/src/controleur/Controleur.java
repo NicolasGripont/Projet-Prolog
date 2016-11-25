@@ -101,8 +101,12 @@ public class Controleur extends Application {
 			}
 		}
 
-		// on set la nouvelle position au pion qui bouge
-		this.plateau.deplacerPiece(piecePlateau, deplacement.get(deplacement.size() - 1));
+		// recuperation de la case destination
+		Case nouvelleCase = this.plateau.getCases()[deplacement.get(deplacement.size() - 1).getLigne()][deplacement
+				.get(deplacement.size() - 1).getColonne()];
+
+		// on set la nouvelle position de la piece qui bouge
+		this.plateau.deplacerPiece(piecePlateau, nouvelleCase);
 
 		// supprimer piece de l'objet plateau et fire le deplacement 2 sens
 		for (Piece p : piecesMortes) {
