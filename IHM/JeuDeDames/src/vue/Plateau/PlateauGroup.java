@@ -269,6 +269,7 @@ public class PlateauGroup extends Group {
 				@Override
 				public void handle(ActionEvent arg0) {
 					PlateauGroup.this.getChildren().remove(pathTransition.getNode());
+					PlateauGroup.this.pieceVues.remove(pathTransition.getNode());
 				}
 			});
 		}
