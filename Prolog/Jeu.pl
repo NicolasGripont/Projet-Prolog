@@ -11,16 +11,16 @@ gameover('Draw', NewNoirs, NewBlancs) :- noirs(Noirs), blancs(Blancs), (length(N
 gameover('Draw', _, _) :- cptDraw(CptDraw), retract(cptDraw(CptDraw)), assert(cptDraw(0)), false.
 
 %%%% Test de victoire pour les joueurs.
-winner(blancs, Blancs, Noirs) :- (length(Noirs, 0);(movePossiblePlayer(noirs, Blancs, Noirs, Noirs, []))), !.
-winner(noirs, Blancs, Noirs) :- (length(Blancs, 0);(movePossiblePlayer(blancs, Blancs, Noirs, Blancs, []))), !.
+winner(blanc, Blancs, Noirs) :- (length(Noirs, 0);(movePossiblePlayer(noir, Blancs, Noirs, Noirs, []))), !.
+winner(noir, Blancs, Noirs) :- (length(Blancs, 0);(movePossiblePlayer(blanc, Blancs, Noirs, Blancs, []))), !.
 
 %%%% Predicate to get the next player
-changePlayer(blancs,noirs).
-changePlayer(noirs,blancs).
+changePlayer(blanc,noir).
+changePlayer(noir,blanc).
 
 %%%% Verify if the place has a pion
-isPion(X,Y,blancs) :- blancs(Blancs), member([X, Y, _],Blancs).
-isPion(X,Y,noirs) :- noirs(Noirs), member([X, Y, _],Noirs).
+isPion(X,Y,blanc) :- blancs(Blancs), member([X, Y, _],Blancs).
+isPion(X,Y,noir) :- noirs(Noirs), member([X, Y, _],Noirs).
 
 %%%% DISPLAY
 display1(I,Taille, [Liste|R2]) :- I<Taille, !,Y is I+1,display3(0,Taille,I,Liste), writeln(Liste), display1(Y,Taille, R2).
@@ -29,8 +29,8 @@ display3(X,Taille,Ligne,[V|R]):-X<Taille,!,Y is X+1, display3(Y,Taille,Ligne,R),
 display3(_,_,_,[]).
 
 %%%% Dessine la contenu de la case
-dessineCase(X,Y, 'b') :- isPion( X,Y,blancs),!.
-dessineCase(X,Y, 'n') :- isPion( X,Y,noirs),!.
+dessineCase(X,Y, 'b') :- isPion( X,Y,blanc),!.
+dessineCase(X,Y, 'n') :- isPion( X,Y,noir),!.
 dessineCase(_,_, '_').
 
 ajoutLigne(Ligne,R6):-mod(Ligne,2) =:= 0,
@@ -106,25 +106,25 @@ mangeTouteDirection([X,Y,pion],Couleur,Blancs,Noirs,R):-mangeHautGauche([X,Y,pio
 moveHautGauche([X,_,_],_,_,_,[]):- X2 is X-1,X2<0,!.
 moveHautGauche([_,Y,_],_,_,_,[]):- Y2 is Y-1,Y2<0,!.
 moveHautGauche([X,Y,pion],Player,Blancs,Noirs,R):- mangeHautGauche([X,Y,pion],Player,Blancs,Noirs,R), R\==[],!.
-moveHautGauche([X,Y,pion],blanc,Blancs,Noirs,[[Blancs3, Noirs, [[X2,Y2]]]]):-  X2 is X-1,Y2 is Y-1,not(member(Blancs,[X2,Y2,pion])), not(member(Noirs,[X2,Y2,pion])),!, delete(Blancs, [X,Y,pion], Blancs2), append(Blancs2, [[X2,Y2,pion]], Blancs3).
+moveHautGauche([X,Y,pion],blanc,Blancs,Noirs,[[Blancs3, Noirs, [[X2,Y2]]]]):-  X2 is X-1,Y2 is Y-1,not(member([X2,Y2,_],Blancs)), not(member([X2,Y2,_],Noirs)),!, delete(Blancs, [X,Y,pion], Blancs2), append(Blancs2, [[X2,Y2,pion]], Blancs3).
 moveHautGauche(_,_,_,_,[]).
 
 moveHautDroite([X,_,_],_,_,_,[]):- X2 is X+1,X2>9,!.
 moveHautDroite([_,Y,_],_,_,_,[]):- Y2 is Y-1,Y2<0,!.
 moveHautDroite([X,Y,pion],Player,Blancs,Noirs,R):- mangeHautDroite([X,Y,pion],Player,Blancs,Noirs,R), R\==[],!.
-moveHautDroite([X,Y,pion],blanc,Blancs,Noirs,[[Blancs3, Noirs, [[X2,Y2]]]]):-  X2 is X+1,Y2 is Y-1,not(member(Blancs,[X2,Y2,pion])), not(member(Noirs,[X2,Y2,pion])),!, delete(Blancs, [X,Y,pion], Blancs2), append(Blancs2, [[X2,Y2,pion]], Blancs3).
+moveHautDroite([X,Y,pion],blanc,Blancs,Noirs,[[Blancs3, Noirs, [[X2,Y2]]]]):- X2 is X+1,Y2 is Y-1,not(member([X2,Y2,_],Blancs)), not(member([X2,Y2,_],Noirs)),!, delete(Blancs, [X,Y,pion], Blancs2), append(Blancs2, [[X2,Y2,pion]], Blancs3).
 moveHautDroite(_,_,_,_,[]).
 
 moveBasGauche([X,_,_],_,_,_,[]):- X2 is X-1,X2<0,!.
 moveBasGauche([_,Y,_],_,_,_,[]):- Y2 is Y+1,Y2>9,!.
 moveBasGauche([X,Y,pion],Player,Blancs,Noirs,R):- mangeBasGauche([X,Y,pion],Player,Blancs,Noirs,R), R\==[],!.
-moveBasGauche([X,Y,pion],noir,Blancs,Noirs,[[Blancs, Noirs3, [[X2,Y2]]]]):-  X2 is X-1,Y2 is Y+1,not(member(Blancs,[X2,Y2,pion])), not(member(Noirs,[X2,Y2,pion])),!, delete(Noirs, [X,Y,pion], Noirs2), append(Noirs2, [[X2,Y2,pion]], Noirs3).
+moveBasGauche([X,Y,pion],noir,Blancs,Noirs,[[Blancs, Noirs3, [[X2,Y2]]]]):-  X2 is X-1,Y2 is Y+1,not(member([X2,Y2,_],Blancs)), not(member([X2,Y2,_],Noirs)),!, delete(Noirs, [X,Y,pion], Noirs2), append(Noirs2, [[X2,Y2,pion]], Noirs3).
 moveBasGauche(_,_,_,_,[]).
 
 moveBasDroite([X,_,_],_,_,_,[]):- X2 is X+1,X2>9,!.
 moveBasDroite([_,Y,_],_,_,_,[]):- Y2 is Y+1,Y2>9,!.
 moveBasDroite([X,Y,pion],Player,Blancs,Noirs,R):- mangeBasDroite([X,Y,pion],Player,Blancs,Noirs,R), R\==[],!.
-moveBasDroite([X,Y,pion],noir,Blancs,Noirs,[[Blancs, Noirs3, [[X2,Y2]]]]):-  X2 is X+1,Y2 is Y+1,not(member(Blancs,[X2,Y2,pion])), not(member(Noirs,[X2,Y2,pion])),!, delete(Noirs, [X,Y,pion], Noirs2), append(Noirs2, [[X2,Y2,pion]], Noirs3).
+moveBasDroite([X,Y,pion],noir,Blancs,Noirs,[[Blancs, Noirs3, [[X2,Y2]]]]):-  X2 is X+1,Y2 is Y+1,not(member([X2,Y2,_],Blancs)), not(member([X2,Y2,_],Noirs)),!, delete(Noirs, [X,Y,pion], Noirs2), append(Noirs2, [[X2,Y2,pion]], Noirs3).
 moveBasDroite(_,_,_,_,[]).
 %test
 % moveBasDroite([4,2,pion],blanc,[[4,2,pion]],[[5,1,pion],[3,1,pion],[5,3,pion],[3,3,pion]],R),writeln(R).
@@ -132,7 +132,7 @@ moveBasDroite(_,_,_,_,[]).
 
 
 
-%moveHautGauche([
+%moveHautGauche
 % moveHautGauche([4,4,pion],blanc,[[4,4,pion]],[[1,1,pion],[2,2,pion]],R).
 % moveHautGauche([4,4,pion],blanc,[[4,4,pion]],[[1,1,pion],[3,3,pion]],R).
 %
@@ -149,6 +149,7 @@ movePossible(E,Camp,Blancs,Noirs,S):-moveHautGauche(E,Camp,Blancs,Noirs,R1),move
 %tests
 % movePossible([4,2,pion],blanc,[[4,2,pion]],[[5,1,pion],[3,1,pion],[1,1,pion],[1,3,pion],[3,3,pion]],R),writeln(R).
 % movePossible([4,2,pion],blanc,[[4,2,pion]],[[5,1,pion],[3,1,pion],[5,3,pion],[3,3,pion]],R),writeln(R).
+% movePossible([4,2,pion],blanc,[[4,2,pion]],[[1,1,pion]],R),writeln(R).
 
 %methode naive on prend la premiere solution trouvee
 choixMove([_,_,_],[[Blancs,Noirs,ListeMouvement]|_],Blancs,Noirs,ListeMouvement):-!.
@@ -166,34 +167,36 @@ movePossiblePlayer(_, _, _, [], _).
 
 %Changer un pion en dame
 
-changePionDame(blancs, Noirs, Blancs, ListeMouvement, [_,_,pion], Blancs2, Noirs) :- last(ListeMouvement, [X,0]), delete(Blancs, [X,0,_], L), append(L, [X,0,dame], Blancs2),!.
-changePionDame(noirs, Noirs, Blancs, ListeMouvement, [_,_,pion], Blancs, Noirs2) :- last(ListeMouvement, [X,9]), delete(Noirs, [X,9,_], L), append(L, [X,9,dame], Noirs2),!.
+changePionDame(blanc, Noirs, Blancs, ListeMouvement, [_,_,pion], Blancs2, Noirs) :- last(ListeMouvement, [X,0]), delete(Blancs, [X,0,_], L), append(L, [X,0,dame], Blancs2),!.
+changePionDame(noir, Noirs, Blancs, ListeMouvement, [_,_,pion], Blancs, Noirs2) :- last(ListeMouvement, [X,9]), delete(Noirs, [X,9,_], L), append(L, [X,9,dame], Noirs2),!.
 changePionDame(_, Noirs, Blancs, _, _, Blancs, Noirs).
 
-applyMoves(Blancs, Noirs, Blancs2, Noirs2) :- retract(blancs(Blancs)), retract(noirs(Noirs)), assert(blancs(Blancs2)), assert(noirs(Noirs2)).
+applyMoves(Blancs, Noirs, Blancs2, Noirs2) :- retract(blancs(Blancs)), retract(noirs(Noirs)),assert(blancs(Blancs2)), assert(noirs(Noirs2)).
+%
 
-play(Player):-  write('New turn for: '), ((Player==blancs, writeln('Blancs'));(Player==noirs, writeln('Noirs'))),
+play(Player):-  write('New turn for: '), ((Player==blanc, writeln('Blancs'));(Player==noir, writeln('Noirs'))),
 		noirs(Noirs),
 		blancs(Blancs),
 
 		display1(0,10,_),
+		writeln(" "),
 
-            ia(Player,Noirs,Blancs,Noirs2,Blancs2,ListeMouvement, E),
+		ia(Player,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement, E),
 
 		%TODO
 		%Envoi données
 
-			changePionDame(Player, Noirs2, Blancs2, ListeMouvement, E, Blancs3, Noirs3),
+		%changePionDame(Player, Noirs2, Blancs2, ListeMouvement, E, Blancs3, Noirs3),
 
-			not(((gameover(blancs), !, write('Game is Over. Winner: '), writeln('Blancs'));
-				(gameover(noirs), !, write('Game is Over. Winner: '), writeln('Noirs'));
+		not(((gameover(blanc), !, write('Game is Over. Winner: '), writeln('Blancs'));
+				(gameover(noir), !, write('Game is Over. Winner: '), writeln('Noirs'));
 		(gameover('Draw', Blancs, Noirs), !, writeln('Game is Over. Draw')))),
 
-		applyMoves(Blancs, Noirs, Blancs3, Noirs3),
-
+		applyMoves(Blancs, Noirs, Blancs2, Noirs2),
 	    changePlayer(Player,NextPlayer), % Change the player before next turn
-            play(NextPlayer). % next turn!
+	    sleep(1),
+		play(NextPlayer). % next turn!
 
 
-init :-creerListe(noir,L1),creerListe(blanc,L2),assert(noirs(L1)),assert(blancs(L2)), assert(cptDraw(0)), play(blancs).
+init :-creerListe(noir,L1),creerListe(blanc,L2),assert(noirs(L1)),assert(blancs(L2)), assert(cptDraw(0)), play(blanc).
 
