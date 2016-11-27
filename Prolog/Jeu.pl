@@ -151,13 +151,13 @@ movePossible(E,Camp,Blancs,Noirs,S):-moveHautGauche(E,Camp,Blancs,Noirs,R1),move
 % movePossible([4,2,pion],blanc,[[4,2,pion]],[[5,1,pion],[3,1,pion],[5,3,pion],[3,3,pion]],R),writeln(R).
 
 %methode naive on prend la premiere solution trouvee
-choixMove([_,_,_],[[Blancs,Noirs,ListeMouvement]|_],Noirs,Blancs,ListeMouvement):-!.
-choixMove(_,[],Noirs,Blancs,[]):- blancs(Blancs),noirs(Noirs).
+choixMove([_,_,_],[[Blancs,Noirs,ListeMouvement]|_],Blancs,Noirs,ListeMouvement):-!.
+choixMove(_,[],Blancs,Noirs,[]):- blancs(Blancs),noirs(Noirs).
 
 
-ia(blanc,Noirs,Blancs,Noirs2,Blancs2,ListeMouvement,E):-repeat,length(Blancs,X),Index is random(X),nth0(Index,Blancs,E),subtract(Blancs,[E],Blancs3),movePossible(E,blanc,Blancs3,Noirs,L),L \== [],choixMove(E,L,Noirs2,Blancs2,ListeMouvement).
-
-%ia(noir,Noirs,Blancs,Noirs2,Blancs2,ListeMouvement,E).
+ia(blanc,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,E):-repeat,length(Blancs,X),Index is random(X),nth0(Index,Blancs,E),movePossible(E,blanc,Blancs,Noirs,L),L \== [],!,choixMove(E,L,Blancs2,Noirs2,ListeMouvement).
+ia(noir,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,E):-repeat,length(Noirs,X),Index is random(X),nth0(Index,Noirs,E),movePossible(E,noir,Blancs,Noirs,L),L \== [],!,choixMove(E,L,Blancs2,Noirs2,ListeMouvement).
+% ia(blanc,[[4,2,pion]],[[5,1,pion],[3,1,pion],[1,1,pion],[1,3,pion],[3,3,pion]],Blancs,Noirs,L,E).
 
 %On regarde tous les mouvements possibles pour un joueur
 movePossiblePlayer(Camp, Blancs, Noirs, [Tete|Pions], S) :- movePossible(Tete, Camp, Blancs, Noirs, T), movePossiblePlayer(Camp, Blancs, Noirs, Pions, R), append(T,R,S),!.
