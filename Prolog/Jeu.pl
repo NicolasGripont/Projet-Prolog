@@ -190,7 +190,7 @@ play(Player):-  write('New turn for: '), ((Player==blanc, writeln('Blancs'));(Pl
 
 		not(((gameover(blanc), !, write('Game is Over. Winner: '), writeln('Blancs'));
 				(gameover(noir), !, write('Game is Over. Winner: '), writeln('Noirs'));
-		(gameover('Draw', Blancs, Noirs), !, writeln('Game is Over. Draw')))),
+		(gameover('Draw', Blancs3, Noirs3), !, writeln('Game is Over. Draw')))),
 
 		applyMoves(Blancs, Noirs, Blancs2, Noirs2),
 	    changePlayer(Player,NextPlayer), % Change the player before next turn
