@@ -8,6 +8,8 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import modele.Case;
@@ -185,12 +187,21 @@ public class Controleur extends Application {
 	}
 
 	public void lancerPartie(TypeJoueur typeJoueur1, String nomJoueur1, TypeJoueur typeJoueur2, String nomJoueur2) {
-		this.joueur1 = new Joueur(0, typeJoueur1, nomJoueur1, Couleur.BLANC);
-		this.joueur2 = new Joueur(1, typeJoueur2, nomJoueur2, Couleur.NOIR);
 
 		// Initialisation du jeu
 		this.jeu = new Jeu("localhost", "5000");
-		jeu.init(new ArrayList<>(), new ArrayList<>());
+		if (this.jeu.init(new ArrayList<>(), new ArrayList<>()) == -1) {
+			this.jeu = null;
+			Alert alert = new Alert(AlertType.ERROR);
+			alert.setTitle("Erreur");
+			alert.setHeaderText("Verifiez que le serveur est lancé.");
+			alert.setContentText(
+					"Lancer le serveur : \n- Lancer SWI prolog \n- File > Consult... > Choisir le fichier Jeu.pl\n- Taper la commande : 'server(5000).'");
+			alert.showAndWait();
+			return;
+		}
+		this.joueur1 = new Joueur(0, typeJoueur1, nomJoueur1, Couleur.BLANC);
+		this.joueur2 = new Joueur(1, typeJoueur2, nomJoueur2, Couleur.NOIR);
 		this.plateau = new Plateau();
 		this.plateau.initPions();
 		this.joueurCourant = this.joueur1;

@@ -182,7 +182,6 @@ public class Jeu {
 					deplacements.add(new Case(Couleur.NOIR, x, y));
 				}
 			}
-			System.out.println(">" + deplacements);
 			Piece piece = null;
 			if ((root.get("pion") != null)) {
 				JsonObject elt = root.get("pion").getAsJsonObject();
