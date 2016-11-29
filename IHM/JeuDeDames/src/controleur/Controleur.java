@@ -190,7 +190,7 @@ public class Controleur extends Application {
 
 		// Initialisation du jeu
 		this.jeu = new Jeu("localhost", "5000");
-		this.jeu.init(new ArrayList<>(), new ArrayList<>());
+		jeu.init(new ArrayList<>(), new ArrayList<>());
 		this.plateau = new Plateau();
 		this.plateau.initPions();
 		this.joueurCourant = this.joueur1;

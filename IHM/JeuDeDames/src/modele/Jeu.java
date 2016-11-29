@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -105,8 +104,8 @@ public class Jeu {
 
 	public Coup play(int joueur, List<Piece> blancs, List<Piece> noirs) {
 		try {
-			JsonArray blancsArray = buildObjectListPiece(blancs,"blancs");
-			JsonArray noirsArray = buildObjectListPiece(noirs,"noirs");
+			JsonArray blancsArray = this.buildObjectListPiece(blancs, "blancs");
+			JsonArray noirsArray = this.buildObjectListPiece(noirs, "noirs");
 			JsonObject parameters = new JsonObject();
 			parameters.addProperty("joueur", joueur);
 			parameters.add("blancs", blancsArray);
@@ -118,7 +117,7 @@ public class Jeu {
 			request.setRequestMethod("POST");
 			request.setDoOutput(true);
 			request.setDoInput(true);
-			OutputStream os= request.getOutputStream();
+			OutputStream os = request.getOutputStream();
 			os.write(parameters.toString().getBytes("UTF8"));
 			os.close();
 			InputStream in = new BufferedInputStream(request.getInputStream());
@@ -126,7 +125,7 @@ public class Jeu {
 			JsonObject root = jp.parse(new InputStreamReader((InputStream) request.getContent())).getAsJsonObject();
 			System.out.println(root);
 			request.disconnect();
-			ArrayList<Piece> newBlancs = new ArrayList<Piece>();
+			ArrayList<Piece> newBlancs = new ArrayList<>();
 			if ((root.get("blancs") != null)) {
 				blancsArray = root.get("blancs").getAsJsonArray();
 				for (int i = 0; i < blancsArray.size(); i++) {
@@ -147,7 +146,7 @@ public class Jeu {
 					}
 				}
 			}
-			ArrayList<Piece> newNoirs = new ArrayList<Piece>();
+			ArrayList<Piece> newNoirs = new ArrayList<>();
 			if ((root.get("noirs") != null)) {
 				noirsArray = root.get("noirs").getAsJsonArray();
 				for (int i = 0; i < noirsArray.size(); i++) {
@@ -168,9 +167,9 @@ public class Jeu {
 					}
 				}
 			}
-			ArrayList<Case> deplacements = new ArrayList<Case>();
+			ArrayList<Case> deplacements = new ArrayList<>();
 			if ((root.get("mouvements") != null)) {
-				JsonArray mouvementsArray = root.get("noirs").getAsJsonArray();
+				JsonArray mouvementsArray = root.get("mouvements").getAsJsonArray();
 				for (int i = 0; i < mouvementsArray.size(); i++) {
 					JsonObject elt = mouvementsArray.get(i).getAsJsonObject();
 					int x = 0, y = 0;
@@ -183,6 +182,7 @@ public class Jeu {
 					deplacements.add(new Case(Couleur.NOIR, x, y));
 				}
 			}
+			System.out.println(">" + deplacements);
 			Piece piece = null;
 			if ((root.get("pion") != null)) {
 				JsonObject elt = root.get("pion").getAsJsonObject();
@@ -206,17 +206,17 @@ public class Jeu {
 			return null;
 		}
 	}
-	
+
 	private JsonArray buildObjectListPiece(List<Piece> pieces, String key) {
 		JsonArray array = new JsonArray();
-		for(Piece p : pieces) {
+		for (Piece p : pieces) {
 			JsonObject objPiece = new JsonObject();
 			int x = p.getPosition().getLigne();
 			int y = p.getPosition().getColonne();
 			objPiece.addProperty("x", x);
 			objPiece.addProperty("y", y);
 			String str = "pion";
-			if(p.getClass().equals(Dame.class)) {
+			if (p.getClass().equals(Dame.class)) {
 				str = "dame";
 			}
 			objPiece.addProperty("type", str);
@@ -224,7 +224,7 @@ public class Jeu {
 		}
 		return array;
 	}
-	
+
 	public String getNameServer() {
 		return this.nameServer;
 	}
