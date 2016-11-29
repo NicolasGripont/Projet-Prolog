@@ -100,7 +100,7 @@ maxSolution(R1,R2,R3,R4,S):-longueurChaine(R1,X),longueurChaine(R2,Y),longueurCh
 
 maxSolutionJoueur([[Pion1,T1]|Suite3],[[Pion2,T2]|Suite4],S):-longueurChaine(T1,X),longueurChaine(T2,Y),max_list([X,Y],Maxi),estSolution([[Pion1,T1]|Suite3],X,Maxi,S1),estSolution([[Pion2,T2]|Suite4],Y,Maxi,S2),append(S1,S2,S).
 
-% cherche les possiblités pour manger un pion dans chaque direction et
+% cherche les possiblitÃ©s pour manger un pion dans chaque direction et
 % retourne les solutions possibles comprenant : le chemin + l'etat du
 % jeu.
 % pour un Pion
@@ -195,11 +195,11 @@ ia(noir,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,E):-movePossiblePlayer(noir, 
 
 %Changer un pion en dame
 
-changePionDame(blanc, Noirs, Blancs, ListeMouvement, [_,_,pion], Blancs2, Noirs) :- last(ListeMouvement, [X,0]), delete(Blancs, [X,0,_], L), append(L, [X,0,dame], Blancs2),!.
-changePionDame(noir, Noirs, Blancs, ListeMouvement, [_,_,pion], Blancs, Noirs2) :- last(ListeMouvement, [X,9]), delete(Noirs, [X,9,_], L), append(L, [X,9,dame], Noirs2),!.
-changePionDame(_, Noirs, Blancs, _, _, Blancs, Noirs).
+changePionDame(blanc, Blancs, Noirs, ListeMouvement, [_,_,pion], Blancs2, Noirs) :- last(ListeMouvement, [X,0]), delete(Blancs, [X,0,_], L), append(L, [[X,0,dame]], Blancs2),!.
+changePionDame(noir, Blancs, Noirs, ListeMouvement, [_,_,pion], Blancs, Noirs2) :- last(ListeMouvement, [X,9]), delete(Noirs, [X,9,_], L), append(L, [[X,9,dame]], Noirs2),!.
+changePionDame(_, Blancs, Noirs, _, _, Blancs, Noirs).
 
-applyMoves(Blancs, Noirs, Blancs2, Noirs2) :- retract(blancs(Blancs)), retract(noirs(Noirs)),assert(blancs(Blancs2)), assert(noirs(Noirs2)).
+applyMoves(Blancs, Noirs, Blancs2, Noirs2) :- retractall(blancs(_)), retractall(noirs(_)),assert(blancs(Blancs2)), assert(noirs(Noirs2)).
 %
 
 play(Player):-  write('New turn for: '), ((Player==blanc, writeln('Blancs'));(Player==noir, writeln('Noirs'))),
@@ -212,9 +212,9 @@ play(Player):-  write('New turn for: '), ((Player==blanc, writeln('Blancs'));(Pl
 		ia(Player,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement, E),
 
 		%TODO
-		%Envoi données
+		%Envoi donnÃ©es
 
-		changePionDame(Player, Noirs2, Blancs2, ListeMouvement, E, Blancs3, Noirs3),
+		changePionDame(Player, Blancs2, Noirs2, ListeMouvement, E, Blancs3, Noirs3),
 
 		not(((gameover(blanc), !, write('Game is Over. Winner: '), writeln('Blancs'));
 				(gameover(noir), !, write('Game is Over. Winner: '), writeln('Noirs'));
@@ -226,5 +226,5 @@ play(Player):-  write('New turn for: '), ((Player==blanc, writeln('Blancs'));(Pl
 		play(NextPlayer). % next turn!
 
 
-init :-creerListe(noir,L1),creerListe(blanc,L2),assert(noirs(L1)),assert(blancs(L2)), assert(cptDraw(0)), play(blanc).
+init :-retractall(blancs(_)), retractall(noirs(_)), retractall(cptDraw(_)), creerListe(noir,L1),creerListe(blanc,L2),assert(noirs(L1)),assert(blancs(L2)), assert(cptDraw(0)), play(blanc).
 
