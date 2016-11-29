@@ -15,6 +15,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import modele.Case;
+import modele.Joueur;
 import modele.Piece;
 import modele.Plateau;
 import vue.Plateau.PlateauGroup;
@@ -58,6 +59,10 @@ public class VueJeu implements Initializable {
 	private PlateauGroup plateauGroup;
 
 	private Plateau plateau;
+
+	private Joueur joueur1;
+
+	private Joueur joueur2;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -123,6 +128,24 @@ public class VueJeu implements Initializable {
 	@FXML
 	public void onButtonQuitterPartieClicked() {
 		this.controleur.cliquerSurQuitter();
+	}
+
+	public Joueur getJoueur1() {
+		return this.joueur1;
+	}
+
+	public void setJoueur1(Joueur joueur1) {
+		this.joueur1 = joueur1;
+		this.labelJoueur1.setText(joueur1.getNom());
+	}
+
+	public Joueur getJoueur2() {
+		return this.joueur2;
+	}
+
+	public void setJoueur2(Joueur joueur2) {
+		this.joueur2 = joueur2;
+		this.labelJoueur2.setText(joueur2.getNom());
 	}
 
 }

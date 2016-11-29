@@ -12,9 +12,13 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import modele.Case;
 import modele.Couleur;
+import modele.Jeu;
+import modele.Joueur;
 import modele.Piece;
 import modele.Plateau;
+import modele.TypeJoueur;
 import vue.VueJeu.VueJeu;
+import vue.VueMenu.VueMenu;
 import vue.VuePopUpQuitter.VuePopUpQuitter;
 
 public class Controleur extends Application {
@@ -23,11 +27,21 @@ public class Controleur extends Application {
 
 	private VueJeu vueJeu;
 
-	private Plateau plateau;
+	private VueMenu vueMenu;
 
 	private VuePopUpQuitter myVuePopUpQuitter;
 
+	private Plateau plateau;
+
 	private Stage stagePopUpQuitter;
+
+	private Joueur joueur1;
+
+	private Joueur joueur2;
+
+	private Joueur JoueurCourant;
+
+	private Jeu jeu;
 
 	@Override
 	public void start(Stage primaryStage) {
@@ -35,15 +49,13 @@ public class Controleur extends Application {
 		this.stage.setMinWidth(900); // Largeur minimum fixée
 		this.stage.setMinHeight(620); // Hauteur minimum fixée
 		try {
-			FXMLLoader fxmlLoader = new FXMLLoader(this.getClass().getResource("/vue/vueJeu/VueJeu.fxml"));
+			FXMLLoader fxmlLoader = new FXMLLoader(this.getClass().getResource("/vue/vueMenu/VueMenu.fxml"));
 			Parent root;
 			root = fxmlLoader.load();
-			this.vueJeu = (VueJeu) fxmlLoader.getController();
-			this.vueJeu.setControleur(this);
+			this.vueMenu = (VueMenu) fxmlLoader.getController();
+			this.vueMenu.setControleur(this);
 			this.plateau = new Plateau();
 			this.plateau.initPions();
-			this.vueJeu.setPlateau(this.plateau);
-			this.vueJeu.dessinerPlateau();
 			Scene scene = new Scene(root, this.stage.getWidth(), this.stage.getHeight());
 			this.stage.setTitle("Jeu De Dames");
 			this.stage.setScene(scene);
@@ -145,6 +157,7 @@ public class Controleur extends Application {
 		// appelle vue
 		this.vueJeu.deplacerPiece(piecePlateau, deplacement, deplacement.size() * 1000);
 		this.vueJeu.tuerPieces(piecesMortes, (deplacement.size() * 1000) + 500);
+
 	}
 
 	private boolean contains(List<Piece> pieces, Piece piece) {
@@ -157,6 +170,36 @@ public class Controleur extends Application {
 		}
 
 		return result;
+	}
+
+	public void lancerPartie(TypeJoueur typeJoueur1, String nomJoueur1, TypeJoueur typeJoueur2, String nomJoueur2) {
+		this.joueur1 = new Joueur(typeJoueur1, nomJoueur1, Couleur.BLANC);
+		this.joueur2 = new Joueur(typeJoueur2, nomJoueur2, Couleur.NOIR);
+
+		// Initialisation du jeu
+		Jeu jeu = new Jeu("localhost", "5000");
+		this.plateau = new Plateau();
+		this.plateau.initPions();
+		this.JoueurCourant = this.joueur1;
+
+		// Affichage
+		try {
+			FXMLLoader fxmlLoader = new FXMLLoader(this.getClass().getResource("/vue/vueJeu/VueJeu.fxml"));
+			Parent root;
+			root = fxmlLoader.load();
+			this.vueJeu = (VueJeu) fxmlLoader.getController();
+			this.vueJeu.setControleur(this);
+			this.vueJeu.setJoueur1(this.joueur1);
+			this.vueJeu.setJoueur2(this.joueur2);
+			this.vueJeu.setPlateau(this.plateau);
+			this.vueJeu.dessinerPlateau();
+			Scene scene = new Scene(root, this.stage.getScene().getWidth(), this.stage.getScene().getHeight());
+			this.stage.setTitle("Jeu De Dames");
+			this.stage.setScene(scene);
+			this.stage.show();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 }
