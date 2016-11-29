@@ -189,8 +189,8 @@ public class Controleur extends Application {
 			root = fxmlLoader.load();
 			this.vueJeu = (VueJeu) fxmlLoader.getController();
 			this.vueJeu.setControleur(this);
-			this.vueJeu.setJoueur1(this.joueur1);
-			this.vueJeu.setJoueur2(this.joueur2);
+			this.vueJeu.setTextLabelJoueur1(this.joueur1.getNom());
+			this.vueJeu.setTextLabelJoueur2(this.joueur2.getNom());
 			this.vueJeu.setPlateau(this.plateau);
 			this.vueJeu.dessinerPlateau();
 			Scene scene = new Scene(root, this.stage.getScene().getWidth(), this.stage.getScene().getHeight());

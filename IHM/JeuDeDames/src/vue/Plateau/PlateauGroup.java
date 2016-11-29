@@ -34,7 +34,9 @@ public class PlateauGroup extends Group {
 
 	private final PlateauCanvas plateauCanvas;
 
-	private List<PieceVue> pieceVues;
+	private List<PieceVue> pieceVuesBlanches;
+
+	private List<PieceVue> pieceVuesNoires;
 
 	private final VueJeu vueJeu;
 
@@ -70,22 +72,38 @@ public class PlateauGroup extends Group {
 	}
 
 	public void creerPieces() {
-		this.pieceVues = new ArrayList<>();
-		for (int i = 0; i < Plateau.NB_LIGNES; i++) {
-			for (int j = 0; j < Plateau.NB_COLONNES; j++) {
-				Case caseCourante = this.plateau.getCases()[i][j];
-				if (!caseCourante.estVide()) {
-					PieceVue circle = new PieceVue(caseCourante.getPiece());
-					this.getChildren().add(circle);
-					this.pieceVues.add(circle);
-					this.setPieceVueDragable(circle, true);
-				}
-			}
+		this.pieceVuesBlanches = new ArrayList<>();
+		this.pieceVuesNoires = new ArrayList<>();
+
+		for (Piece p : this.plateau.getBlanches()) {
+			PieceVue pieceVue = new PieceVue(p);
+			this.getChildren().add(pieceVue);
+			this.pieceVuesBlanches.add(pieceVue);
+			this.setPieceVueDraggable(pieceVue, false);
+		}
+
+		for (Piece p : this.plateau.getNoires()) {
+			PieceVue pieceVue = new PieceVue(p);
+			this.getChildren().add(pieceVue);
+			this.pieceVuesNoires.add(pieceVue);
+			this.setPieceVueDraggable(pieceVue, false);
 		}
 	}
 
-	private void setPieceVueDragable(PieceVue pieceVue, boolean dragable) {
-		if (dragable) {
+	public void setPiecesVuesNoiresDraggable(boolean draggable) {
+		for (PieceVue p : this.pieceVuesNoires) {
+			this.setPieceVueDraggable(p, draggable);
+		}
+	}
+
+	public void setPiecesVuesBlanchesDraggable(boolean draggable) {
+		for (PieceVue p : this.pieceVuesBlanches) {
+			this.setPieceVueDraggable(p, draggable);
+		}
+	}
+
+	private void setPieceVueDraggable(PieceVue pieceVue, boolean draggable) {
+		if (draggable) {
 			pieceVue.setCursor(Cursor.HAND);
 
 			pieceVue.setOnMousePressed(new EventHandler<MouseEvent>() {
@@ -148,7 +166,10 @@ public class PlateauGroup extends Group {
 				}
 			});
 		} else {
-			pieceVue.setCursor(Cursor.HAND);
+			pieceVue.setCursor(Cursor.DEFAULT);
+			pieceVue.setOnMousePressed(null);
+			pieceVue.setOnMouseDragged(null);
+			pieceVue.setOnMouseClicked(null);
 		}
 	}
 
@@ -157,7 +178,11 @@ public class PlateauGroup extends Group {
 		double hauteurCase = this.plateauCanvas.getPlateauHeight() / Plateau.NB_COLONNES;
 		double margin = 5;
 
-		for (PieceVue pieceVue : this.pieceVues) {
+		List<PieceVue> piecesVues = new ArrayList<>();
+		piecesVues.addAll(this.pieceVuesBlanches);
+		piecesVues.addAll(this.pieceVuesNoires);
+
+		for (PieceVue pieceVue : piecesVues) {
 			Case caseCourante = pieceVue.getPiece().getPosition();
 			if (!caseCourante.estVide()) {
 				String imagePath = null;
@@ -199,12 +224,23 @@ public class PlateauGroup extends Group {
 		double hauteurCase = this.plateauCanvas.getPlateauHeight() / Plateau.NB_COLONNES;
 		double margin = 5;
 		PieceVue pieceVue = null;
-		for (PieceVue p : this.pieceVues) {
-			if (p.getPiece() == piece) {
-				pieceVue = p;
-				break;
+
+		if (piece.getCouleur() == Couleur.BLANC) {
+			for (PieceVue p : this.pieceVuesBlanches) {
+				if (p.getPiece() == piece) {
+					pieceVue = p;
+					break;
+				}
+			}
+		} else {
+			for (PieceVue p : this.pieceVuesNoires) {
+				if (p.getPiece() == piece) {
+					pieceVue = p;
+					break;
+				}
 			}
 		}
+
 		if (pieceVue != null) {
 			double xStart = pieceVue.getCenterX();
 			double yStart = pieceVue.getCenterY();
@@ -242,10 +278,20 @@ public class PlateauGroup extends Group {
 	public void tuerPiece(Piece piece, int dureeDattente) {
 
 		PieceVue pieceATuer = null;
-		for (PieceVue pieceVue : this.pieceVues) {
-			if (pieceVue.getPiece() == piece) {
-				pieceATuer = pieceVue;
-				break;
+
+		if (piece.getCouleur() == Couleur.BLANC) {
+			for (PieceVue p : this.pieceVuesBlanches) {
+				if (p.getPiece() == piece) {
+					pieceATuer = p;
+					break;
+				}
+			}
+		} else {
+			for (PieceVue p : this.pieceVuesNoires) {
+				if (p.getPiece() == piece) {
+					pieceATuer = p;
+					break;
+				}
 			}
 		}
 
@@ -269,7 +315,12 @@ public class PlateauGroup extends Group {
 				@Override
 				public void handle(ActionEvent arg0) {
 					PlateauGroup.this.getChildren().remove(pathTransition.getNode());
-					PlateauGroup.this.pieceVues.remove(pathTransition.getNode());
+					PieceVue pieceVue = (PieceVue) pathTransition.getNode();
+					if (pieceVue.getPiece().getCouleur() == Couleur.BLANC) {
+						PlateauGroup.this.pieceVuesBlanches.remove(pieceVue);
+					} else {
+						PlateauGroup.this.pieceVuesNoires.remove(pieceVue);
+					}
 				}
 			});
 		}
