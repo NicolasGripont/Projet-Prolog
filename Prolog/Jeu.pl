@@ -281,6 +281,7 @@ init :-retractall(blancs(_)), retractall(noirs(_)), retractall(cptDraw(_)), cree
 :- json_object noirs(noirs:list).
 :- json_object positions(positions:list).
 :- json_object game(joueur: integer, blancs:list, noirs:list).
+:- json_object turn(joueur: integer, blancs:list, noirs:list, p:compound, mouvements:list).
 
 % Predicat qui lance le server
 server(Port) :-	http_server(http_dispatch, [port(Port)]).
@@ -299,16 +300,20 @@ init_server(_Request) :- 	init,
 % Le prédicat appelle le predicat ia qui va jouer un cout
 % Le prédicat renvoie la liste des pions blancs et noirs et le joueur qui doit jouer en format JSON
 play_server(Request) :- http_read_json(Request, JsonIn,[json_object(term)]),
- 						json_to_prolog(JsonIn, Data), game_get_data_informations(Data, J, Blancs, Noirs), 
-						format(user_output,"Joueur is: ~p~n",[J]),
-				   		JsonOut=JsonIn,
-				   		reply_json(JsonOut).
+ 						json_to_prolog(JsonIn, Data), game_get_data_informations(Data, J, Blancs, Noirs),
+ 						play(J,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,Pion),
+ 						format(user_output,"Request is: ~p~n",[Pion]),
+						build_reply_play(Blancs2,Noirs2,J,Pion,ListeMouvement,JSON),
+						format(user_output,"json is: ~p~n",[JSON]),
+				   		reply_json(JSON).
 
 
 % Prédicat game_get_data_informations qui permet de recuperer la Liste Blancs, la Liste Noirs et le joueur dans un objet JSON de type game
 game_get_data_informations(Data, J, Blancs, Noirs):- 	game_get_joueur(Data, J), 
-														game_get_blancs(Data, Blancs), 
-														game_get_noirs(Data, Noirs).
+														game_get_blancs(Data, LB), 
+														convert_list_pion_json_to_object(LB,Blancs),
+														game_get_noirs(Data, LN),
+														convert_list_pion_json_to_object(LN,Noirs).
 
 % Prédicat game_get_data_informations qui permet de recuperer le numero du joueur dans un objet JSON de type game
 game_get_joueur(game(0,_,_),blanc). 
@@ -323,10 +328,21 @@ game_get_noirs(game(_,_,Z),Z).
 % Predicat qui permet de construire le JSON relatif à la reponse d'init
 %	ListeBlancs = Liste contenant des pions et des dames
 %	ListeNoirs = Liste contenant des pions et des dames
-build_reply_init(ListeBlancs,ListeNoirs, Joueur, JSON) :- 	convert_list_pion_to_json_object(ListeBlancs, LB), 
+build_reply_init(ListeBlancs,ListeNoirs,Joueur,JSON) :- 	convert_list_pion_to_json_object(ListeBlancs, LB), 
 															convert_list_pion_to_json_object(ListeNoirs, LN),
 															J = game(Joueur, LB, LN), 
 															prolog_to_json(J,JSON).
+
+
+build_reply_play(ListeBlancs,ListeNoirs,Joueur,Pion,ListeMouvement,JSON) :- convert_list_pion_to_json_object(ListeBlancs, LB), 
+																			convert_list_pion_to_json_object(ListeNoirs, LN),
+																			convert_list_position_to_json_object(ListeMouvement, LM),
+																			convert_pion_to_json_object_pion(Pion, P1),
+																			prolog_to_json(P1,P),
+																			changePlayer(Joueur,JPredicat),
+																			build_joueur_predicat_int(JPredicat,JInt),
+																			JSONProlog = turn(JInt, LB, LN, P, LM), 
+																			prolog_to_json(JSONProlog,JSON).
 
 % Predicat qui permet de construire le int d'un joueur avec le predicat
 build_joueur_predicat_int(blanc,0).
@@ -337,15 +353,22 @@ build_joueur_int_predicat(0,blanc).
 build_joueur_int_predicat(1,noir).
 
 % Predicat qui permet de construire le JSON d'une liste de pion
-convert_list_pion_to_json_object([], []):- !.
+convert_list_pion_to_json_object([], []).
 convert_list_pion_to_json_object([H|T],O2) :- convert_list_pion_to_json_object(T, O), convert_pion_to_json_object_pion(H,X), append([X],O,O2), !.
 
+% Predicat qui permet de construire le prolog d'une liste de pion JSON
+convert_list_pion_json_to_object([], []).
+convert_list_pion_json_to_object([H|T],O2) :- convert_list_pion_json_to_object(T, O), convert_pion_json_to_object_pion(H,X), append([X],O,O2), !.
+
 % Predicat qui permet de construire le JSON d'une liste de position
-convert_list_position_to_json_object([], []):- !.
-convert_list_position_to_json_object([H|T],O2) :- convert_list_position_to_json_object(T, O), convert_position_to_json_object_position(H,X), writeln(X), append([X],O,O2), !.
+convert_list_position_to_json_object([], []).
+convert_list_position_to_json_object([H|T],O2) :- convert_list_position_to_json_object(T, O), convert_position_to_json_object_position(H,X), append([X],O,O2), !.
 
 % Méthode de conversion d'un pion ou d'une dame ([1, 2, pion] ou [1, 2, dame]) en Objet JSON Prolog (pion(1,2) ou dame(1,2))
-convert_pion_to_json_object_pion(L,O) :- convert_pion_to_json_object_pion_X(L,X), convert_pion_to_json_object_pion_Y(L,X,Y), convert_pion_to_json_object_pion_Name(L,X,Y,O), !.
+convert_pion_to_json_object_pion(L,O) :- 	convert_pion_to_json_object_pion_X(L,X), 
+											convert_pion_to_json_object_pion_Y(L,X,Y), 
+											convert_pion_to_json_object_pion_Name(L,X,Y,O), !.
+
 convert_pion_to_json_object_pion_X([H|_],X) :- X = H.
 convert_pion_to_json_object_pion_Y([],_,_).
 convert_pion_to_json_object_pion_Y([X|T],X,Y) :- convert_pion_to_json_object_pion_Y(T,X,Y).
@@ -354,6 +377,21 @@ convert_pion_to_json_object_pion_Name([],_).
 convert_pion_to_json_object_pion_Name([pion|_], X, Y, O) :- O = pion(X,Y).
 convert_pion_to_json_object_pion_Name([dame|_], X, Y, O) :- O = dame(X,Y).
 convert_pion_to_json_object_pion_Name([_|T], X, Y, O) :- convert_pion_to_json_object_pion_Name(T,X,Y,O).
+
+% Méthode de conversion d'un pion ou d'une dame JSON (pion(1,2) ou dame(1,2)) en Objet Prolog ([1, 2, pion] ou [1, 2, dame])
+convert_pion_json_to_object_pion(L,O4) :- 	convert_pion_json_to_object_pion_X(L,X), 
+											convert_pion_json_to_object_pion_Y(L,Y), 
+											convert_pion_json_to_object_pion_Name(L,N),
+											append([N],[],O2),
+											append([Y],O2,O3),
+											append([X],O3,O4), !.
+
+convert_pion_json_to_object_pion_X(pion(X,_),X).
+convert_pion_json_to_object_pion_X(dame(X,_),X).
+convert_pion_json_to_object_pion_Y(pion(_,Y),Y).
+convert_pion_json_to_object_pion_Y(dame(_,Y),Y).
+convert_pion_json_to_object_pion_Name(pion(_,_),pion).
+convert_pion_json_to_object_pion_Name(dame(_,_),dame).
 
 % Méthode de conversion d'une position ([1, 2]) en Objet JSON Prolog (position(1,2))
 convert_position_to_json_object_position(L,O) :- convert_position_to_json_object_position_X(L,X), convert_position_to_json_object_position_Y(L,X,Y), O = position(X,Y), !.
