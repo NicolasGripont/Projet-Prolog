@@ -194,7 +194,7 @@ public class Controleur extends Application {
 			this.jeu = null;
 			Alert alert = new Alert(AlertType.ERROR);
 			alert.setTitle("Erreur");
-			alert.setHeaderText("Verifiez que le serveur est lancé.");
+			alert.setHeaderText("Verifier que le serveur est lancé.");
 			alert.setContentText(
 					"Lancer le serveur : \n- Lancer SWI prolog \n- File > Consult... > Choisir le fichier Jeu.pl\n- Taper la commande : 'server(5000).'");
 			alert.showAndWait();
