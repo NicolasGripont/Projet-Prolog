@@ -281,7 +281,7 @@ init :-retractall(blancs(_)), retractall(noirs(_)), retractall(cptDraw(_)), cree
 :- json_object noirs(noirs:list).
 :- json_object positions(positions:list).
 :- json_object game(joueur: integer, blancs:list, noirs:list).
-:- json_object turn(joueur: integer, blancs:list, noirs:list, p:compound, mouvements:list).
+:- json_object turn(joueur: integer, blancs:list, noirs:list, pion:compound, mouvements:list).
 
 % Predicat qui lance le server
 server(Port) :-	http_server(http_dispatch, [port(Port)]).
@@ -302,9 +302,8 @@ init_server(_Request) :- 	init,
 play_server(Request) :- http_read_json(Request, JsonIn,[json_object(term)]),
  						json_to_prolog(JsonIn, Data), game_get_data_informations(Data, J, Blancs, Noirs),
  						play(J,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,Pion),
- 						format(user_output,"Request is: ~p~n",[Pion]),
 						build_reply_play(Blancs2,Noirs2,J,Pion,ListeMouvement,JSON),
-						format(user_output,"json is: ~p~n",[JSON]),
+						%format(user_output,"json is: ~p~n",[JSON]),
 				   		reply_json(JSON).
 
 
