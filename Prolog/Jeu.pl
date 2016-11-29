@@ -220,9 +220,9 @@ applyMoves(Blancs, Noirs) :- retractall(blancs(_)), retractall(noirs(_)),assert(
 %
 
 %lancement du jeu
-play(Player,Blancs,Noirs,Blancs3,Noirs3,ListeMouvement,Pion):-applyMoves(Blancs, Noirs, Blancs3, Noirs3),ia(Player,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement, E),
+% play(blanc,[[1,1,pion],[2,2,pion]],[[5,5,pion],[8,6,pion]],B,N,L,Pion).
+play(Player,Blancs,Noirs,Blancs3,Noirs3,ListeMouvement,Pion):-applyMoves(Blancs, Noirs),ia(Player,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement, E),
 		changePionDame(Player, Blancs2, Noirs2, ListeMouvement, E, Blancs3, Noirs3),
-		applyMoves(Blancs, Noirs),
 		not(((gameover(blanc), !, write('Game is Over. Winner: '), writeln('Blancs'));
 				(gameover(noir), !, write('Game is Over. Winner: '), writeln('Noirs'));
 		(gameover('Draw', Blancs3, Noirs3), !, writeln('Game is Over. Draw')))).
