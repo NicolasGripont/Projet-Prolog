@@ -15,7 +15,6 @@ import modele.Couleur;
 import modele.Jeu;
 import modele.Joueur;
 import modele.Piece;
-import modele.Pion;
 import modele.Plateau;
 import modele.TypeJoueur;
 import vue.VueJeu.VueJeu;
@@ -40,7 +39,7 @@ public class Controleur extends Application {
 
 	private Joueur joueur2;
 
-	private Joueur JoueurCourant;
+	private Joueur joueurCourant;
 
 	private Jeu jeu;
 
@@ -116,10 +115,11 @@ public class Controleur extends Application {
 		// plateauClone.getBlanches(), plateauClone.getNoires());
 		// this.jouerCoup(coup.getPiecesBlanches(), coup.getPiecesNoires(),
 		// getPiece(), coup.deplacement);
-	}
-
-	public void test(Piece p) {
-		p = new Pion(Couleur.BLANC, new Case(Couleur.NOIR, 0, 12));
+		// if (this.joueurCourant == this.joueur1) {
+		// this.joueurCourant = this.joueur2;
+		// } else {
+		// this.joueurCourant = this.joueur1;
+		// }
 	}
 
 	/**
@@ -193,7 +193,7 @@ public class Controleur extends Application {
 		Jeu jeu = new Jeu("localhost", "5000");
 		this.plateau = new Plateau();
 		this.plateau.initPions();
-		this.JoueurCourant = this.joueur1;
+		this.joueurCourant = this.joueur1;
 
 		// Affichage
 		try {
