@@ -55,6 +55,9 @@ public class VueJeu implements Initializable {
 	@FXML
 	private ImageView imageViewDamesJoueur2;
 
+	@FXML
+	private Button buttonJouerUnTour;
+
 	private PlateauGroup plateauGroup;
 
 	private Plateau plateau;
@@ -141,4 +144,8 @@ public class VueJeu implements Initializable {
 		this.plateauGroup.setPiecesVuesBlanchesDraggable(draggable);
 	}
 
+	@FXML
+	private void onButtonJouerUnTourPartieClicked() {
+		this.controleur.jouerCoupIA();
+	}
 }

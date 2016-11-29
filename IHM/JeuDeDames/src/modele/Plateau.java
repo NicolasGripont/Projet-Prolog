@@ -9,7 +9,7 @@ public class Plateau {
 
 	public static final int NB_LIGNES = 10;
 
-	private Case[][] cases;
+	private final Case[][] cases;
 
 	private final List<Piece> noires;
 
@@ -32,10 +32,6 @@ public class Plateau {
 
 	public Case[][] getCases() {
 		return this.cases;
-	}
-
-	public void setCases(Case[][] cases) {
-		this.cases = cases;
 	}
 
 	public List<Piece> getNoires() {
@@ -91,6 +87,42 @@ public class Plateau {
 		} else {
 			this.blanches.remove(piece);
 		}
+	}
+
+	@Override
+	public Plateau clone() {
+		// TODO Auto-generated method stub
+		Plateau plateau = new Plateau();
+
+		for (Piece p : this.getNoires()) {
+			Piece piece = null;
+			Case position = plateau.getCases()[p.getPosition().getLigne()][p.getPosition().getColonne()];
+			if (p.getClass().equals(Pion.class)) {
+				piece = new Pion(Couleur.NOIR, position);
+			} else if (p.getClass().equals(Dame.class)) {
+				piece = new Dame(Couleur.NOIR, position);
+			}
+			if (piece != null) {
+				position.setPiece(piece);
+				plateau.noires.add(p);
+			}
+		}
+
+		for (Piece p : this.getBlanches()) {
+			Piece piece = null;
+			Case position = plateau.cases[p.getPosition().getLigne()][p.getPosition().getColonne()];
+			if (p.getClass().equals(Pion.class)) {
+				piece = new Pion(Couleur.BLANC, position);
+			} else if (p.getClass().equals(Dame.class)) {
+				piece = new Dame(Couleur.BLANC, position);
+			}
+			if (piece != null) {
+				position.setPiece(piece);
+				plateau.blanches.add(p);
+			}
+		}
+
+		return plateau;
 	}
 
 }

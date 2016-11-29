@@ -101,13 +101,10 @@ public class VueMenu implements Initializable {
 		if ((typeJoueur1 != TypeJoueur.INCONNU) && (typeJoueur2 != TypeJoueur.INCONNU)) {
 			this.controleur.lancerPartie(typeJoueur1, this.textFieldNomJoueur1.getText(), typeJoueur2,
 					this.textFieldNomJoueur2.getText());
-		} else {
-			System.out.println(typeJoueur1 + " " + typeJoueur2);
 		}
 	}
 
 	private TypeJoueur getTypeJoueur(String type) {
-		System.out.println(type);
 		if (type.equals(IA_ALEATOIRE)) {
 			return TypeJoueur.IA_ALEATOIRE;
 		} else if (type.equals(JOUEUR_REEL)) {

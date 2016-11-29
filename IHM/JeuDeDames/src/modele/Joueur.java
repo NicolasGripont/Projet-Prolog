@@ -2,17 +2,28 @@ package modele;
 
 public class Joueur {
 
+	int id;
+
 	String nom;
 
 	TypeJoueur typeJoueur;
 
 	Couleur couleur;
 
-	public Joueur(TypeJoueur typeJoueur, String nom, Couleur couleur) {
+	public Joueur(int id, TypeJoueur typeJoueur, String nom, Couleur couleur) {
 		super();
+		this.id = id;
 		this.nom = nom;
 		this.typeJoueur = typeJoueur;
 		this.couleur = couleur;
+	}
+
+	public int getId() {
+		return this.id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	public String getNom() {

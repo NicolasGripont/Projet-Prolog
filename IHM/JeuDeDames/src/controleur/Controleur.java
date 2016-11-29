@@ -15,6 +15,7 @@ import modele.Couleur;
 import modele.Jeu;
 import modele.Joueur;
 import modele.Piece;
+import modele.Pion;
 import modele.Plateau;
 import modele.TypeJoueur;
 import vue.VueJeu.VueJeu;
@@ -109,6 +110,18 @@ public class Controleur extends Application {
 		this.vueJeu.setPlateau(plateau);
 	}
 
+	public void jouerCoupIA() {
+		// Plateau plateauClone = this.plateau.clone();
+		// Coup coup = this.jeu.play(this.JoueurCourant.getId(),
+		// plateauClone.getBlanches(), plateauClone.getNoires());
+		// this.jouerCoup(coup.getPiecesBlanches(), coup.getPiecesNoires(),
+		// getPiece(), coup.deplacement);
+	}
+
+	public void test(Piece p) {
+		p = new Pion(Couleur.BLANC, new Case(Couleur.NOIR, 0, 12));
+	}
+
 	/**
 	 * 
 	 * @param blancs
@@ -173,8 +186,8 @@ public class Controleur extends Application {
 	}
 
 	public void lancerPartie(TypeJoueur typeJoueur1, String nomJoueur1, TypeJoueur typeJoueur2, String nomJoueur2) {
-		this.joueur1 = new Joueur(typeJoueur1, nomJoueur1, Couleur.BLANC);
-		this.joueur2 = new Joueur(typeJoueur2, nomJoueur2, Couleur.NOIR);
+		this.joueur1 = new Joueur(0, typeJoueur1, nomJoueur1, Couleur.BLANC);
+		this.joueur2 = new Joueur(1, typeJoueur2, nomJoueur2, Couleur.NOIR);
 
 		// Initialisation du jeu
 		Jeu jeu = new Jeu("localhost", "5000");

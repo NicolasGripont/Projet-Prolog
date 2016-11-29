@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="600.0" prefHeight="460.0" prefWidth="661.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="vue.VueJeu.VueJeu">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="600.0" prefHeight="580.0" prefWidth="728.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="vue.VueJeu.VueJeu">
    <top>
       <Label text="Jeu de Dames" textAlignment="CENTER" BorderPane.alignment="CENTER">
          <font>
@@ -17,8 +17,9 @@
       </Label>
    </top>
    <right>
-      <VBox prefHeight="363.0" prefWidth="165.0" spacing="30.0" BorderPane.alignment="CENTER">
+      <VBox alignment="CENTER" prefHeight="363.0" prefWidth="165.0" spacing="30.0" BorderPane.alignment="CENTER">
          <children>
+            <Button fx:id="buttonJouerUnTour" mnemonicParsing="false" onMouseClicked="#onButtonJouerUnTourPartieClicked" text="Jouer Un Tour" />
             <HBox prefHeight="17.0" prefWidth="165.0">
                <children>
                   <Label prefHeight="17.0" prefWidth="54.0" text="Temps : " />
@@ -63,7 +64,7 @@
                   </HBox>
                </children>
             </VBox>
-            <VBox prefHeight="59.0" prefWidth="165.0">
+            <VBox alignment="CENTER" prefHeight="59.0" prefWidth="165.0">
                <children>
                   <HBox prefHeight="20.0" prefWidth="165.0">
                      <children>
@@ -95,7 +96,7 @@
                   </HBox>
                </children>
             </VBox>
-            <Button fx:id="buttonQuitterPartie" mnemonicParsing="false" onMouseClicked="#onButtonQuitterPartieClicked" text="Quitter Partie" />
+            <Button fx:id="buttonQuitterPartie" alignment="BOTTOM_RIGHT" contentDisplay="CENTER" mnemonicParsing="false" onMouseClicked="#onButtonQuitterPartieClicked" text="Quitter Partie" textAlignment="CENTER" />
          </children>
          <padding>
             <Insets top="10.0" />
