@@ -225,6 +225,114 @@ play(Player):-  write('New turn for: '), ((Player==blanc, writeln('Blancs'));(Pl
 	    sleep(0.5),
 		play(NextPlayer). % next turn!
 
+% ATTENTION : play est commenté pour pouvoir utiliser l'IHM
+init :-retractall(blancs(_)), retractall(noirs(_)), retractall(cptDraw(_)), creerListe(noir,L1),creerListe(blanc,L2),assert(noirs(L1)),assert(blancs(L2)), assert(cptDraw(0)).%, play(blanc).
 
-init :-retractall(blancs(_)), retractall(noirs(_)), retractall(cptDraw(_)), creerListe(noir,L1),creerListe(blanc,L2),assert(noirs(L1)),assert(blancs(L2)), assert(cptDraw(0)), play(blanc).
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%																		%
+%					 Code Serveur du Jeu de dame						%
+%																		%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Chargement des modules pour le serveur et la gestion du JSON
+:- use_module(library(http/thread_httpd)).
+:- use_module(library(http/http_dispatch)).
+:- use_module(library(http/html_write)).
+:- use_module(library(http/json)).
+:- use_module(library(http/json_convert)).
+:- use_module(library(http/http_json)).
+
+% Surcharge des urls avec les méthodes appellées pour chacune
+:- http_handler(root(init), init_server, []).
+:- http_handler(root(play), play_server, []).
+
+% Creation des objets JSON utilisé dans l'application
+:- json_object pion(x:integer, y:integer) + [type=pion].
+:- json_object joueur(j:integer).
+:- json_object dame(x:integer, y:integer) + [type=dame].
+:- json_object position(x:integer, y:integer).
+:- json_object blancs(blancs:list).
+:- json_object noirs(noirs:list).
+:- json_object positions(positions:list).
+:- json_object game(joueur: integer, blancs:list, noirs:list).
+
+% Predicat qui lance le server
+server(Port) :-	http_server(http_dispatch, [port(Port)]).
+
+% Prédicat init qui est appellé quand on appelle l'url /init
+% Le prédicat lance le jeu en appelant la méthode init du jeu
+% Le prédicat renvoie la liste des pions blancs et noirs et le joueur qui doit jouer en format JSON
+init_server(_Request) :- 	init,
+							noirs(ListeNoirs),
+							blancs(ListeBlancs),
+							build_reply_init(ListeBlancs,ListeNoirs, 0, JSON),
+							reply_json(JSON).
+
+% Prédicat play_server qui est appellé quand on appelle l'url /play
+% Le prédicat reconstruit la liste des blancs et des noirs
+% Le prédicat appelle le predicat ia qui va jouer un cout
+% Le prédicat renvoie la liste des pions blancs et noirs et le joueur qui doit jouer en format JSON
+play_server(Request) :- http_read_json(Request, JsonIn,[json_object(term)]),
+ 						json_to_prolog(JsonIn, Data), game_get_data_informations(Data, J, Blancs, Noirs), 
+						format(user_output,"Joueur is: ~p~n",[J]),
+				   		JsonOut=JsonIn,
+				   		reply_json(JsonOut).
+
+
+% Prédicat game_get_data_informations qui permet de recuperer la Liste Blancs, la Liste Noirs et le joueur dans un objet JSON de type game
+game_get_data_informations(Data, J, Blancs, Noirs):- 	game_get_joueur(Data, J), 
+														game_get_blancs(Data, Blancs), 
+														game_get_noirs(Data, Noirs).
+
+% Prédicat game_get_data_informations qui permet de recuperer le numero du joueur dans un objet JSON de type game
+game_get_joueur(game(0,_,_),blanc). 
+game_get_joueur(game(1,_,_),noir). 
+
+% Prédicat game_get_data_informations qui permet de recuperer la Liste Blancs dans un objet JSON de type game
+game_get_blancs(game(_,Y,_),Y). 
+
+% Prédicat game_get_data_informations qui permet de recuperer la Liste Noirs dans un objet JSON de type game
+game_get_noirs(game(_,_,Z),Z).
+
+% Predicat qui permet de construire le JSON relatif à la reponse d'init
+%	ListeBlancs = Liste contenant des pions et des dames
+%	ListeNoirs = Liste contenant des pions et des dames
+build_reply_init(ListeBlancs,ListeNoirs, Joueur, JSON) :- 	convert_list_pion_to_json_object(ListeBlancs, LB), 
+															convert_list_pion_to_json_object(ListeNoirs, LN),
+															J = game(Joueur, LB, LN), 
+															prolog_to_json(J,JSON).
+
+% Predicat qui permet de construire le int d'un joueur avec le predicat
+build_joueur_predicat_int(blanc,0).
+build_joueur_predicat_int(noir,1).
+
+% Predicat qui permet de construire le predicat d'un joueur avec le int
+build_joueur_int_predicat(0,blanc).
+build_joueur_int_predicat(1,noir).
+
+% Predicat qui permet de construire le JSON d'une liste de pion
+convert_list_pion_to_json_object([], []):- !.
+convert_list_pion_to_json_object([H|T],O2) :- convert_list_pion_to_json_object(T, O), convert_pion_to_json_object_pion(H,X), append([X],O,O2), !.
+
+% Predicat qui permet de construire le JSON d'une liste de position
+convert_list_position_to_json_object([], []):- !.
+convert_list_position_to_json_object([H|T],O2) :- convert_list_position_to_json_object(T, O), convert_position_to_json_object_position(H,X), writeln(X), append([X],O,O2), !.
+
+% Méthode de conversion d'un pion ou d'une dame ([1, 2, pion] ou [1, 2, dame]) en Objet JSON Prolog (pion(1,2) ou dame(1,2))
+convert_pion_to_json_object_pion(L,O) :- convert_pion_to_json_object_pion_X(L,X), convert_pion_to_json_object_pion_Y(L,X,Y), convert_pion_to_json_object_pion_Name(L,X,Y,O), !.
+convert_pion_to_json_object_pion_X([H|_],X) :- X = H.
+convert_pion_to_json_object_pion_Y([],_,_).
+convert_pion_to_json_object_pion_Y([X|T],X,Y) :- convert_pion_to_json_object_pion_Y(T,X,Y).
+convert_pion_to_json_object_pion_Y([H|_],_,Y) :- Y = H.
+convert_pion_to_json_object_pion_Name([],_).
+convert_pion_to_json_object_pion_Name([pion|_], X, Y, O) :- O = pion(X,Y).
+convert_pion_to_json_object_pion_Name([dame|_], X, Y, O) :- O = dame(X,Y).
+convert_pion_to_json_object_pion_Name([_|T], X, Y, O) :- convert_pion_to_json_object_pion_Name(T,X,Y,O).
+
+% Méthode de conversion d'une position ([1, 2]) en Objet JSON Prolog (position(1,2))
+convert_position_to_json_object_position(L,O) :- convert_position_to_json_object_position_X(L,X), convert_position_to_json_object_position_Y(L,X,Y), O = position(X,Y), !.
+convert_position_to_json_object_position_X([H|_],X) :- X = H.
+convert_position_to_json_object_position_Y([],_,_).
+convert_position_to_json_object_position_Y([X|T],X,Y) :- convert_position_to_json_object_position_Y(T,X,Y).
+convert_position_to_json_object_position_Y([H|_],_,Y) :- Y = H.
