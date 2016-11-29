@@ -220,6 +220,7 @@ public class PlateauGroup extends Group {
 	}
 
 	public void deplacerPiece(Piece piece, List<Case> deplacement, int dureeDeplacement) {
+		System.out.println(deplacement.get(deplacement.size() - 1));
 		double largeurCase = this.plateauCanvas.getPlateauWidth() / Plateau.NB_LIGNES;
 		double hauteurCase = this.plateauCanvas.getPlateauHeight() / Plateau.NB_COLONNES;
 		double margin = 5;

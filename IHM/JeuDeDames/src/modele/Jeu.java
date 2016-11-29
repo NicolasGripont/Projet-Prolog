@@ -66,10 +66,10 @@ public class Jeu {
 						y = elt.get("y").getAsInt();
 					}
 					if (elt.get("type").getAsString().equals("pion")) {
-						Pion p = new Pion(Couleur.BLANC, new Case(Couleur.NOIR, x, y));
+						Pion p = new Pion(Couleur.BLANC, new Case(Couleur.NOIR, y, x));
 						blancs.add(p);
 					} else if (elt.get("type").getAsString().equals("dame")) {
-						Dame d = new Dame(Couleur.BLANC, new Case(Couleur.NOIR, x, y));
+						Dame d = new Dame(Couleur.BLANC, new Case(Couleur.NOIR, y, x));
 						blancs.add(d);
 					}
 				}
@@ -86,10 +86,10 @@ public class Jeu {
 						y = elt.get("y").getAsInt();
 					}
 					if (elt.get("type").getAsString().equals("pion")) {
-						Pion p = new Pion(Couleur.NOIR, new Case(Couleur.NOIR, x, y));
+						Pion p = new Pion(Couleur.NOIR, new Case(Couleur.NOIR, y, x));
 						noirs.add(p);
 					} else if (elt.get("type").getAsString().equals("dame")) {
-						Dame d = new Dame(Couleur.NOIR, new Case(Couleur.NOIR, x, y));
+						Dame d = new Dame(Couleur.NOIR, new Case(Couleur.NOIR, y, x));
 						noirs.add(d);
 					}
 				}
@@ -138,10 +138,10 @@ public class Jeu {
 						y = elt.get("y").getAsInt();
 					}
 					if (elt.get("type").getAsString().equals("pion")) {
-						Pion p = new Pion(Couleur.BLANC, new Case(Couleur.NOIR, x, y));
+						Pion p = new Pion(Couleur.BLANC, new Case(Couleur.NOIR, y, x));
 						newBlancs.add(p);
 					} else if (elt.get("type").getAsString().equals("dame")) {
-						Dame d = new Dame(Couleur.BLANC, new Case(Couleur.NOIR, x, y));
+						Dame d = new Dame(Couleur.BLANC, new Case(Couleur.NOIR, y, x));
 						newBlancs.add(d);
 					}
 				}
@@ -159,10 +159,10 @@ public class Jeu {
 						y = elt.get("y").getAsInt();
 					}
 					if (elt.get("type").getAsString().equals("pion")) {
-						Pion p = new Pion(Couleur.NOIR, new Case(Couleur.NOIR, x, y));
+						Pion p = new Pion(Couleur.NOIR, new Case(Couleur.NOIR, y, x));
 						newNoirs.add(p);
 					} else if (elt.get("type").getAsString().equals("dame")) {
-						Dame d = new Dame(Couleur.NOIR, new Case(Couleur.NOIR, x, y));
+						Dame d = new Dame(Couleur.NOIR, new Case(Couleur.NOIR, y, x));
 						newNoirs.add(d);
 					}
 				}
@@ -179,7 +179,7 @@ public class Jeu {
 					if (elt.get("y") != null) {
 						y = elt.get("y").getAsInt();
 					}
-					deplacements.add(new Case(Couleur.NOIR, x, y));
+					deplacements.add(new Case(Couleur.NOIR, y, x));
 				}
 			}
 			Piece piece = null;
@@ -193,9 +193,9 @@ public class Jeu {
 					y = elt.get("y").getAsInt();
 				}
 				if (elt.get("type").getAsString().equals("pion")) {
-					piece = new Pion(Couleur.NOIR, new Case(Couleur.NOIR, x, y));
+					piece = new Pion(Couleur.NOIR, new Case(Couleur.NOIR, y, x));
 				} else if (elt.get("type").getAsString().equals("dame")) {
-					piece = new Dame(Couleur.NOIR, new Case(Couleur.NOIR, x, y));
+					piece = new Dame(Couleur.NOIR, new Case(Couleur.NOIR, y, x));
 				}
 			}
 			Coup coup = new Coup(newBlancs, newNoirs, deplacements, piece);
@@ -210,8 +210,8 @@ public class Jeu {
 		JsonArray array = new JsonArray();
 		for (Piece p : pieces) {
 			JsonObject objPiece = new JsonObject();
-			int x = p.getPosition().getLigne();
-			int y = p.getPosition().getColonne();
+			int y = p.getPosition().getLigne();
+			int x = p.getPosition().getColonne();
 			objPiece.addProperty("x", x);
 			objPiece.addProperty("y", y);
 			String str = "pion";
