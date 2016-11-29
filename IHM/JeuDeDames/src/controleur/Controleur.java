@@ -12,6 +12,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import modele.Case;
 import modele.Couleur;
+import modele.Coup;
 import modele.Jeu;
 import modele.Joueur;
 import modele.Piece;
@@ -110,16 +111,14 @@ public class Controleur extends Application {
 	}
 
 	public void jouerCoupIA() {
-		// Plateau plateauClone = this.plateau.clone();
-		// Coup coup = this.jeu.play(this.JoueurCourant.getId(),
-		// plateauClone.getBlanches(), plateauClone.getNoires());
-		// this.jouerCoup(coup.getPiecesBlanches(), coup.getPiecesNoires(),
-		// getPiece(), coup.deplacement);
-		// if (this.joueurCourant == this.joueur1) {
-		// this.joueurCourant = this.joueur2;
-		// } else {
-		// this.joueurCourant = this.joueur1;
-		// }
+		Plateau plateauClone = this.plateau.clone();
+		Coup coup = this.jeu.play(this.joueurCourant.getId(), plateauClone.getBlanches(), plateauClone.getNoires());
+		this.jouerCoup(coup.getPiecesBlanches(), coup.getPiecesNoires(), coup.getPiece(), coup.getDeplacement());
+		if (this.joueurCourant == this.joueur1) {
+			this.joueurCourant = this.joueur2;
+		} else {
+			this.joueurCourant = this.joueur1;
+		}
 	}
 
 	/**
@@ -190,7 +189,8 @@ public class Controleur extends Application {
 		this.joueur2 = new Joueur(1, typeJoueur2, nomJoueur2, Couleur.NOIR);
 
 		// Initialisation du jeu
-		Jeu jeu = new Jeu("localhost", "5000");
+		this.jeu = new Jeu("localhost", "5000");
+		this.jeu.init(new ArrayList<>(), new ArrayList<>());
 		this.plateau = new Plateau();
 		this.plateau.initPions();
 		this.joueurCourant = this.joueur1;
