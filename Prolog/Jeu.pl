@@ -83,6 +83,23 @@ ajoutMouvement(_,[],[]).
 %ajoutMouvement([1,2],[[[],[],[[0,0]]],[[],[],[[1,1]]]],R).
 %ajoutMouvement([1,2],[[[],[],[[0,0]]],[[],[],[[1,1]]]],R).
 
+%cherche le premier pion ou dame adverse dans la diagonale
+cherchePionHautGauche(X,Y,blanc,Blancs,Noirs,[X1,Y1,T]):-X1 is X-1, Y1 is Y-1, X1>=0, Y1>=0, not(member([X1,Y1,_],Blancs)),member([X1,Y1,T],Noirs),!.
+cherchePionHautGauche(X,Y,blanc,Blancs,Noirs,[X2,Y2,T]):-X1 is X-1, Y1 is Y-1, X1>=0, Y1>=0, not(member([X1,Y1,_],Blancs)),not(member([X1,Y1,T],Noirs)),cherchePionHautGauche(X1,Y1,blanc,Blancs,Noirs,[X2,Y2,T]).
+%tests
+% cherchePionHautGauche(4,4,blanc,[[4,4,pion]],[[1,1,pion],[3,3,pion]],R).
+% cherchePionHautGauche(4,4,blanc,[[4,4,pion]],[[1,1,pion],[3,1,pion]],R).
+% cherchePionHautGauche(4,4,blanc,[[4,4,pion]],[[2,1,pion],[3,1,pion]],R).
+
+%cherche les cases vides dans la diagonale
+chercheCaseVide(X,Y,Blancs,Noirs).
+
+%dame
+mangeHautGauche([X,Y,dame],blanc,Blancs,Noirs,Retour):- cherchePionHautGauche(X,Y,blanc,Blancs,Noirs,R),
+		member([X2,Y2,_],Noirs),not(member([X3,Y3,_],Noirs)),not(member([X3,Y3,_],Blancs)),!,delete(Noirs,[X2,Y2,_],Noirs2),delete(Blancs,[X,Y,pion],Blancs2)
+		,mangeTouteDirection([X3,Y3,pion],blanc,[[X3,Y3,pion]|Blancs2],Noirs2,R),creerMouvement([[X3,Y3,pion]|Blancs2],Noirs2,R,Sortie),ajoutMouvement([X3,Y3],Sortie,Retour).
+
+%pion
 mangeHautGauche([X,Y,pion],blanc,Blancs,Noirs,Retour):- X2 is X-1, Y2 is Y-1,X3 is X-2,Y3 is Y-2,X3 >= 0,Y3 >= 0,member([X2,Y2,_],Noirs),not(member([X3,Y3,_],Noirs)),not(member([X3,Y3,_],Blancs)),!,delete(Noirs,[X2,Y2,_],Noirs2),delete(Blancs,[X,Y,pion],Blancs2),mangeTouteDirection([X3,Y3,pion],blanc,[[X3,Y3,pion]|Blancs2],Noirs2,R),creerMouvement([[X3,Y3,pion]|Blancs2],Noirs2,R,Sortie),ajoutMouvement([X3,Y3],Sortie,Retour).
 mangeHautGauche([X,Y,pion],noir,Blancs,Noirs,Retour):- X2 is X-1, Y2 is Y-1,X3 is X-2,Y3 is Y-2,X3 >= 0,Y3 >= 0,member([X2,Y2,_],Blancs),not(member([X3,Y3,_],Noirs)),not(member([X3,Y3,_],Blancs)),!,delete(Blancs,[X2,Y2,_],Blancs2),delete(Noirs,[X,Y,pion],Noirs2),mangeTouteDirection([X3,Y3,pion],noir,Blancs2,[[X3,Y3,pion]|Noirs2],R),creerMouvement(Blancs2,[[X3,Y3,pion]|Noirs2],R,Sortie),ajoutMouvement([X3,Y3],Sortie,Retour).
 mangeHautGauche(_,_,_,_,[]).
@@ -199,8 +216,16 @@ changePionDame(blanc, Blancs, Noirs, ListeMouvement, [_,_,pion], Blancs2, Noirs)
 changePionDame(noir, Blancs, Noirs, ListeMouvement, [_,_,pion], Blancs, Noirs2) :- last(ListeMouvement, [X,9]), delete(Noirs, [X,9,_], L), append(L, [[X,9,dame]], Noirs2),!.
 changePionDame(_, Blancs, Noirs, _, _, Blancs, Noirs).
 
-applyMoves(Blancs, Noirs, Blancs2, Noirs2) :- retractall(blancs(_)), retractall(noirs(_)),assert(blancs(Blancs2)), assert(noirs(Noirs2)).
+applyMoves(Blancs, Noirs) :- retractall(blancs(_)), retractall(noirs(_)),assert(blancs(Blancs)), assert(noirs(Noirs)).
 %
+
+%lancement du jeu
+play(Player,Blancs,Noirs,Blancs3,Noirs3,ListeMouvement,Pion):-applyMoves(Blancs, Noirs, Blancs3, Noirs3),ia(Player,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement, E),
+		changePionDame(Player, Blancs2, Noirs2, ListeMouvement, E, Blancs3, Noirs3),
+		applyMoves(Blancs, Noirs),
+		not(((gameover(blanc), !, write('Game is Over. Winner: '), writeln('Blancs'));
+				(gameover(noir), !, write('Game is Over. Winner: '), writeln('Noirs'));
+		(gameover('Draw', Blancs3, Noirs3), !, writeln('Game is Over. Draw')))).
 
 play(Player):-  write('New turn for: '), ((Player==blanc, writeln('Blancs'));(Player==noir, writeln('Noirs'))),
 		noirs(Noirs),
@@ -220,7 +245,7 @@ play(Player):-  write('New turn for: '), ((Player==blanc, writeln('Blancs'));(Pl
 				(gameover(noir), !, write('Game is Over. Winner: '), writeln('Noirs'));
 		(gameover('Draw', Blancs3, Noirs3), !, writeln('Game is Over. Draw')))),
 
-		applyMoves(Blancs, Noirs, Blancs3, Noirs3),
+		applyMoves(Blancs3, Noirs3),
 	    changePlayer(Player,NextPlayer), % Change the player before next turn
 	    sleep(0.5),
 		play(NextPlayer). % next turn!
