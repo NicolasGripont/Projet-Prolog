@@ -21,6 +21,7 @@ import modele.Case;
 import modele.Couleur;
 import modele.Dame;
 import modele.Piece;
+import modele.Pion;
 import modele.Plateau;
 import vue.VueJeu.VueJeu;
 
@@ -276,7 +277,7 @@ public class PlateauGroup extends Group {
 		}
 	}
 
-	public void tuerPiece(Piece piece, int dureeDattente) {
+	public void tuerPiece(Piece piece, int dureeDAttente) {
 
 		PieceVue pieceATuer = null;
 
@@ -304,7 +305,7 @@ public class PlateauGroup extends Group {
 					.add(new CubicCurveTo(pieceATuer.getCenterX(), pieceATuer.getCenterY(), pieceATuer.getCenterX(),
 							pieceATuer.getCenterY(), pieceATuer.getCenterX(), pieceATuer.getCenterY()));
 			PathTransition pathTransition = new PathTransition();
-			pathTransition.setDelay(Duration.millis(dureeDattente));
+			pathTransition.setDelay(Duration.millis(dureeDAttente));
 			pathTransition.setDuration(Duration.millis(1));
 			pathTransition.setNode(pieceATuer);
 			pathTransition.setPath(path);
@@ -324,6 +325,88 @@ public class PlateauGroup extends Group {
 					}
 				}
 			});
+		}
+	}
+
+	public void creerDame(Pion pion, Dame dame, int dureeDAttente) {
+		PieceVue pieceVue = null;
+
+		if (pion.getCouleur() == Couleur.BLANC) {
+			for (PieceVue p : this.pieceVuesBlanches) {
+				if (p.getPiece() == pion) {
+					pieceVue = p;
+					break;
+				}
+			}
+		} else {
+			for (PieceVue p : this.pieceVuesNoires) {
+				if (p.getPiece() == pion) {
+					pieceVue = p;
+					break;
+				}
+			}
+		}
+
+		if (pieceVue != null) {
+			pieceVue.setPiece(dame);
+
+			Path path = new Path();
+
+			path.getElements().add(new MoveTo(pieceVue.getCenterX(), pieceVue.getCenterY()));
+			path.getElements().add(new CubicCurveTo(pieceVue.getCenterX(), pieceVue.getCenterY(), pieceVue.getCenterX(),
+					pieceVue.getCenterY(), pieceVue.getCenterX(), pieceVue.getCenterY()));
+			PathTransition pathTransition = new PathTransition();
+			pathTransition.setDelay(Duration.millis(dureeDAttente));
+			pathTransition.setDuration(Duration.millis(1));
+			pathTransition.setNode(pieceVue);
+			pathTransition.setPath(path);
+			pathTransition.setOrientation(OrientationType.ORTHOGONAL_TO_TANGENT);
+			pathTransition.setCycleCount(1);
+			pathTransition.setAutoReverse(false);
+			pathTransition.play();
+			pathTransition.setOnFinished(new EventHandler<ActionEvent>() {
+				@Override
+				public void handle(ActionEvent arg0) {
+					double largeurCase = PlateauGroup.this.plateauCanvas.getPlateauWidth() / Plateau.NB_LIGNES;
+					double hauteurCase = PlateauGroup.this.plateauCanvas.getPlateauHeight() / Plateau.NB_COLONNES;
+					double margin = 5;
+					String imagePath = null;
+					if (pion.getCouleur() == Couleur.BLANC) {
+						System.out.println("Blanc");
+						imagePath = PlateauGroup.this.classLoader.getResource("dame_blanche.png").toString();
+					} else {
+						System.out.println("Noir");
+						imagePath = PlateauGroup.this.classLoader.getResource("dame_noire.png").toString();
+					}
+					Image img = new Image(imagePath, largeurCase - (2 * margin), hauteurCase - (2 * margin), false,
+							false);
+					PieceVue pionVue = (PieceVue) pathTransition.getNode();
+					PieceVue dameVue = new PieceVue(pionVue.getPiece());
+					double x = (largeurCase * pionVue.getPiece().getPosition().getColonne())
+							+ PlateauGroup.this.plateauCanvas.getOffsetX() + (largeurCase / 2);
+					double y = (hauteurCase * pionVue.getPiece().getPosition().getLigne())
+							+ PlateauGroup.this.plateauCanvas.getOffsetY() + (hauteurCase / 2);
+					double r = (largeurCase - (2 * margin)) / 2;
+					dameVue.setCenterX(x);
+					dameVue.setCenterY(y);
+					dameVue.setRadius(r);
+					Paint paint = new ImagePattern(img);
+					dameVue.setFill(paint);
+
+					if (pionVue.getPiece().getCouleur() == Couleur.NOIR) {
+						PlateauGroup.this.pieceVuesNoires.remove(pionVue);
+						PlateauGroup.this.pieceVuesNoires.add(dameVue);
+					} else {
+						PlateauGroup.this.pieceVuesBlanches.remove(pionVue);
+						PlateauGroup.this.pieceVuesBlanches.add(dameVue);
+					}
+
+					PlateauGroup.this.getChildren().remove(pionVue);
+					PlateauGroup.this.getChildren().add(dameVue);
+
+				}
+			});
+
 		}
 	}
 

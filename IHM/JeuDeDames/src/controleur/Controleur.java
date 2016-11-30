@@ -15,9 +15,11 @@ import javafx.stage.Stage;
 import modele.Case;
 import modele.Couleur;
 import modele.Coup;
+import modele.Dame;
 import modele.Jeu;
 import modele.Joueur;
 import modele.Piece;
+import modele.Pion;
 import modele.Plateau;
 import modele.TypeJoueur;
 import vue.VueJeu.VueJeu;
@@ -171,6 +173,17 @@ public class Controleur extends Application {
 		// appelle vue
 		this.vueJeu.deplacerPiece(piecePlateau, deplacement, deplacement.size() * 1000);
 		this.vueJeu.tuerPieces(piecesMortes, (deplacement.size() * 1000) + 500);
+
+		// Creation dame si besoin TODO : a mettre dans plateau
+		if (piecePlateau.getClass().equals(Pion.class)
+				&& (((piecePlateau.getPosition().getLigne() == 0) && (piecePlateau.getCouleur() == Couleur.BLANC))
+						|| ((piecePlateau.getPosition().getLigne() == (Plateau.NB_LIGNES - 1))
+								&& (piecePlateau.getCouleur() == Couleur.NOIR)))) {
+
+			Dame dame = new Dame(piecePlateau.getCouleur(), piecePlateau.getPosition());
+			dame.getPosition().setPiece(dame);
+			this.vueJeu.creerDame((Pion) piecePlateau, dame, (deplacement.size() * 1000) + 500);
+		}
 
 	}
 
