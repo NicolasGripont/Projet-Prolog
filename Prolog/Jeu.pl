@@ -4,11 +4,12 @@
 
 
 %%%% Test is the game is finished %%%
-gameover(Winner) :- noirs(Noirs), blancs(Blancs), winner(Winner, Blancs, Noirs), !.  % There exists a winning configuration: We cut!
-gameover('Draw', NewNoirs, NewBlancs) :- noirs(Noirs), blancs(Blancs), (length(Noirs, X), length(NewNoirs, X), length(Blancs, Y), length(NewBlancs, Y),
-										cptDraw(CptDraw), NewCptDraw is CptDraw+1, retract(cptDraw(CptDraw)), assert(cptDraw(NewCptDraw)),!,
-										NewCptDraw == 10).
-gameover('Draw', _, _) :- cptDraw(CptDraw), retract(cptDraw(CptDraw)), assert(cptDraw(0)), false.
+gameover(Blancs,Noirs,_,_,Winner) :- winner(Winner, Blancs, Noirs), !.  % There exists a winning configuration: We cut!
+gameover(Blancs,Noirs,Blancs2,Noirs2,egalite) :- length(Noirs, X), length(Noirs2, X), length(Blancs, Y), length(Blancs2, Y),
+										cptDraw(CptDraw), NewCptDraw is CptDraw+1, retract(cptDraw(CptDraw)), assert(cptDraw(NewCptDraw)),
+										NewCptDraw == 25,!.
+gameover(Blancs,Noirs,Blancs2,Noirs2,continuer) :- length(Noirs, X), length(Noirs2, X), length(Blancs, Y), length(Blancs2, Y),!.
+gameover(_,_,_,_,continuer) :- cptDraw(CptDraw), retract(cptDraw(CptDraw)), assert(cptDraw(0)), false.
 
 %%%% Test de victoire pour les joueurs.
 winner(blanc, Blancs, Noirs) :- (length(Noirs, 0);(movePossiblePlayer(noir, Blancs, Noirs, Noirs, [],_))), !.
@@ -152,8 +153,10 @@ moveBasDroite([X,Y,pion],noir,Blancs,Noirs,[[Blancs, Noirs3, [[X2,Y2]]]],deplace
 moveBasDroite(_,_,_,_,[],deplacement).
 %test
 % moveBasDroite([4,2,pion],blanc,[[4,2,pion]],[[5,1,pion],[3,1,pion],[5,3,pion],[3,3,pion]],R,T),writeln(R).
-
-
+% moveBasDroite([4,2,pion],blanc,[[4,2,pion]],[[1,1,pion]],R,T),writeln(R).
+% moveBasDroite([0,7,pion],blanc,[[0,7,pion]],[[1,1,pion]],R,T),writeln(R).
+% movePossible([0,7,pion],blanc,[[0,7,pion]],[[1,1,pion]],R,T),writeln(R).
+% movePossiblePlayer(blanc,[[0,7,pion]],[[1,1,pion]],[[0,7,pion]],S,Type),writeln(S).
 
 
 %moveHautGauche
@@ -221,11 +224,9 @@ applyMoves(Blancs, Noirs) :- retractall(blancs(_)), retractall(noirs(_)),assert(
 
 %lancement du jeu
 % play(blanc,[[1,1,pion],[2,2,pion]],[[5,5,pion],[8,6,pion]],B,N,L,Pion).
-play(Player,Blancs,Noirs,Blancs3,Noirs3,ListeMouvement,Pion):-applyMoves(Blancs, Noirs),ia(Player,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement, Pion),
+play(Player,Blancs,Noirs,Blancs3,Noirs3,ListeMouvement,Pion,Etat):-applyMoves(Blancs, Noirs),ia(Player,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement, Pion),
 		changePionDame(Player, Blancs2, Noirs2, ListeMouvement, Pion, Blancs3, Noirs3),
-		not(((gameover(blanc), !, write('Game is Over. Winner: '), writeln('Blancs'));
-				(gameover(noir), !, write('Game is Over. Winner: '), writeln('Noirs'));
-		(gameover('Draw', Blancs3, Noirs3), !, writeln('Game is Over. Draw')))).
+		gameover(Blancs,Noirs,Blancs3,Noirs3,Etat).
 
 play(Player):-  write('New turn for: '), ((Player==blanc, writeln('Blancs'));(Player==noir, writeln('Noirs'))),
 		noirs(Noirs),
@@ -247,7 +248,7 @@ play(Player):-  write('New turn for: '), ((Player==blanc, writeln('Blancs'));(Pl
 
 		applyMoves(Blancs3, Noirs3),
 	    changePlayer(Player,NextPlayer), % Change the player before next turn
-	    sleep(0.5),
+	    sleep(1),
 		play(NextPlayer). % next turn!
 
 % ATTENTION : play est commenté pour pouvoir utiliser l'IHM
