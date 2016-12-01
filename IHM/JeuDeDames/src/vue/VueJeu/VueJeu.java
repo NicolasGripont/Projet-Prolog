@@ -58,7 +58,7 @@ public class VueJeu implements Initializable {
 	private ImageView imageViewDamesJoueur2;
 
 	@FXML
-	private Button buttonJouerUnTour;
+	private Button buttonSimuler;
 
 	private PlateauGroup plateauGroup;
 
@@ -147,8 +147,16 @@ public class VueJeu implements Initializable {
 	}
 
 	@FXML
-	private void onButtonJouerUnTourPartieClicked() {
-		this.controleur.jouerCoupIA();
+	private void onButtonSimulerClicked() {
+		this.controleur.simulerPartie();
+	}
+
+	public void setTextButtonSimuler(String text) {
+		this.buttonSimuler.setText(text);
+	}
+
+	public void setVisibleButtonSimuler(boolean visible) {
+		this.buttonSimuler.setVisible(visible);
 	}
 
 	public void creerDame(Pion pion, Dame dame, int dureeDAttente) {

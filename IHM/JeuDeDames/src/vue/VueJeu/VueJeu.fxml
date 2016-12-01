@@ -19,7 +19,7 @@
    <right>
       <VBox alignment="CENTER" prefHeight="363.0" prefWidth="165.0" spacing="30.0" BorderPane.alignment="CENTER">
          <children>
-            <Button fx:id="buttonJouerUnTour" mnemonicParsing="false" onMouseClicked="#onButtonJouerUnTourPartieClicked" text="Jouer Un Tour" />
+            <Button fx:id="buttonSimuler" mnemonicParsing="false" onMouseClicked="#onButtonSimulerClicked" text="Lancer Simulation" />
             <HBox prefHeight="17.0" prefWidth="165.0">
                <children>
                   <Label prefHeight="17.0" prefWidth="54.0" text="Temps : " />
