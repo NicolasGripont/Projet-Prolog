@@ -93,17 +93,18 @@ cherchePionHautGauche(X,Y,blanc,Blancs,Noirs,[X2,Y2,T]):-X1 is X-1, Y1 is Y-1, X
 % cherchePionHautGauche(4,4,blanc,[[4,4,pion]],[[2,1,pion],[3,1,pion]],R).
 
 %cherche les cases vides dans la diagonale
-chercheCaseVideHautGauche(X,Y,Blancs,Noirs, [[X1,Y1]|L]) :-
+chercheCaseVideHautGauche(X,Y,Blancs,Noirs, Manges, [[X1,Y1]|L]) :-
     X1 is X-1, Y1 is Y-1, X1>=0, Y1>=0,
     not(member([X1,Y1,_],Blancs)),
     not(member([X1,Y1,_],Noirs)),
-    chercheCaseVideHautGauche(X1,Y1,Blancs,Noirs,L),!.
-chercheCaseVideHautGauche(_,_,_,_, []).
+    not(member([X1,Y1],Manges)),
+    chercheCaseVideHautGauche(X1,Y1,Blancs,Noirs,Manges,L),!.
+chercheCaseVideHautGauche(_,_,_,_,_,[]).
 
 %tests
-% chercheCaseVideHautGauche(4,4,[[4,4,pion]],[[1,1,pion]],R).
-% chercheCaseVideHautGauche(4,4,[[4,4,pion]],[[1,1,pion],[3,3,pion]],R).
-% chercheCaseVideHautGauche(4,4,[],[],R).
+% chercheCaseVideHautGauche(4,4,[[4,4,pion]],[[1,1,pion]], [], R).
+% chercheCaseVideHautGauche(4,4,[[4,4,pion]],[[1,1,pion],[3,3,pion]], [], R).
+% chercheCaseVideHautGauche(4,4,[],[],[[2,2]],R).
 
 %dame
 mangeHautGauche([X,Y,dame],blanc,Blancs,Noirs,Retour):- cherchePionHautGauche(X,Y,blanc,Blancs,Noirs,R),
