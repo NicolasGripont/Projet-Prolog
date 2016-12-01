@@ -85,8 +85,10 @@ ajoutMouvement(_,[],[]).
 %ajoutMouvement([1,2],[[[],[],[[0,0]]],[[],[],[[1,1]]]],R).
 
 %cherche le premier pion ou dame adverse dans la diagonale
-cherchePionHautGauche(X,Y,blanc,Blancs,Noirs,[X1,Y1,T]):-X1 is X-1, Y1 is Y-1, X1>=0, Y1>=0, not(member([X1,Y1,_],Blancs)),member([X1,Y1,T],Noirs),!.
-cherchePionHautGauche(X,Y,blanc,Blancs,Noirs,[X2,Y2,T]):-X1 is X-1, Y1 is Y-1, X1>=0, Y1>=0, not(member([X1,Y1,_],Blancs)),not(member([X1,Y1,T],Noirs)),cherchePionHautGauche(X1,Y1,blanc,Blancs,Noirs,[X2,Y2,T]).
+cherchePionHautGauche(X,Y,blanc,Blancs,Noirs,[X1,Y1,T],Manges):-X1 is X-1, Y1 is Y-1, X1>=0, Y1>=0, not(member([X1,Y1,_],Blancs)),
+		not(member([X1,Y1,_],Manges)),member([X1,Y1,T],Noirs),!.
+cherchePionHautGauche(X,Y,blanc,Blancs,Noirs,[X2,Y2,T],Manges):-X1 is X-1, Y1 is Y-1, X1>=0, Y1>=0, not(member([X1,Y1,_],Blancs)),
+		not(member([X1,Y1,T],Noirs)),not(member([X1,Y1,_],Manges)),cherchePionHautGauche(X1,Y1,blanc,Blancs,Noirs,[X2,Y2,T]).
 %tests
 % cherchePionHautGauche(4,4,blanc,[[4,4,pion]],[[1,1,pion],[3,3,pion]],R).
 % cherchePionHautGauche(4,4,blanc,[[4,4,pion]],[[1,1,pion],[3,1,pion]],R).
