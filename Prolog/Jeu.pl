@@ -282,7 +282,7 @@ init :-retractall(blancs(_)), retractall(noirs(_)), retractall(cptDraw(_)), cree
 :- json_object noirs(noirs:list).
 :- json_object positions(positions:list).
 :- json_object game(joueur: integer, blancs:list, noirs:list).
-:- json_object turn(joueur: integer, blancs:list, noirs:list, pion:compound, mouvements:list).
+:- json_object turn(etat:integer, joueur: integer, blancs:list, noirs:list, pion:compound, mouvements:list).
 
 % Predicat qui lance le server
 server(Port) :-	http_server(http_dispatch, [port(Port)]).
@@ -302,8 +302,8 @@ init_server(_Request) :- 	init,
 % Le prédicat renvoie la liste des pions blancs et noirs et le joueur qui doit jouer en format JSON
 play_server(Request) :- http_read_json(Request, JsonIn,[json_object(term)]),
  						json_to_prolog(JsonIn, Data), game_get_data_informations(Data, J, Blancs, Noirs),
- 						play(J,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,Pion),
-						build_reply_play(Blancs2,Noirs2,J,Pion,ListeMouvement,JSON),
+ 						play(J,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,Pion,Etat),
+						build_reply_play(Blancs2,Noirs2,J,Pion,ListeMouvement,Etat,JSON),
 						%format(user_output,"json is: ~p~n",[JSON]),
 				   		reply_json(JSON).
 
@@ -334,19 +334,26 @@ build_reply_init(ListeBlancs,ListeNoirs,Joueur,JSON) :- 	convert_list_pion_to_js
 															prolog_to_json(J,JSON).
 
 
-build_reply_play(ListeBlancs,ListeNoirs,Joueur,Pion,ListeMouvement,JSON) :- convert_list_pion_to_json_object(ListeBlancs, LB), 
+build_reply_play(ListeBlancs,ListeNoirs,Joueur,Pion,ListeMouvement,Etat,JSON) :- convert_list_pion_to_json_object(ListeBlancs, LB), 
 																			convert_list_pion_to_json_object(ListeNoirs, LN),
 																			convert_list_position_to_json_object(ListeMouvement, LM),
 																			convert_pion_to_json_object_pion(Pion, P1),
 																			prolog_to_json(P1,P),
 																			changePlayer(Joueur,JPredicat),
 																			build_joueur_predicat_int(JPredicat,JInt),
-																			JSONProlog = turn(JInt, LB, LN, P, LM), 
+																			build_etat_predicat_int(Etat,EInt),
+																			JSONProlog = turn(EInt,JInt, LB, LN, P, LM), 
 																			prolog_to_json(JSONProlog,JSON).
 
 % Predicat qui permet de construire le int d'un joueur avec le predicat
 build_joueur_predicat_int(blanc,0).
 build_joueur_predicat_int(noir,1).
+
+% Predicat qui permet de construire le int d'un etat avec le predicat
+build_etat_predicat_int(blanc,0).
+build_etat_predicat_int(noir,1).
+build_etat_predicat_int(egalite,2).
+build_etat_predicat_int(continuer,3).
 
 % Predicat qui permet de construire le predicat d'un joueur avec le int
 build_joueur_int_predicat(0,blanc).
