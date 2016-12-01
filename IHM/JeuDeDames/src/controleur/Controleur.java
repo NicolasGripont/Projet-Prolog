@@ -40,8 +40,6 @@ public class Controleur extends Application {
 
 	private Plateau plateau;
 
-	private Stage stagePopUpQuitter;
-
 	private Joueur joueur1;
 
 	private Joueur joueur2;
@@ -73,7 +71,25 @@ public class Controleur extends Application {
 			this.stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 				@Override
 				public void handle(WindowEvent we) {
-					Controleur.this.cliquerSurQuitter();
+					if ((Controleur.this.threadSimulerPartie != null)
+							&& Controleur.this.threadSimulerPartie.isAlive()) {
+						try {
+							Controleur.this.sem.acquire();
+							Controleur.this.threadSimulerPartie.interrupt();
+							Controleur.this.vueJeu.setTextButtonSimuler("Reprendre simulation");
+							Controleur.this.threadSimulerPartie = null;
+							Controleur.this.sem.release();
+						} catch (InterruptedException e) {
+
+						}
+					}
+					Alert alert = new Alert(AlertType.CONFIRMATION);
+					alert.setTitle("Quitter");
+					alert.setHeaderText("Voulez-vous vraiment quitter le jeu ?");
+					Optional<ButtonType> result = alert.showAndWait();
+					if (result.get() == ButtonType.OK) { // Quitter
+						Controleur.this.stage.close();
+					}
 					// Si on arrive la alors c'est qu'on a annuler
 					we.consume();
 				}
@@ -87,7 +103,7 @@ public class Controleur extends Application {
 		launch(args);
 	}
 
-	public void cliquerSurQuitter() {
+	public void cliquerSurQuitterPartie() {
 		if ((this.threadSimulerPartie != null) && this.threadSimulerPartie.isAlive()) {
 			try {
 				this.sem.acquire();
@@ -101,10 +117,30 @@ public class Controleur extends Application {
 		}
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 		alert.setTitle("Quitter");
-		alert.setHeaderText("Voulez-vous vraiment quitter le jeu ?");
+		alert.setHeaderText("Voulez-vous vraiment arrêter la partie et revenir à l'écran d'accueil ?");
 		Optional<ButtonType> result = alert.showAndWait();
 		if (result.get() == ButtonType.OK) { // Quitter
-			this.stage.close();
+			this.plateau = null;
+			this.joueur1 = null;
+			this.joueur2 = null;
+			this.jeu = null;
+			this.joueurCourant = null;
+			this.vueJeu = null;
+			try {
+				FXMLLoader fxmlLoader = new FXMLLoader(this.getClass().getResource("/vue/vueMenu/VueMenu.fxml"));
+				Parent root;
+				root = fxmlLoader.load();
+				this.vueMenu = (VueMenu) fxmlLoader.getController();
+				this.vueMenu.setControleur(this);
+				this.plateau = new Plateau();
+				this.plateau.initPions();
+				Scene scene = new Scene(root, this.stage.getWidth(), this.stage.getHeight());
+				this.stage.setScene(scene);
+				this.stage.show();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -226,8 +262,8 @@ public class Controleur extends Application {
 			Alert alert = new Alert(AlertType.ERROR);
 			alert.setTitle("Erreur");
 			alert.setHeaderText("Verifier que le serveur est lancé.");
-			alert.setContentText(
-					"Lancer le serveur : \n- Lancer SWI prolog \n- File > Consult... > Choisir le fichier Jeu.pl\n- Taper la commande : 'server(5000).'");
+			alert.setContentText("Lancer le serveur : " + "\n- Lancer SWI prolog "
+					+ "\n- File > Consult... > Choisir le fichier Jeu.pl " + "\n- Taper la commande : 'server(5000).'");
 			alert.showAndWait();
 			return;
 		}
@@ -249,7 +285,6 @@ public class Controleur extends Application {
 			this.vueJeu.setPlateau(this.plateau);
 			this.vueJeu.dessinerPlateau();
 			Scene scene = new Scene(root, this.stage.getScene().getWidth(), this.stage.getScene().getHeight());
-			this.stage.setTitle("Jeu De Dames");
 			this.stage.setScene(scene);
 			this.stage.show();
 

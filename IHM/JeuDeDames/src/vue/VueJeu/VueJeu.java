@@ -127,7 +127,7 @@ public class VueJeu implements Initializable {
 
 	@FXML
 	public void onButtonQuitterPartieClicked() {
-		this.controleur.cliquerSurQuitter();
+		this.controleur.cliquerSurQuitterPartie();
 	}
 
 	public void setTextLabelJoueur1(String text) {
