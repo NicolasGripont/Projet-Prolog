@@ -125,7 +125,12 @@ public class Jeu {
 			JsonObject root = jp.parse(new InputStreamReader((InputStream) request.getContent())).getAsJsonObject();
 			System.out.println(root);
 			request.disconnect();
+			int etat = -1;
+			if ((root.get("etat") != null)) {
+				etat = root.get("etat").getAsInt();
+			}
 			ArrayList<Piece> newBlancs = new ArrayList<>();
+
 			if ((root.get("blancs") != null)) {
 				blancsArray = root.get("blancs").getAsJsonArray();
 				for (int i = 0; i < blancsArray.size(); i++) {
@@ -198,7 +203,7 @@ public class Jeu {
 					piece = new Dame(Couleur.NOIR, new Case(Couleur.NOIR, y, x));
 				}
 			}
-			Coup coup = new Coup(newBlancs, newNoirs, deplacements, piece);
+			Coup coup = new Coup(etat, newBlancs, newNoirs, deplacements, piece);
 			return coup;
 		} catch (IOException e) {
 			e.printStackTrace();

@@ -3,7 +3,8 @@ package modele;
 import java.util.List;
 
 public class Coup {
-
+	int etat;
+	
 	List<Piece> piecesBlanches;
 
 	List<Piece> piecesNoires;
@@ -28,12 +29,21 @@ public class Coup {
 	 * @param deplacement
 	 * @param piece
 	 */
-	public Coup(List<Piece> piecesBlanches, List<Piece> piecesNoires, List<Case> deplacement, Piece piece) {
+	public Coup(int etat, List<Piece> piecesBlanches, List<Piece> piecesNoires, List<Case> deplacement, Piece piece) {
 		super();
+		this.etat = etat;
 		this.piecesBlanches = piecesBlanches;
 		this.piecesNoires = piecesNoires;
 		this.deplacement = deplacement;
 		this.piece = piece;
+	}
+	
+	public int getEtat() {
+		return etat;
+	}
+
+	public void setEtat(int etat) {
+		this.etat = etat;
 	}
 
 	public List<Piece> getPiecesBlanches() {
