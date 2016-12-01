@@ -15,7 +15,9 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import modele.Case;
+import modele.Dame;
 import modele.Piece;
+import modele.Pion;
 import modele.Plateau;
 import vue.Plateau.PlateauGroup;
 
@@ -147,5 +149,9 @@ public class VueJeu implements Initializable {
 	@FXML
 	private void onButtonJouerUnTourPartieClicked() {
 		this.controleur.jouerCoupIA();
+	}
+
+	public void creerDame(Pion pion, Dame dame, int dureeDAttente) {
+		this.plateauGroup.creerDame(pion, dame, dureeDAttente);
 	}
 }
