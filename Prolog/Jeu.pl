@@ -386,8 +386,8 @@ moves_allowed_server(Request) :- 	http_read_json(Request, JsonIn,[json_object(te
  									call_movePossiblePlayer(J,Blancs, Noirs,S),
  									format(user_output,"S is: ~p~n",[S]),
  									build_reply_moves_allowed(S,Json),
-									%format(user_output,"json is: ~p~n",[JSON]),
-							   		reply_json(JsonIn).
+									format(user_output,"json is: ~p~n",[JSON]),
+							   		reply_json(Json).
 
 
 call_movePossiblePlayer(blanc, Blancs, Noirs, S) :- movePossiblePlayer(blanc, Blancs, Noirs, Blancs, S,_).
