@@ -61,34 +61,34 @@ ajouterListe(_,_,[]).
 creerListe(noir,L):-ajouterListe(0,3,L).
 creerListe(blanc,L):-ajouterListe(6,9,L).
 
-mangeBasGauche([X,Y,pion],blanc,Blancs,Noirs,Retour):- X2 is X-1, Y2 is Y+1,X3 is X-2,Y3 is Y+2,X3 >= 0 ,Y3 =< 9,member([X2,Y2,_],Noirs),not(member([X3,Y3,_],Noirs)),not(member([X3,Y3,_],Blancs)),!,delete(Noirs,[X2,Y2,_],Noirs2),delete(Blancs,[X,Y,pion],Blancs2),mangeTouteDirection([X3,Y3,pion],blanc,[[X3,Y3,pion]|Blancs2],Noirs2,R),creerMouvement([[X3,Y3,pion]|Blancs2],Noirs2,R,Sortie),ajoutMouvement([X3,Y3],Sortie,Retour).
-mangeBasGauche([X,Y,pion],noir,Blancs,Noirs,Retour):- X2 is X-1, Y2 is Y+1,X3 is X-2,Y3 is Y+2,X3 >= 0 ,Y3 =< 9,member([X2,Y2,_],Blancs),not(member([X3,Y3,_],Noirs)),not(member([X3,Y3,_],Blancs)),!,delete(Blancs,[X2,Y2,_],Blancs2),delete(Noirs,[X,Y,pion],Noirs2),mangeTouteDirection([X3,Y3,pion],noir,Blancs2,[[X3,Y3,pion]|Noirs2],R),creerMouvement(Blancs2,[[X3,Y3,pion]|Noirs2],R,Sortie),ajoutMouvement([X3,Y3],Sortie,Retour).
-mangeBasGauche(_,_,_,_,[]).
-
-mangeBasDroite([X,Y,pion],blanc,Blancs,Noirs,Retour):- X2 is X+1, Y2 is Y+1,X3 is X+2,Y3 is Y+2,X3 =< 9 ,Y3 =< 9,member([X2,Y2,_],Noirs),not(member([X3,Y3,_],Noirs)),not(member([X3,Y3,_],Blancs)),!,delete(Noirs,[X2,Y2,_],Noirs2),delete(Blancs,[X,Y,pion],Blancs2),mangeTouteDirection([X3,Y3,pion],blanc,[[X3,Y3,pion]|Blancs2],Noirs2,R),creerMouvement([[X3,Y3,pion]|Blancs2],Noirs2,R,Sortie),ajoutMouvement([X3,Y3],Sortie,Retour).
-mangeBasDroite([X,Y,pion],noir,Blancs,Noirs,Retour):- X2 is X+1, Y2 is Y+1,X3 is X+2,Y3 is Y+2,X3 =< 9 ,Y3 =< 9,member([X2,Y2,_],Blancs),not(member([X3,Y3,_],Noirs)),not(member([X3,Y3,_],Blancs)),!,delete(Blancs,[X2,Y2,_],Blancs2),delete(Noirs,[X,Y,pion],Noirs2),mangeTouteDirection([X3,Y3,pion],noir,Blancs2,[[X3,Y3,pion]|Noirs2],R),creerMouvement(Blancs2,[[X3,Y3,pion]|Noirs2],R,Sortie),ajoutMouvement([X3,Y3],Sortie,Retour).
-mangeBasDroite(_,_,_,_,[]).
-
-mangeHautDroite([X,Y,pion],blanc,Blancs,Noirs,Retour):- X2 is X+1, Y2 is Y-1,X3 is X+2,Y3 is Y-2,X3 =< 9 ,Y3 >= 0,member([X2,Y2,_],Noirs),not(member([X3,Y3,_],Noirs)),not(member([X3,Y3,_],Blancs)),!,delete(Noirs,[X2,Y2,_],Noirs2),delete(Blancs,[X,Y,pion],Blancs2),mangeTouteDirection([X3,Y3,pion],blanc,[[X3,Y3,pion]|Blancs2],Noirs2,R),creerMouvement([[X3,Y3,pion]|Blancs2],Noirs2,R,Sortie),ajoutMouvement([X3,Y3],Sortie,Retour).
-mangeHautDroite([X,Y,pion],noir,Blancs,Noirs,Retour):- X2 is X+1, Y2 is Y-1,X3 is X+2,Y3 is Y-2,X3 =< 9 ,Y3 >= 0,member([X2,Y2,_],Blancs),not(member([X3,Y3,_],Noirs)),not(member([X3,Y3,_],Blancs)),!,delete(Blancs,[X2,Y2,_],Blancs2),delete(Noirs,[X,Y,pion],Noirs2),mangeTouteDirection([X3,Y3,pion],noir,Blancs2,[[X3,Y3,pion]|Noirs2],R),creerMouvement(Blancs2,[[X3,Y3,pion]|Noirs2],R,Sortie),ajoutMouvement([X3,Y3],Sortie,Retour).
-mangeHautDroite(_,_,_,_,[]).
-
-creerMouvement(B,N,[],[[B,N,[]]]):-!.
-creerMouvement(_,_,S,S).
-%tests
-%creerMouvement([],[],[],R).
-
-ajoutMouvement(Pos,[[Blancs,Noirs,ListeMouvement]|Suite],[[Blancs,Noirs,[Pos|ListeMouvement]]|R]):-!,ajoutMouvement(Pos,Suite,R).
-ajoutMouvement(_,[],[]).
-%Tests
-%ajoutMouvement([1,2],[[[],[],[[0,0]]],[[],[],[[1,1]]]],R).
-%ajoutMouvement([1,2],[[[],[],[[0,0]]],[[],[],[[1,1]]]],R).
-
 %cherche le premier pion ou dame adverse dans la diagonale
 cherchePionHautGauche(X,Y,blanc,Blancs,Noirs,[X1,Y1,T],Manges):-X1 is X-1, Y1 is Y-1, X1>=0, Y1>=0, not(member([X1,Y1,_],Blancs)),
 		not(member([X1,Y1,_],Manges)),member([X1,Y1,T],Noirs),!.
-cherchePionHautGauche(X,Y,blanc,Blancs,Noirs,[X2,Y2,T],Manges):-X1 is X-1, Y1 is Y-1, X1>=0, Y1>=0, not(member([X1,Y1,_],Blancs)),
-		not(member([X1,Y1,T],Noirs)),not(member([X1,Y1,_],Manges)),cherchePionHautGauche(X1,Y1,blanc,Blancs,Noirs,[X2,Y2,T]).
+cherchePionHautGauche(X,Y,noir,Blancs,Noirs,[X1,Y1,T],Manges):-X1 is X-1, Y1 is Y-1, X1>=0, Y1>=0, not(member([X1,Y1,_],Noirs)),
+		not(member([X1,Y1,_],Manges)),member([X1,Y1,T],Blancs),!.
+cherchePionHautGauche(X,Y,Camp,Blancs,Noirs,[X2,Y2,T],Manges):-X1 is X-1, Y1 is Y-1, X1>=0, Y1>=0, not(member([X1,Y1,_],Blancs)),
+		not(member([X1,Y1,T],Noirs)),not(member([X1,Y1,_],Manges)),cherchePionHautGauche(X1,Y1,Camp,Blancs,Noirs,[X2,Y2,T]).
+		
+cherchePionHautDroite(X,Y,blanc,Blancs,Noirs,[X1,Y1,T],Manges):-X1 is X+1, Y1 is Y-1, X1=<9, Y1>=0, not(member([X1,Y1,_],Blancs)),
+		not(member([X1,Y1,_],Manges)),member([X1,Y1,T],Noirs),!.
+cherchePionHautDroite(X,Y,noir,Blancs,Noirs,[X1,Y1,T],Manges):-X1 is X+1, Y1 is Y-1, X1=<9, Y1>=0, not(member([X1,Y1,_],Noirs)),
+		not(member([X1,Y1,_],Manges)),member([X1,Y1,T],Blancs),!.
+cherchePionHautDroite(X,Y,Camp,Blancs,Noirs,[X2,Y2,T],Manges):-X1 is X+1, Y1 is Y-1, X1=<9, Y1>=0, not(member([X1,Y1,_],Blancs)),
+		not(member([X1,Y1,T],Noirs)),not(member([X1,Y1,_],Manges)),cherchePionHautDroite(X1,Y1,Camp,Blancs,Noirs,[X2,Y2,T]).
+
+cherchePionBasGauche(X,Y,blanc,Blancs,Noirs,[X1,Y1,T],Manges):-X1 is X-1, Y1 is Y+1, X1>=0, Y1=<9, not(member([X1,Y1,_],Blancs)),
+		not(member([X1,Y1,_],Manges)),member([X1,Y1,T],Noirs),!.
+cherchePionBasGauche(X,Y,noir,Blancs,Noirs,[X1,Y1,T],Manges):-X1 is X-1, Y1 is Y+1, X1>=0, Y1=<9, not(member([X1,Y1,_],Noirs)),
+		not(member([X1,Y1,_],Manges)),member([X1,Y1,T],Blancs),!.
+cherchePionBasGauche(X,Y,Camp,Blancs,Noirs,[X2,Y2,T],Manges):-X1 is X-1, Y1 is Y+1, X1>=0, Y1=<9, not(member([X1,Y1,_],Blancs)),
+		not(member([X1,Y1,T],Noirs)),not(member([X1,Y1,_],Manges)),cherchePionBasGauche(X1,Y1,Camp,Blancs,Noirs,[X2,Y2,T]).
+		
+cherchePionBasDroite(X,Y,blanc,Blancs,Noirs,[X1,Y1,T],Manges):-X1 is X+1, Y1 is Y+1, X1=<9, Y1=<9, not(member([X1,Y1,_],Blancs)),
+		not(member([X1,Y1,_],Manges)),member([X1,Y1,T],Noirs),!.
+cherchePionBasDroite(X,Y,noir,Blancs,Noirs,[X1,Y1,T],Manges):-X1 is X+1, Y1 is Y+1, X1=<9, Y1=<9, not(member([X1,Y1,_],Noirs)),
+		not(member([X1,Y1,_],Manges)),member([X1,Y1,T],Blancs),!.
+cherchePionBasDroite(X,Y,Camp,Blancs,Noirs,[X2,Y2,T],Manges):-X1 is X+1, Y1 is Y+1, X1=<9, Y1=<9, not(member([X1,Y1,_],Blancs)),
+		not(member([X1,Y1,T],Noirs)),not(member([X1,Y1,_],Manges)),cherchePionBasDroite(X1,Y1,Camp,Blancs,Noirs,[X2,Y2,T]).
 %tests
 % cherchePionHautGauche(4,4,blanc,[[4,4,pion]],[[1,1,pion],[3,3,pion]],R).
 % cherchePionHautGauche(4,4,blanc,[[4,4,pion]],[[1,1,pion],[3,1,pion]],R).
@@ -108,18 +108,51 @@ chercheCaseVideHautGauche(_,_,_,_,_,[]).
 % chercheCaseVideHautGauche(4,4,[[4,4,pion]],[[1,1,pion],[3,3,pion]], [], R).
 % chercheCaseVideHautGauche(4,4,[],[],[[2,2]],R).
 
-%dame
-mangeHautGauche([X,Y,dame],blanc,Blancs,Noirs,Retour):- cherchePionHautGauche(X,Y,blanc,Blancs,Noirs,Pion),
-		chercheCaseVideHautGauche(X,Y,Blancs,Noirs, [], R),
-		member([X2,Y2,_],Noirs),not(member([X3,Y3,_],Noirs)),not(member([X3,Y3,_],Blancs)),!,delete(Noirs,[X2,Y2,_],Noirs2),delete(Blancs,[X,Y,pion],Blancs2)
-		,mangeTouteDirection([X3,Y3,pion],blanc,[[X3,Y3,pion]|Blancs2],Noirs2,R),creerMouvement([[X3,Y3,pion]|Blancs2],Noirs2,R,Sortie),ajoutMouvement([X3,Y3],Sortie,Retour).
+creerMouvement(B,N,[],[[B,N,[]]]):-!.
+creerMouvement(_,_,S,S).
+%tests
+%creerMouvement([],[],[],R).
+
+ajoutMouvement(Pos,[[Blancs,Noirs,ListeMouvement]|Suite],[[Blancs,Noirs,[Pos|ListeMouvement]]|R]):-!,ajoutMouvement(Pos,Suite,R).
+ajoutMouvement(_,[],[]).
+%Tests
+%ajoutMouvement([1,2],[[[],[],[[0,0]]],[[],[],[[1,1]]]],R).
+%ajoutMouvement([1,2],[[[],[],[[0,0]]],[[],[],[[1,1]]]],R).
 
 %pion
+mangeBasGauche([X,Y,pion],blanc,Blancs,Noirs,Retour):- X2 is X-1, Y2 is Y+1,X3 is X-2,Y3 is Y+2,X3 >= 0 ,Y3 =< 9,member([X2,Y2,_],Noirs),not(member([X3,Y3,_],Noirs)),not(member([X3,Y3,_],Blancs)),!,delete(Noirs,[X2,Y2,_],Noirs2),delete(Blancs,[X,Y,pion],Blancs2),mangeTouteDirection([X3,Y3,pion],blanc,[[X3,Y3,pion]|Blancs2],Noirs2,R),creerMouvement([[X3,Y3,pion]|Blancs2],Noirs2,R,Sortie),ajoutMouvement([X3,Y3],Sortie,Retour).
+mangeBasGauche([X,Y,pion],noir,Blancs,Noirs,Retour):- X2 is X-1, Y2 is Y+1,X3 is X-2,Y3 is Y+2,X3 >= 0 ,Y3 =< 9,member([X2,Y2,_],Blancs),not(member([X3,Y3,_],Noirs)),not(member([X3,Y3,_],Blancs)),!,delete(Blancs,[X2,Y2,_],Blancs2),delete(Noirs,[X,Y,pion],Noirs2),mangeTouteDirection([X3,Y3,pion],noir,Blancs2,[[X3,Y3,pion]|Noirs2],R),creerMouvement(Blancs2,[[X3,Y3,pion]|Noirs2],R,Sortie),ajoutMouvement([X3,Y3],Sortie,Retour).
+mangeBasGauche(_,_,_,_,[]).
+
+mangeBasDroite([X,Y,pion],blanc,Blancs,Noirs,Retour):- X2 is X+1, Y2 is Y+1,X3 is X+2,Y3 is Y+2,X3 =< 9 ,Y3 =< 9,member([X2,Y2,_],Noirs),not(member([X3,Y3,_],Noirs)),not(member([X3,Y3,_],Blancs)),!,delete(Noirs,[X2,Y2,_],Noirs2),delete(Blancs,[X,Y,pion],Blancs2),mangeTouteDirection([X3,Y3,pion],blanc,[[X3,Y3,pion]|Blancs2],Noirs2,R),creerMouvement([[X3,Y3,pion]|Blancs2],Noirs2,R,Sortie),ajoutMouvement([X3,Y3],Sortie,Retour).
+mangeBasDroite([X,Y,pion],noir,Blancs,Noirs,Retour):- X2 is X+1, Y2 is Y+1,X3 is X+2,Y3 is Y+2,X3 =< 9 ,Y3 =< 9,member([X2,Y2,_],Blancs),not(member([X3,Y3,_],Noirs)),not(member([X3,Y3,_],Blancs)),!,delete(Blancs,[X2,Y2,_],Blancs2),delete(Noirs,[X,Y,pion],Noirs2),mangeTouteDirection([X3,Y3,pion],noir,Blancs2,[[X3,Y3,pion]|Noirs2],R),creerMouvement(Blancs2,[[X3,Y3,pion]|Noirs2],R,Sortie),ajoutMouvement([X3,Y3],Sortie,Retour).
+mangeBasDroite(_,_,_,_,[]).
+
+mangeHautDroite([X,Y,pion],blanc,Blancs,Noirs,Retour):- X2 is X+1, Y2 is Y-1,X3 is X+2,Y3 is Y-2,X3 =< 9 ,Y3 >= 0,member([X2,Y2,_],Noirs),not(member([X3,Y3,_],Noirs)),not(member([X3,Y3,_],Blancs)),!,delete(Noirs,[X2,Y2,_],Noirs2),delete(Blancs,[X,Y,pion],Blancs2),mangeTouteDirection([X3,Y3,pion],blanc,[[X3,Y3,pion]|Blancs2],Noirs2,R),creerMouvement([[X3,Y3,pion]|Blancs2],Noirs2,R,Sortie),ajoutMouvement([X3,Y3],Sortie,Retour).
+mangeHautDroite([X,Y,pion],noir,Blancs,Noirs,Retour):- X2 is X+1, Y2 is Y-1,X3 is X+2,Y3 is Y-2,X3 =< 9 ,Y3 >= 0,member([X2,Y2,_],Blancs),not(member([X3,Y3,_],Noirs)),not(member([X3,Y3,_],Blancs)),!,delete(Blancs,[X2,Y2,_],Blancs2),delete(Noirs,[X,Y,pion],Noirs2),mangeTouteDirection([X3,Y3,pion],noir,Blancs2,[[X3,Y3,pion]|Noirs2],R),creerMouvement(Blancs2,[[X3,Y3,pion]|Noirs2],R,Sortie),ajoutMouvement([X3,Y3],Sortie,Retour).
+mangeHautDroite(_,_,_,_,[]).
+
 mangeHautGauche([X,Y,pion],blanc,Blancs,Noirs,Retour):- X2 is X-1, Y2 is Y-1,X3 is X-2,Y3 is Y-2,X3 >= 0,Y3 >= 0,member([X2,Y2,_],Noirs),not(member([X3,Y3,_],Noirs)),not(member([X3,Y3,_],Blancs)),!,delete(Noirs,[X2,Y2,_],Noirs2),delete(Blancs,[X,Y,pion],Blancs2),mangeTouteDirection([X3,Y3,pion],blanc,[[X3,Y3,pion]|Blancs2],Noirs2,R),creerMouvement([[X3,Y3,pion]|Blancs2],Noirs2,R,Sortie),ajoutMouvement([X3,Y3],Sortie,Retour).
 mangeHautGauche([X,Y,pion],noir,Blancs,Noirs,Retour):- X2 is X-1, Y2 is Y-1,X3 is X-2,Y3 is Y-2,X3 >= 0,Y3 >= 0,member([X2,Y2,_],Blancs),not(member([X3,Y3,_],Noirs)),not(member([X3,Y3,_],Blancs)),!,delete(Blancs,[X2,Y2,_],Blancs2),delete(Noirs,[X,Y,pion],Noirs2),mangeTouteDirection([X3,Y3,pion],noir,Blancs2,[[X3,Y3,pion]|Noirs2],R),creerMouvement(Blancs2,[[X3,Y3,pion]|Noirs2],R,Sortie),ajoutMouvement([X3,Y3],Sortie,Retour).
 mangeHautGauche(_,_,_,_,[]).
 %test mangehautgauche
 % mangeHautGauche([4,4,pion],blanc,[[4,4,pion]],[[1,1,pion],[3,3,pion]],R).
+
+%
+
+%dame
+mangeHautGauche2(blanc,Blancs,Noirs,[[X,Y]|Suite],Manges,Retour):-mangeHautGauche2(blanc,Blancs,Noirs,Suite,Manges,Solution1),
+		mangeTouteDirection([X,Y,dame],blanc,Blancs,Noirs,Manges,R),
+		maxSolution(Solution1,R,S),
+		creerMouvement(Blancs,Noirs,S,Sortie),ajoutMouvement([X,Y],Sortie,Retour).
+mangeHautGauche2(_,_,_,[],_,[]).
+
+mangeHautGauche([X,Y,dame],blanc,Blancs,Noirs,Manges,Retour):- cherchePionHautGauche(X,Y,blanc,Blancs,Noirs,[X2,Y2,T]),
+		chercheCaseVideHautGauche(X,Y,Blancs,Noirs, [], R),R \== [],!, delete(Noirs,[X2,Y2,T],Noirs2),
+		delete(Blancs,[X,Y,dame],Blancs2),mangeHautGauche2(blanc,Blancs2,Noirs2,R,[[X2,Y2,dame]|Manges],Retour).
+mangeHautGauche([X,Y,dame],Camp,Blancs,Noirs,Retour):-mangeHautGauche([X,Y,dame],Camp,Blancs,Noirs,[],Retour),!.
+
+
 
 longueurChaine([],0).
 longueurChaine([[_,_,T]|_],X):-length(T,X).
@@ -127,8 +160,11 @@ longueurChaine([[_,_,T]|_],X):-length(T,X).
 estSolution(Liste,Maxi,Maxi,Liste):-!.
 estSolution(_,_,_,[]).
 
-
-maxSolution(R1,R2,R3,R4,S):-longueurChaine(R1,X),longueurChaine(R2,Y),longueurChaine(R3,Z),longueurChaine(R4,W),max_list([X,Y,Z,W],Maxi),estSolution(R1,X,Maxi,S1),estSolution(R2,Y,Maxi,S2),estSolution(R3,Z,Maxi,S3),estSolution(R4,W,Maxi,S4),append(S1,S2,S5),append(S5,S3,S6),append(S6,S4,S).
+maxSolution(R1,R2,S):-longueurChaine(R1,X),longueurChaine(R2,Y),max_list([X,Y],Maxi),estSolution(R1,X,Maxi,S1),estSolution(R2,Y,Maxi,S2),
+		append(S1,S2,S).
+maxSolution(R1,R2,R3,R4,S):-longueurChaine(R1,X),longueurChaine(R2,Y),longueurChaine(R3,Z),longueurChaine(R4,W),max_list([X,Y,Z,W],Maxi),
+		estSolution(R1,X,Maxi,S1),estSolution(R2,Y,Maxi,S2),estSolution(R3,Z,Maxi,S3),estSolution(R4,W,Maxi,S4),
+		append(S1,S2,S5),append(S5,S3,S6),append(S6,S4,S).
 
 maxSolutionJoueur([[Pion1,T1]|Suite3],[[Pion2,T2]|Suite4],S):-longueurChaine(T1,X),longueurChaine(T2,Y),max_list([X,Y],Maxi),estSolution([[Pion1,T1]|Suite3],X,Maxi,S1),estSolution([[Pion2,T2]|Suite4],Y,Maxi,S2),append(S1,S2,S).
 
@@ -136,7 +172,12 @@ maxSolutionJoueur([[Pion1,T1]|Suite3],[[Pion2,T2]|Suite4],S):-longueurChaine(T1,
 % retourne les solutions possibles comprenant : le chemin + l'etat du
 % jeu.
 % pour un Pion
-mangeTouteDirection([X,Y,pion],Couleur,Blancs,Noirs,R):-mangeHautGauche([X,Y,pion],Couleur,Blancs,Noirs,R1),mangeHautDroite([X,Y,pion],Couleur,Blancs,Noirs,R2),mangeBasGauche([X,Y,pion],Couleur,Blancs,Noirs,R3),mangeBasDroite([X,Y,pion],Couleur,Blancs,Noirs,R4),maxSolution(R1,R2,R3,R4,R).
+mangeTouteDirection([X,Y,pion],Couleur,Blancs,Noirs,R):-mangeHautGauche([X,Y,pion],Couleur,Blancs,Noirs,R1),
+		mangeHautDroite([X,Y,pion],Couleur,Blancs,Noirs,R2),mangeBasGauche([X,Y,pion],Couleur,Blancs,Noirs,R3),
+		mangeBasDroite([X,Y,pion],Couleur,Blancs,Noirs,R4),maxSolution(R1,R2,R3,R4,R).
+mangeTouteDirection([X,Y,dame],Couleur,Blancs,Noirs,Manges,R):-mangeHautGauche([X,Y,dame],Couleur,Blancs,Noirs,Manges,R1),
+		mangeHautDroite([X,Y,dame],Couleur,Blancs,Noirs,Manges,R2),mangeBasGauche([X,Y,dame],Couleur,Blancs,Noirs,Manges,R3),
+		mangeBasDroite([X,Y,dame],Couleur,Blancs,Noirs,Manges,R4),maxSolution(R1,R2,R3,R4,R).
 %tests
 % mangeTouteDirection([4,2,pion],blanc,[[4,2,pion]],[[5,1,pion],[3,1,pion],[1,1,pion],[1,3,pion],[3,3,pion]],R),writeln(R).
 
