@@ -267,7 +267,7 @@ public class PlateauGroup extends Group {
 			pathTransition.setDuration(Duration.millis(dureeDeplacement));
 			pathTransition.setNode(pieceVue);
 			pathTransition.setPath(path);
-			pathTransition.setOrientation(OrientationType.ORTHOGONAL_TO_TANGENT);
+			pathTransition.setOrientation(OrientationType.NONE);
 			pathTransition.setCycleCount(1);
 			pathTransition.setAutoReverse(false);
 			pathTransition.play();
@@ -309,7 +309,7 @@ public class PlateauGroup extends Group {
 			pathTransition.setDuration(Duration.millis(1));
 			pathTransition.setNode(pieceATuer);
 			pathTransition.setPath(path);
-			pathTransition.setOrientation(OrientationType.ORTHOGONAL_TO_TANGENT);
+			pathTransition.setOrientation(OrientationType.NONE);
 			pathTransition.setCycleCount(1);
 			pathTransition.setAutoReverse(false);
 			pathTransition.play();
@@ -360,7 +360,7 @@ public class PlateauGroup extends Group {
 			pathTransition.setDuration(Duration.millis(1));
 			pathTransition.setNode(pieceVue);
 			pathTransition.setPath(path);
-			pathTransition.setOrientation(OrientationType.ORTHOGONAL_TO_TANGENT);
+			pathTransition.setOrientation(OrientationType.NONE);
 			pathTransition.setCycleCount(1);
 			pathTransition.setAutoReverse(false);
 			pathTransition.play();

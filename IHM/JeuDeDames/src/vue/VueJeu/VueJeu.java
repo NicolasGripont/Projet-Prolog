@@ -11,9 +11,12 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import modele.Case;
 import modele.Dame;
 import modele.Piece;
@@ -58,11 +61,29 @@ public class VueJeu implements Initializable {
 	private ImageView imageViewDamesJoueur2;
 
 	@FXML
-	private Button buttonSimuler;
+	private ImageView imageViewPlay;
+
+	@FXML
+	private ImageView imageViewFastForward;
+
+	@FXML
+	private ImageView imageViewPause;
+
+	private final Tooltip tooltipPlay = new Tooltip("Play");
+
+	private final Tooltip tooltipFastForward = new Tooltip("Avance rapide");
+
+	private final Tooltip tooltipPause = new Tooltip("Pause");
 
 	private PlateauGroup plateauGroup;
 
 	private Plateau plateau;
+
+	@FXML
+	private HBox hBoxSimulation;
+
+	@FXML
+	private VBox vBox;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -88,6 +109,16 @@ public class VueJeu implements Initializable {
 		this.imageViewPionsJoueur1.setImage(new Image(this.classLoader.getResource("pion_blanc.png").toString()));
 		this.imageViewDamesJoueur2.setImage(new Image(this.classLoader.getResource("dame_noire.png").toString()));
 		this.imageViewPionsJoueur2.setImage(new Image(this.classLoader.getResource("pion_noir.png").toString()));
+
+		this.imageViewPlay.setImage(new Image(this.classLoader.getResource("play_noir.png").toString()));
+		this.imageViewFastForward.setImage(new Image(this.classLoader.getResource("fast_forward_noir.png").toString()));
+		this.imageViewPause.setImage(new Image(this.classLoader.getResource("pause_noir.png").toString()));
+
+		this.imageViewPlay.setDisable(true);
+
+		Tooltip.install(this.imageViewPlay, this.tooltipPlay);
+		Tooltip.install(this.imageViewFastForward, this.tooltipFastForward);
+		Tooltip.install(this.imageViewPause, this.tooltipPause);
 	}
 
 	public Controleur getControleur() {
@@ -147,19 +178,100 @@ public class VueJeu implements Initializable {
 	}
 
 	@FXML
-	private void onButtonSimulerClicked() {
-		this.controleur.simulerPartie();
+	private void onImageViewPlayClicked() {
+		this.controleur.playSimulation();
 	}
 
-	public void setTextButtonSimuler(String text) {
-		this.buttonSimuler.setText(text);
+	@FXML
+	private void onImageViewPauseClicked() {
+		this.controleur.pauseSimulation();
 	}
 
-	public void setVisibleButtonSimuler(boolean visible) {
-		this.buttonSimuler.setVisible(visible);
+	@FXML
+	private void onImageViewFastForwardClicked() {
+		this.controleur.fastForwardSimulation();
+	}
+
+	@FXML
+	private void onImageViewPlayEntered() {
+		if (!this.imageViewPlay.isDisable()) {
+			this.imageViewPlay.setImage(new Image(this.classLoader.getResource("play_gris.png").toString()));
+		}
+	}
+
+	@FXML
+	private void onImageViewPauseEntered() {
+		if (!this.imageViewPause.isDisable()) {
+			this.imageViewPause.setImage(new Image(this.classLoader.getResource("pause_gris.png").toString()));
+		}
+	}
+
+	@FXML
+	private void onImageViewFastForwardEntered() {
+		if (!this.imageViewFastForward.isDisable()) {
+			this.imageViewFastForward
+					.setImage(new Image(this.classLoader.getResource("fast_forward_gris.png").toString()));
+		}
+	}
+
+	@FXML
+	private void onImageViewPlayExited() {
+		if (!this.imageViewPlay.isDisable()) {
+			this.imageViewPlay.setImage(new Image(this.classLoader.getResource("play_noir.png").toString()));
+		}
+	}
+
+	@FXML
+	private void onImageViewPauseExited() {
+		if (!this.imageViewPause.isDisable()) {
+			this.imageViewPause.setImage(new Image(this.classLoader.getResource("pause_noir.png").toString()));
+		}
+	}
+
+	@FXML
+	private void onImageViewFastForwardExited() {
+		if (!this.imageViewFastForward.isDisable()) {
+			this.imageViewFastForward
+					.setImage(new Image(this.classLoader.getResource("fast_forward_noir.png").toString()));
+		}
+	}
+
+	public void setImageViewPlayDisable(boolean disable) {
+		this.imageViewPlay.setDisable(disable);
+		if (disable) {
+			this.imageViewPlay.setImage(new Image(this.classLoader.getResource("play_gris.png").toString()));
+		} else {
+			this.imageViewPlay.setImage(new Image(this.classLoader.getResource("play_noir.png").toString()));
+		}
+	}
+
+	public void setImageViewPauseDisable(boolean disable) {
+		this.imageViewPause.setDisable(disable);
+		if (disable) {
+			this.imageViewPause.setImage(new Image(this.classLoader.getResource("pause_gris.png").toString()));
+		} else {
+			this.imageViewPause.setImage(new Image(this.classLoader.getResource("pause_noir.png").toString()));
+		}
+	}
+
+	public void setImageViewFastForwardDisable(boolean disable) {
+		this.imageViewFastForward.setDisable(disable);
+		if (disable) {
+			this.imageViewFastForward
+					.setImage(new Image(this.classLoader.getResource("fast_forward_gris.png").toString()));
+		} else {
+			this.imageViewFastForward
+					.setImage(new Image(this.classLoader.getResource("fast_forward_noir.png").toString()));
+		}
 	}
 
 	public void creerDame(Pion pion, Dame dame, int dureeDAttente) {
 		this.plateauGroup.creerDame(pion, dame, dureeDAttente);
+	}
+
+	public void setSimulationMode(boolean simulation) {
+		if (!simulation) {
+			this.vBox.getChildren().remove(this.hBoxSimulation);
+		}
 	}
 }

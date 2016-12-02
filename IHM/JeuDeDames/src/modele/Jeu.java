@@ -120,6 +120,7 @@ public class Jeu {
 			OutputStream os = request.getOutputStream();
 			os.write(parameters.toString().getBytes("UTF8"));
 			os.close();
+			System.out.println(parameters.toString());
 			InputStream in = new BufferedInputStream(request.getInputStream());
 			JsonParser jp = new JsonParser();
 			JsonObject root = jp.parse(new InputStreamReader((InputStream) request.getContent())).getAsJsonObject();
