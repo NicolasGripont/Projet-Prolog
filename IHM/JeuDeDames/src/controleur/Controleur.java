@@ -56,6 +56,10 @@ public class Controleur extends Application {
 
 	private final Semaphore sem = new Semaphore(1);
 
+	private int coefVitesse = 1;
+
+	private int nbCoups = 0;
+
 	@Override
 	public void start(Stage primaryStage) {
 		this.stage = primaryStage;
@@ -232,8 +236,8 @@ public class Controleur extends Application {
 			this.plateau.supprimerPiece(p);
 		}
 
-		int dureeDeplacement = (deplacement.size() * this.dureeUnDeplacement);
-		int dureeCoup = dureeDeplacement + (this.dureeUnDeplacement / 2);
+		int dureeDeplacement = this.calculDureeDeplacement(piece, deplacement);
+		int dureeCoup = this.calculDureeCoup(dureeDeplacement);
 		// appelle vue
 		this.vueJeu.deplacerPiece(piecePlateau, deplacement, dureeDeplacement);
 		this.vueJeu.tuerPieces(piecesMortes, dureeCoup);
@@ -248,7 +252,8 @@ public class Controleur extends Application {
 			dame.getPosition().setPiece(dame);
 			this.vueJeu.creerDame((Pion) piecePlateau, dame, dureeCoup);
 		}
-
+		this.nbCoups++;
+		this.vueJeu.setTextLabelNbCoups("" + this.nbCoups);
 	}
 
 	private boolean contains(List<Piece> pieces, Piece piece) {
@@ -317,12 +322,7 @@ public class Controleur extends Application {
 				this.threadSimulerPartie = new Thread() {
 					@Override
 					public void run() {
-						try {
-							Thread.sleep(1000);
-						} catch (InterruptedException e) {
-							System.out.println(e);
-							return;
-						}
+
 						while (Controleur.this.threadSimulerPartie.isInterrupted() == false) {
 							try {
 								final Coup coup = Controleur.this.getCoupIA();
@@ -345,9 +345,9 @@ public class Controleur extends Application {
 
 									}
 								});
-								int dureeDeplacement = (coup.getDeplacement().size()
-										* Controleur.this.dureeUnDeplacement);
-								int dureeCoup = dureeDeplacement + (Controleur.this.dureeUnDeplacement / 2);
+								int dureeDeplacement = Controleur.this.calculDureeDeplacement(coup.getPiece(),
+										coup.getDeplacement());
+								int dureeCoup = Controleur.this.calculDureeCoup(dureeDeplacement);
 								Thread.sleep(dureeCoup + (Controleur.this.dureeUnDeplacement / 2));
 							} catch (InterruptedException e) {
 								return;
@@ -365,24 +365,52 @@ public class Controleur extends Application {
 	}
 
 	public void playSimulation() {
+		this.coefVitesse = 1;
 		this.dureeUnDeplacement = this.DUREE_UN_DEPLACEMENT_NORMAL;
 		this.pauseSimulation();
+		this.vueJeu.setTextLabelVitesse("x" + this.coefVitesse);
 		this.simulerPartie();
 		this.vueJeu.setImageViewPlayDisable(true);
-		this.vueJeu.setImageViewFastForwardDisable(false);
+		// this.vueJeu.setImageViewFastForwardDisable(false);
 		this.vueJeu.setImageViewPauseDisable(false);
 	}
 
 	public void fastForwardSimulation() {
-		this.dureeUnDeplacement = this.DUREE_UN_DEPLACEMENT_NORMAL / 8;
-		this.pauseSimulation();
+		this.stopThreadSimulerPartie();
+
+		switch (this.coefVitesse) {
+		case 1:
+			this.coefVitesse = 2;
+			break;
+		case 2:
+			this.coefVitesse = 4;
+			break;
+		case 4:
+			this.coefVitesse = 8;
+			break;
+		default:
+			this.coefVitesse = 1;
+			break;
+		}
+
+		this.dureeUnDeplacement = this.DUREE_UN_DEPLACEMENT_NORMAL / this.coefVitesse;
+		this.vueJeu.setTextLabelVitesse("x" + this.coefVitesse);
 		this.simulerPartie();
 		this.vueJeu.setImageViewPlayDisable(false);
-		this.vueJeu.setImageViewFastForwardDisable(true);
+		// this.vueJeu.setImageViewFastForwardDisable(false);
 		this.vueJeu.setImageViewPauseDisable(false);
 	}
 
 	public void pauseSimulation() {
+		this.stopThreadSimulerPartie();
+		this.coefVitesse = 1;
+		this.vueJeu.setTextLabelVitesse("x0");
+		this.vueJeu.setImageViewPlayDisable(false);
+		// this.vueJeu.setImageViewFastForwardDisable(false);
+		this.vueJeu.setImageViewPauseDisable(true);
+	}
+
+	private void stopThreadSimulerPartie() {
 		if ((this.threadSimulerPartie != null) && this.threadSimulerPartie.isAlive()) {
 			try {
 				this.sem.acquire();
@@ -394,9 +422,26 @@ public class Controleur extends Application {
 
 			}
 		}
-		this.vueJeu.setImageViewPlayDisable(false);
-		this.vueJeu.setImageViewFastForwardDisable(false);
-		this.vueJeu.setImageViewPauseDisable(true);
 	}
 
+	/**
+	 * 
+	 * @param piece
+	 *            : la piece a deplacer etant a sa position d'origine
+	 * @param deplacement
+	 *            : les cases constituant le trajet
+	 * @return
+	 */
+	private int calculDureeDeplacement(Piece piece, List<Case> deplacement) {
+		int coefDeplacement = Math.abs(deplacement.get(0).getColonne() - piece.getPosition().getColonne());
+
+		for (int i = 1; i < deplacement.size(); i++) {
+			coefDeplacement += Math.abs(deplacement.get(i - 1).getColonne() - deplacement.get(i).getColonne());
+		}
+		return (coefDeplacement * this.dureeUnDeplacement);
+	}
+
+	private int calculDureeCoup(int dureeDeplacement) {
+		return dureeDeplacement + (this.dureeUnDeplacement / 2);
+	}
 }

@@ -37,7 +37,10 @@ public class VueJeu implements Initializable {
 	private Button buttonQuitterPartie;
 
 	@FXML
-	private Label labelTimer;
+	private Label labelVitesse;
+
+	@FXML
+	private HBox hBoxVitesse;
 
 	@FXML
 	private Label labelNbCoups;
@@ -272,6 +275,15 @@ public class VueJeu implements Initializable {
 	public void setSimulationMode(boolean simulation) {
 		if (!simulation) {
 			this.vBox.getChildren().remove(this.hBoxSimulation);
+			this.vBox.getChildren().remove(this.hBoxVitesse);
 		}
+	}
+
+	public void setTextLabelVitesse(String text) {
+		this.labelVitesse.setText(text);
+	}
+
+	public void setTextLabelNbCoups(String text) {
+		this.labelNbCoups.setText(text);
 	}
 }

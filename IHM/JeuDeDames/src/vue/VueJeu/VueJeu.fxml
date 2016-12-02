@@ -38,10 +38,10 @@
                   </ImageView>
                </children>
             </HBox>
-            <HBox prefHeight="17.0" prefWidth="165.0">
+            <HBox fx:id="hBoxVitesse" prefHeight="17.0" prefWidth="165.0">
                <children>
-                  <Label prefHeight="17.0" prefWidth="54.0" text="Temps : " />
-                  <Label fx:id="labelTimer" text="0" />
+                  <Label prefHeight="17.0" text="Vitesse : " />
+                  <Label fx:id="labelVitesse" text="x0" />
                </children>
             </HBox>
             <HBox prefHeight="20.0" prefWidth="165.0">
