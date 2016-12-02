@@ -221,7 +221,6 @@ public class PlateauGroup extends Group {
 	}
 
 	public void deplacerPiece(Piece piece, List<Case> deplacement, int dureeDeplacement) {
-		System.out.println(deplacement.get(deplacement.size() - 1));
 		double largeurCase = this.plateauCanvas.getPlateauWidth() / Plateau.NB_LIGNES;
 		double hauteurCase = this.plateauCanvas.getPlateauHeight() / Plateau.NB_COLONNES;
 		double margin = 5;
@@ -372,10 +371,8 @@ public class PlateauGroup extends Group {
 					double margin = 5;
 					String imagePath = null;
 					if (pion.getCouleur() == Couleur.BLANC) {
-						System.out.println("Blanc");
 						imagePath = PlateauGroup.this.classLoader.getResource("dame_blanche.png").toString();
 					} else {
-						System.out.println("Noir");
 						imagePath = PlateauGroup.this.classLoader.getResource("dame_noire.png").toString();
 					}
 					Image img = new Image(imagePath, largeurCase - (2 * margin), hauteurCase - (2 * margin), false,

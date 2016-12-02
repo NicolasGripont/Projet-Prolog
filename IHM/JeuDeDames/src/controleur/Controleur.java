@@ -28,7 +28,6 @@ import modele.Pion;
 import modele.Plateau;
 import modele.TypeJoueur;
 import vue.VueJeu.VueJeu;
-import vue.VueMenu.EtatSimulation;
 import vue.VueMenu.VueMenu;
 
 public class Controleur extends Application {
@@ -54,9 +53,8 @@ public class Controleur extends Application {
 	private Jeu jeu;
 
 	private Thread threadSimulerPartie = null;
-	private final Semaphore sem = new Semaphore(1);
 
-	private final EtatSimulation etatSimulation = null;
+	private final Semaphore sem = new Semaphore(1);
 
 	@Override
 	public void start(Stage primaryStage) {
@@ -151,17 +149,41 @@ public class Controleur extends Application {
 
 	public void jouerCoupIA() {
 		Coup coup = this.getCoupIA();
-		this.jouerCoup(coup.getPiecesBlanches(), coup.getPiecesNoires(), coup.getPiece(), coup.getDeplacement());
-		if (this.joueurCourant == this.joueur1) {
-			this.joueurCourant = this.joueur2;
+
+		/**
+		 * 0 : Blancs gagnent ,1 : Noir gagnent ,2 : Egalite ,3 : Non terminé
+		 */
+		if (coup.getEtat() != 3) {
+			this.pauseSimulation();
+			this.vueJeu.setImageViewPlayDisable(true);
+			this.vueJeu.setImageViewFastForwardDisable(true);
+			this.vueJeu.setImageViewPauseDisable(true);
+			Alert alert = new Alert(AlertType.INFORMATION);
+			alert.setTitle("Partie terminée");
+			String message = "Egalité !"; // coup = 2
+			if (coup.getEtat() == 0) {
+				alert.setHeaderText(this.joueur1.getNom() + " a gagné !");
+			} else if (coup.getEtat() == 1) {
+				alert.setHeaderText(this.joueur2.getNom() + " a gagné !");
+			}
+			Optional<ButtonType> result = alert.showAndWait();
+			if (result.get() == ButtonType.OK) { // Quitter
+				Controleur.this.stage.close();
+			}
 		} else {
-			this.joueurCourant = this.joueur1;
+			this.jouerCoup(coup.getPiecesBlanches(), coup.getPiecesNoires(), coup.getPiece(), coup.getDeplacement());
+			if (this.joueurCourant == this.joueur1) {
+				this.joueurCourant = this.joueur2;
+			} else {
+				this.joueurCourant = this.joueur1;
+			}
 		}
 	}
 
 	public Coup getCoupIA() {
 		Plateau plateauClone = this.plateau.clone();
 		Coup coup = this.jeu.play(this.joueurCourant.getId(), plateauClone.getBlanches(), plateauClone.getNoires());
+		System.out.println(coup.getEtat());
 		return coup;
 	}
 
@@ -352,7 +374,7 @@ public class Controleur extends Application {
 	}
 
 	public void fastForwardSimulation() {
-		this.dureeUnDeplacement = this.DUREE_UN_DEPLACEMENT_NORMAL / 2;
+		this.dureeUnDeplacement = this.DUREE_UN_DEPLACEMENT_NORMAL / 8;
 		this.pauseSimulation();
 		this.simulerPartie();
 		this.vueJeu.setImageViewPlayDisable(false);
