@@ -6,10 +6,10 @@
 %%%% Test is the game is finished %%%
 gameover(Blancs,Noirs,_,_,Winner) :- winner(Winner, Blancs, Noirs), !.  % There exists a winning configuration: We cut!
 gameover(Blancs,Noirs,Blancs2,Noirs2,egalite) :- length(Noirs, X), length(Noirs2, X), length(Blancs, Y), length(Blancs2, Y),
-										cptDraw(CptDraw), NewCptDraw is CptDraw+1, retract(cptDraw(CptDraw)), assert(cptDraw(NewCptDraw)),
+										cptDraw(CptDraw), NewCptDraw is CptDraw+1, retractall(cptDraw(_)), assert(cptDraw(NewCptDraw)),
 										NewCptDraw == 25,!.
 gameover(Blancs,Noirs,Blancs2,Noirs2,continuer) :- length(Noirs, X), length(Noirs2, X), length(Blancs, Y), length(Blancs2, Y),!.
-gameover(_,_,_,_,continuer) :- cptDraw(CptDraw), retract(cptDraw(CptDraw)), assert(cptDraw(0)), false.
+gameover(_,_,_,_,continuer) :- retractall(cptDraw(_)), assert(cptDraw(0)).
 
 %%%% Test de victoire pour les joueurs.
 winner(blanc, Blancs, Noirs) :- (length(Noirs, 0);(movePossiblePlayer(noir, Blancs, Noirs, Noirs, [],_))), !.
@@ -109,7 +109,8 @@ chercheCaseVideHautGauche(_,_,_,_,_,[]).
 % chercheCaseVideHautGauche(4,4,[],[],[[2,2]],R).
 
 %dame
-mangeHautGauche([X,Y,dame],blanc,Blancs,Noirs,Retour):- cherchePionHautGauche(X,Y,blanc,Blancs,Noirs,R),
+mangeHautGauche([X,Y,dame],blanc,Blancs,Noirs,Retour):- cherchePionHautGauche(X,Y,blanc,Blancs,Noirs,Pion),
+		chercheCaseVideHautGauche(X,Y,Blancs,Noirs, [], R),
 		member([X2,Y2,_],Noirs),not(member([X3,Y3,_],Noirs)),not(member([X3,Y3,_],Blancs)),!,delete(Noirs,[X2,Y2,_],Noirs2),delete(Blancs,[X,Y,pion],Blancs2)
 		,mangeTouteDirection([X3,Y3,pion],blanc,[[X3,Y3,pion]|Blancs2],Noirs2,R),creerMouvement([[X3,Y3,pion]|Blancs2],Noirs2,R,Sortie),ajoutMouvement([X3,Y3],Sortie,Retour).
 
@@ -237,32 +238,34 @@ applyMoves(Blancs, Noirs) :- retractall(blancs(_)), retractall(noirs(_)),assert(
 
 %lancement du jeu
 % play(blanc,[[1,1,pion],[2,2,pion]],[[5,5,pion],[8,6,pion]],B,N,L,Pion).
-play(Player,Blancs,Noirs,Blancs3,Noirs3,ListeMouvement,Pion,Etat):-applyMoves(Blancs, Noirs),ia(Player,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement, Pion),
-		changePionDame(Player, Blancs2, Noirs2, ListeMouvement, Pion, Blancs3, Noirs3),
-		gameover(Blancs,Noirs,Blancs3,Noirs3,Etat).
+play(Player,Blancs,Noirs,Blancs3,Noirs3,ListeMouvement,Pion,Etat):- ia(Player,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement, Pion),writeln("ok1"),
+		changePionDame(Player, Blancs2, Noirs2, ListeMouvement, Pion, Blancs3, Noirs3),writeln("ok2"),
+		gameover(Blancs,Noirs,Blancs3,Noirs3,Etat),writeln("ok3").
 
-play(Player):-  write('New turn for: '), ((Player==blanc, writeln('Blancs'));(Player==noir, writeln('Noirs'))),
-		noirs(Noirs),
-		blancs(Blancs),
+% play(noir, [[1,6,pion],[1,4,pion],[4,5,pion],[7,6,pion],[9,6,pion],[0,7,pion],[2,7,pion],[4,7,pion],[6,7,pion],[8,7,pion],[1,8,pion],[3,8,pion],[5,8,pion],[7,8,pion],[9,8,pion],[0,9,pion],[2,9,pion],[4,9,pion],[6,9,pion],[8,9,pion]],[[1,0,pion],[3,0,pion],[5,0,pion],[7,0,pion],[9,0,pion],[0,1,pion],[2,1,pion],[4,1,pion],[6,1,pion],[8,1,pion],[1,2,pion],[3,2,pion],[5,2,pion],[7,2,pion],[9,2,pion],[0,3,pion],[2,3,pion],[5,4,pion],[6,3,pion],[7,4,pion]],B,N,L,Pion,Etat).
 
-		display1(0,10,_),
-		writeln(" "),
+% play(Player):-  write('New turn for: '), ((Player==blanc, writeln('Blancs'));(Player==noir, writeln('Noirs'))),
+		% noirs(Noirs),
+		% blancs(Blancs),
 
-		ia(Player,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement, E),
+		% display1(0,10,_),
+		% writeln(" "),
 
-		%TODO
-		%Envoi données
+		% ia(Player,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement, E),
 
-		changePionDame(Player, Blancs2, Noirs2, ListeMouvement, E, Blancs3, Noirs3),
+		% %TODO
+		% %Envoi données
 
-		not(((gameover(blanc), !, write('Game is Over. Winner: '), writeln('Blancs'));
-				(gameover(noir), !, write('Game is Over. Winner: '), writeln('Noirs'));
-		(gameover('Draw', Blancs3, Noirs3), !, writeln('Game is Over. Draw')))),
+		% changePionDame(Player, Blancs2, Noirs2, ListeMouvement, E, Blancs3, Noirs3),
 
-		applyMoves(Blancs3, Noirs3),
-	    changePlayer(Player,NextPlayer), % Change the player before next turn
-	    sleep(1),
-		play(NextPlayer). % next turn!
+		% not(((gameover(blanc), !, write('Game is Over. Winner: '), writeln('Blancs'));
+				% (gameover(noir), !, write('Game is Over. Winner: '), writeln('Noirs'));
+		% (gameover('Draw', Blancs3, Noirs3), !, writeln('Game is Over. Draw')))),
+
+		% applyMoves(Blancs3, Noirs3),
+	    % changePlayer(Player,NextPlayer), % Change the player before next turn
+	    % sleep(1),
+		% play(NextPlayer). % next turn!
 
 % ATTENTION : play est commenté pour pouvoir utiliser l'IHM
 init :-retractall(blancs(_)), retractall(noirs(_)), retractall(cptDraw(_)), creerListe(noir,L1),creerListe(blanc,L2),assert(noirs(L1)),assert(blancs(L2)), assert(cptDraw(0)).%, play(blanc).
@@ -303,7 +306,7 @@ server(Port) :-	http_server(http_dispatch, [port(Port)]).
 % Prédicat init qui est appellé quand on appelle l'url /init
 % Le prédicat lance le jeu en appelant la méthode init du jeu
 % Le prédicat renvoie la liste des pions blancs et noirs et le joueur qui doit jouer en format JSON
-init_server(_Request) :- 	init,
+init_server(_Request) :-	init,
 							noirs(ListeNoirs),
 							blancs(ListeBlancs),
 							build_reply_init(ListeBlancs,ListeNoirs, 0, JSON),
@@ -314,26 +317,26 @@ init_server(_Request) :- 	init,
 % Le prédicat appelle le predicat ia qui va jouer un cout
 % Le prédicat renvoie la liste des pions blancs et noirs et le joueur qui doit jouer en format JSON
 play_server(Request) :- http_read_json(Request, JsonIn,[json_object(term)]),
- 						json_to_prolog(JsonIn, Data), game_get_data_informations(Data, J, Blancs, Noirs),
- 						play(J,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,Pion,Etat),
+						json_to_prolog(JsonIn, Data), game_get_data_informations(Data, J, Blancs, Noirs),
+						play(J,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,Pion,Etat),
 						build_reply_play(Blancs2,Noirs2,J,Pion,ListeMouvement,Etat,JSON),
 						%format(user_output,"json is: ~p~n",[JSON]),
-				   		reply_json(JSON).
+						reply_json(JSON).
 
 
 % Prédicat game_get_data_informations qui permet de recuperer la Liste Blancs, la Liste Noirs et le joueur dans un objet JSON de type game
-game_get_data_informations(Data, J, Blancs, Noirs):- 	game_get_joueur(Data, J), 
-														game_get_blancs(Data, LB), 
+game_get_data_informations(Data, J, Blancs, Noirs):-	game_get_joueur(Data, J),
+														game_get_blancs(Data, LB),
 														convert_list_pion_json_to_object(LB,Blancs),
 														game_get_noirs(Data, LN),
 														convert_list_pion_json_to_object(LN,Noirs).
 
 % Prédicat game_get_data_informations qui permet de recuperer le numero du joueur dans un objet JSON de type game
-game_get_joueur(game(0,_,_),blanc). 
-game_get_joueur(game(1,_,_),noir). 
+game_get_joueur(game(0,_,_),blanc).
+game_get_joueur(game(1,_,_),noir).
 
 % Prédicat game_get_data_informations qui permet de recuperer la Liste Blancs dans un objet JSON de type game
-game_get_blancs(game(_,Y,_),Y). 
+game_get_blancs(game(_,Y,_),Y).
 
 % Prédicat game_get_data_informations qui permet de recuperer la Liste Noirs dans un objet JSON de type game
 game_get_noirs(game(_,_,Z),Z).
@@ -341,13 +344,13 @@ game_get_noirs(game(_,_,Z),Z).
 % Predicat qui permet de construire le JSON relatif à la reponse d'init
 %	ListeBlancs = Liste contenant des pions et des dames
 %	ListeNoirs = Liste contenant des pions et des dames
-build_reply_init(ListeBlancs,ListeNoirs,Joueur,JSON) :- 	convert_list_pion_to_json_object(ListeBlancs, LB), 
+build_reply_init(ListeBlancs,ListeNoirs,Joueur,JSON) :-		convert_list_pion_to_json_object(ListeBlancs, LB),
 															convert_list_pion_to_json_object(ListeNoirs, LN),
-															J = game(Joueur, LB, LN), 
+															J = game(Joueur, LB, LN),
 															prolog_to_json(J,JSON).
 
 
-build_reply_play(ListeBlancs,ListeNoirs,Joueur,Pion,ListeMouvement,Etat,JSON) :- convert_list_pion_to_json_object(ListeBlancs, LB), 
+build_reply_play(ListeBlancs,ListeNoirs,Joueur,Pion,ListeMouvement,Etat,JSON) :- convert_list_pion_to_json_object(ListeBlancs, LB),
 																			convert_list_pion_to_json_object(ListeNoirs, LN),
 																			convert_list_position_to_json_object(ListeMouvement, LM),
 																			convert_pion_to_json_object_pion(Pion, P1),
@@ -355,7 +358,7 @@ build_reply_play(ListeBlancs,ListeNoirs,Joueur,Pion,ListeMouvement,Etat,JSON) :-
 																			changePlayer(Joueur,JPredicat),
 																			build_joueur_predicat_int(JPredicat,JInt),
 																			build_etat_predicat_int(Etat,EInt),
-																			JSONProlog = turn(EInt,JInt, LB, LN, P, LM), 
+																			JSONProlog = turn(EInt,JInt, LB, LN, P, LM),
 																			prolog_to_json(JSONProlog,JSON).
 
 % Predicat qui permet de construire le int d'un joueur avec le predicat
@@ -385,8 +388,8 @@ convert_list_position_to_json_object([], []).
 convert_list_position_to_json_object([H|T],O2) :- convert_list_position_to_json_object(T, O), convert_position_to_json_object_position(H,X), append([X],O,O2), !.
 
 % Méthode de conversion d'un pion ou d'une dame ([1, 2, pion] ou [1, 2, dame]) en Objet JSON Prolog (pion(1,2) ou dame(1,2))
-convert_pion_to_json_object_pion(L,O) :- 	convert_pion_to_json_object_pion_X(L,X), 
-											convert_pion_to_json_object_pion_Y(L,X,Y), 
+convert_pion_to_json_object_pion(L,O) :-	convert_pion_to_json_object_pion_X(L,X),
+											convert_pion_to_json_object_pion_Y(L,X,Y),
 											convert_pion_to_json_object_pion_Name(L,X,Y,O), !.
 
 convert_pion_to_json_object_pion_X([H|_],X) :- X = H.
@@ -399,8 +402,8 @@ convert_pion_to_json_object_pion_Name([dame|_], X, Y, O) :- O = dame(X,Y).
 convert_pion_to_json_object_pion_Name([_|T], X, Y, O) :- convert_pion_to_json_object_pion_Name(T,X,Y,O).
 
 % Méthode de conversion d'un pion ou d'une dame JSON (pion(1,2) ou dame(1,2)) en Objet Prolog ([1, 2, pion] ou [1, 2, dame])
-convert_pion_json_to_object_pion(L,O4) :- 	convert_pion_json_to_object_pion_X(L,X), 
-											convert_pion_json_to_object_pion_Y(L,Y), 
+convert_pion_json_to_object_pion(L,O4) :-	convert_pion_json_to_object_pion_X(L,X),
+											convert_pion_json_to_object_pion_Y(L,Y),
 											convert_pion_json_to_object_pion_Name(L,N),
 											append([N],[],O2),
 											append([Y],O2,O3),
