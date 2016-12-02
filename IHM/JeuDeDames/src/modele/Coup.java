@@ -3,8 +3,11 @@ package modele;
 import java.util.List;
 
 public class Coup {
+	/**
+	 * 0 : Blancs gagnent ,1 : Noir gagnent ,2 : Egalite ,3 : Non terminé
+	 */
 	int etat;
-	
+
 	List<Piece> piecesBlanches;
 
 	List<Piece> piecesNoires;
@@ -15,6 +18,7 @@ public class Coup {
 
 	public Coup() {
 		super();
+		this.etat = 0;
 		this.piecesNoires = null;
 		this.piecesBlanches = null;
 		this.deplacement = null;
@@ -37,9 +41,9 @@ public class Coup {
 		this.deplacement = deplacement;
 		this.piece = piece;
 	}
-	
+
 	public int getEtat() {
-		return etat;
+		return this.etat;
 	}
 
 	public void setEtat(int etat) {

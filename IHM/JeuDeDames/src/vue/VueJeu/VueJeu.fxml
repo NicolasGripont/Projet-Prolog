@@ -17,9 +17,27 @@
       </Label>
    </top>
    <right>
-      <VBox alignment="CENTER" prefHeight="363.0" prefWidth="165.0" spacing="30.0" BorderPane.alignment="CENTER">
+      <VBox fx:id="vBox" alignment="CENTER" prefHeight="363.0" prefWidth="165.0" spacing="30.0" BorderPane.alignment="CENTER">
          <children>
-            <Button fx:id="buttonSimuler" mnemonicParsing="false" onMouseClicked="#onButtonSimulerClicked" text="Lancer Simulation" />
+            <HBox fx:id="hBoxSimulation" alignment="CENTER" prefHeight="42.0" prefWidth="165.0">
+               <children>
+                  <ImageView fx:id="imageViewPlay" fitHeight="32.0" fitWidth="32.0" onMouseClicked="#onImageViewPlayClicked" onMouseEntered="#onImageViewPlayEntered" onMouseExited="#onImageViewPlayExited" pickOnBounds="true" preserveRatio="true">
+                     <HBox.margin>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </HBox.margin>
+                  </ImageView>
+                  <ImageView fx:id="imageViewFastForward" fitHeight="32.0" fitWidth="32.0" onMouseClicked="#onImageViewFastForwardClicked" onMouseEntered="#onImageViewFastForwardEntered" onMouseExited="#onImageViewFastForwardExited" pickOnBounds="true" preserveRatio="true">
+                     <HBox.margin>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </HBox.margin>
+                  </ImageView>
+                  <ImageView fx:id="imageViewPause" fitHeight="32.0" fitWidth="32.0" onMouseClicked="#onImageViewPauseClicked" onMouseEntered="#onImageViewPauseEntered" onMouseExited="#onImageViewPauseExited" pickOnBounds="true" preserveRatio="true">
+                     <HBox.margin>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </HBox.margin>
+                  </ImageView>
+               </children>
+            </HBox>
             <HBox prefHeight="17.0" prefWidth="165.0">
                <children>
                   <Label prefHeight="17.0" prefWidth="54.0" text="Temps : " />

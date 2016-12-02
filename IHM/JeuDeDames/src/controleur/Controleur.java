@@ -32,6 +32,10 @@ import vue.VueMenu.VueMenu;
 
 public class Controleur extends Application {
 
+	private final int DUREE_UN_DEPLACEMENT_NORMAL = 1000;
+
+	private int dureeUnDeplacement = this.DUREE_UN_DEPLACEMENT_NORMAL;
+
 	protected Stage stage;
 
 	private VueJeu vueJeu;
@@ -49,6 +53,7 @@ public class Controleur extends Application {
 	private Jeu jeu;
 
 	private Thread threadSimulerPartie = null;
+
 	private final Semaphore sem = new Semaphore(1);
 
 	@Override
@@ -71,17 +76,8 @@ public class Controleur extends Application {
 			this.stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 				@Override
 				public void handle(WindowEvent we) {
-					if ((Controleur.this.threadSimulerPartie != null)
-							&& Controleur.this.threadSimulerPartie.isAlive()) {
-						try {
-							Controleur.this.sem.acquire();
-							Controleur.this.threadSimulerPartie.interrupt();
-							Controleur.this.vueJeu.setTextButtonSimuler("Reprendre simulation");
-							Controleur.this.threadSimulerPartie = null;
-							Controleur.this.sem.release();
-						} catch (InterruptedException e) {
-
-						}
+					if (Controleur.this.vueJeu != null) {
+						Controleur.this.pauseSimulation();
 					}
 					Alert alert = new Alert(AlertType.CONFIRMATION);
 					alert.setTitle("Quitter");
@@ -104,17 +100,7 @@ public class Controleur extends Application {
 	}
 
 	public void cliquerSurQuitterPartie() {
-		if ((this.threadSimulerPartie != null) && this.threadSimulerPartie.isAlive()) {
-			try {
-				this.sem.acquire();
-				this.threadSimulerPartie.interrupt();
-				this.vueJeu.setTextButtonSimuler("Reprendre simulation");
-				this.threadSimulerPartie = null;
-				this.sem.release();
-			} catch (InterruptedException e) {
-
-			}
-		}
+		this.pauseSimulation();
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 		alert.setTitle("Quitter");
 		alert.setHeaderText("Voulez-vous vraiment arrêter la partie et revenir à l'écran d'accueil ?");
@@ -163,17 +149,41 @@ public class Controleur extends Application {
 
 	public void jouerCoupIA() {
 		Coup coup = this.getCoupIA();
-		this.jouerCoup(coup.getPiecesBlanches(), coup.getPiecesNoires(), coup.getPiece(), coup.getDeplacement());
-		if (this.joueurCourant == this.joueur1) {
-			this.joueurCourant = this.joueur2;
+
+		/**
+		 * 0 : Blancs gagnent ,1 : Noir gagnent ,2 : Egalite ,3 : Non terminé
+		 */
+		if (coup.getEtat() != 3) {
+			this.pauseSimulation();
+			this.vueJeu.setImageViewPlayDisable(true);
+			this.vueJeu.setImageViewFastForwardDisable(true);
+			this.vueJeu.setImageViewPauseDisable(true);
+			Alert alert = new Alert(AlertType.INFORMATION);
+			alert.setTitle("Partie terminée");
+			String message = "Egalité !"; // coup = 2
+			if (coup.getEtat() == 0) {
+				alert.setHeaderText(this.joueur1.getNom() + " a gagné !");
+			} else if (coup.getEtat() == 1) {
+				alert.setHeaderText(this.joueur2.getNom() + " a gagné !");
+			}
+			Optional<ButtonType> result = alert.showAndWait();
+			if (result.get() == ButtonType.OK) { // Quitter
+				Controleur.this.stage.close();
+			}
 		} else {
-			this.joueurCourant = this.joueur1;
+			this.jouerCoup(coup.getPiecesBlanches(), coup.getPiecesNoires(), coup.getPiece(), coup.getDeplacement());
+			if (this.joueurCourant == this.joueur1) {
+				this.joueurCourant = this.joueur2;
+			} else {
+				this.joueurCourant = this.joueur1;
+			}
 		}
 	}
 
 	public Coup getCoupIA() {
 		Plateau plateauClone = this.plateau.clone();
 		Coup coup = this.jeu.play(this.joueurCourant.getId(), plateauClone.getBlanches(), plateauClone.getNoires());
+		System.out.println(coup.getEtat());
 		return coup;
 	}
 
@@ -189,7 +199,7 @@ public class Controleur extends Application {
 	 *            liste des cases qui par lesquelles passe la piece 'piece'
 	 * 
 	 */
-	public void jouerCoup(List<Piece> blanches, List<Piece> noires, Piece piece, List<Case> deplacement) {
+	private void jouerCoup(List<Piece> blanches, List<Piece> noires, Piece piece, List<Case> deplacement) {
 		Case positionInitiale = this.plateau.getCases()[piece.getPosition().getLigne()][piece.getPosition()
 				.getColonne()];
 		Piece piecePlateau = positionInitiale.getPiece();
@@ -222,8 +232,8 @@ public class Controleur extends Application {
 			this.plateau.supprimerPiece(p);
 		}
 
-		int dureeDeplacement = (deplacement.size() * 1000);
-		int dureeCoup = dureeDeplacement + 500;
+		int dureeDeplacement = (deplacement.size() * this.dureeUnDeplacement);
+		int dureeCoup = dureeDeplacement + (this.dureeUnDeplacement / 2);
 		// appelle vue
 		this.vueJeu.deplacerPiece(piecePlateau, deplacement, dureeDeplacement);
 		this.vueJeu.tuerPieces(piecesMortes, dureeCoup);
@@ -288,18 +298,18 @@ public class Controleur extends Application {
 			this.stage.setScene(scene);
 			this.stage.show();
 
-			// Si on a 2 IA on affiche le bouton simuler la partie
-			this.vueJeu.setVisibleButtonSimuler((this.joueur1.getTypeJoueur() != TypeJoueur.JOUEUR_REEL)
+			// Si on a pas 2 IA on masque les boutons de simulation
+			this.pauseSimulation();
+			this.vueJeu.setSimulationMode((this.joueur1.getTypeJoueur() != TypeJoueur.JOUEUR_REEL)
 					&& (this.joueur1.getTypeJoueur() != TypeJoueur.INCONNU)
 					&& (this.joueur2.getTypeJoueur() != TypeJoueur.JOUEUR_REEL)
 					&& (this.joueur2.getTypeJoueur() != TypeJoueur.INCONNU));
-
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	public void simulerPartie() {
+	private void simulerPartie() {
 		if (this.threadSimulerPartie == null) {
 			try {
 				this.sem.acquire();
@@ -330,14 +340,15 @@ public class Controleur extends Application {
 											}
 											Controleur.this.sem.release();
 										} catch (InterruptedException e) {
-											// TODO Auto-generated catch block
+
 										}
 
 									}
 								});
-								int dureeDeplacement = (coup.getDeplacement().size() * 1000);
-								int dureeCoup = dureeDeplacement + 500;
-								Thread.sleep(dureeCoup + 500);
+								int dureeDeplacement = (coup.getDeplacement().size()
+										* Controleur.this.dureeUnDeplacement);
+								int dureeCoup = dureeDeplacement + (Controleur.this.dureeUnDeplacement / 2);
+								Thread.sleep(dureeCoup + (Controleur.this.dureeUnDeplacement / 2));
 							} catch (InterruptedException e) {
 								return;
 							}
@@ -346,22 +357,46 @@ public class Controleur extends Application {
 				};
 				this.threadSimulerPartie.setDaemon(true);
 				this.threadSimulerPartie.start();
-				this.vueJeu.setTextButtonSimuler("Mettre en pause");
-				this.sem.release();
-			} catch (InterruptedException e) {
-
-			}
-		} else if (this.threadSimulerPartie.isAlive()) {
-			try {
-				this.sem.acquire();
-				this.threadSimulerPartie.interrupt();
-				this.vueJeu.setTextButtonSimuler("Reprendre simulation");
-				this.threadSimulerPartie = null;
 				this.sem.release();
 			} catch (InterruptedException e) {
 
 			}
 		}
+	}
+
+	public void playSimulation() {
+		this.dureeUnDeplacement = this.DUREE_UN_DEPLACEMENT_NORMAL;
+		this.pauseSimulation();
+		this.simulerPartie();
+		this.vueJeu.setImageViewPlayDisable(true);
+		this.vueJeu.setImageViewFastForwardDisable(false);
+		this.vueJeu.setImageViewPauseDisable(false);
+	}
+
+	public void fastForwardSimulation() {
+		this.dureeUnDeplacement = this.DUREE_UN_DEPLACEMENT_NORMAL / 8;
+		this.pauseSimulation();
+		this.simulerPartie();
+		this.vueJeu.setImageViewPlayDisable(false);
+		this.vueJeu.setImageViewFastForwardDisable(true);
+		this.vueJeu.setImageViewPauseDisable(false);
+	}
+
+	public void pauseSimulation() {
+		if ((this.threadSimulerPartie != null) && this.threadSimulerPartie.isAlive()) {
+			try {
+				this.sem.acquire();
+				this.threadSimulerPartie.interrupt();
+				this.threadSimulerPartie = null;
+
+				this.sem.release();
+			} catch (InterruptedException e) {
+
+			}
+		}
+		this.vueJeu.setImageViewPlayDisable(false);
+		this.vueJeu.setImageViewFastForwardDisable(false);
+		this.vueJeu.setImageViewPauseDisable(true);
 	}
 
 }
