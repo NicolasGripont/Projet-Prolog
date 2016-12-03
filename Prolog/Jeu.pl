@@ -398,7 +398,7 @@ explore(Camp, Blancs, Noirs, Pions, M, Cpt) :-
     Cpt > 0, NewCpt is Cpt-1, movePossiblePlayer(Camp, Blancs, Noirs, Pions, PionsMoves, mange), PionsMoves \== [], !, changePlayer(Camp, Camp2), explorePion(Camp2, PionsMoves, M, NewCpt).
 % explore avec deplacement
 explore(Camp, Blancs, Noirs, Pions, M, Cpt) :-
-    Cpt > 0, NewCpt is Cpt-1, movePossiblePlayer(Camp, Blancs, Noirs, Pions, PionsMoves, deplacement),PionsMoves \== [],!, changePlayer(Camp, Camp2), writeln(PionsMoves),explorePion(Camp2, PionsMoves, M, NewCpt).
+    Cpt > 0, NewCpt is Cpt-1, movePossiblePlayer(Camp, Blancs, Noirs, Pions, PionsMoves, deplacement),PionsMoves \== [],!, changePlayer(Camp, Camp2), explorePion(Camp2, PionsMoves, M, NewCpt).
 % critère d'arrêt de la récursivité -> Cpt à 0 ou pas de move possible
 explore(_,_,_,_,[],_).
 
