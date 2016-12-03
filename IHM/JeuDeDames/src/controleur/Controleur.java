@@ -183,6 +183,7 @@ public class Controleur extends Application {
 		/**
 		 * 0 : Blancs gagnent ,1 : Noir gagnent ,2 : Egalite ,3 : Non terminé
 		 */
+		System.out.println("Etat : " + coup.getEtat());
 		if (coup.getEtat() != 3) {
 			this.pauseSimulation();
 			this.vueJeu.setImageViewPlayDisable(true);
@@ -357,6 +358,9 @@ public class Controleur extends Application {
 						while (Controleur.this.threadSimulerPartie.isInterrupted() == false) {
 							try {
 								final Coup coup = Controleur.this.getCoupIA();
+								if (coup.getEtat() != 3) {
+									System.out.println(coup);
+								}
 								Platform.runLater(new Runnable() {
 									@Override
 									public void run() {
@@ -376,10 +380,34 @@ public class Controleur extends Application {
 
 									}
 								});
+
 								int dureeDeplacement = Controleur.this.calculDureeDeplacement(coup.getPiece(),
 										coup.getDeplacement());
 								int dureeCoup = Controleur.this.calculDureeCoup(dureeDeplacement);
 								Thread.sleep(dureeCoup + (Controleur.this.dureeUnDeplacement / 2));
+								if (coup.getEtat() != 3) {
+									Platform.runLater(new Runnable() {
+										@Override
+										public void run() {
+											Controleur.this.finSimulation();
+											Controleur.this.vueJeu.setImageViewPlayDisable(true);
+											Controleur.this.vueJeu.setImageViewFastForwardDisable(true);
+											Controleur.this.vueJeu.setImageViewPauseDisable(true);
+											Alert alert = new Alert(AlertType.INFORMATION);
+											alert.setTitle("Partie terminée");
+											String message = "Egalité !";
+											if (coup.getEtat() == 0) {
+												message = Controleur.this.joueur1.getNom() + " a gagné !";
+											} else if (coup.getEtat() == 1) {
+												message = Controleur.this.joueur2.getNom() + " a gagné !";
+											}
+											alert.setHeaderText(message);
+											alert.showAndWait();
+											Controleur.this.finSimulation();
+										}
+									});
+									break;// fin simulation
+								}
 							} catch (InterruptedException e) {
 								return;
 							}
@@ -436,6 +464,12 @@ public class Controleur extends Application {
 		this.vueJeu.setTextLabelVitesse("x0");
 		this.vueJeu.setImageViewPlayDisable(false);
 		this.vueJeu.setImageViewPauseDisable(true);
+	}
+
+	public void finSimulation() {
+		this.stopThreadSimulerPartie();
+		this.vueJeu.setTextLabelVitesse("x0");
+		this.vueJeu.setSimulationMode(false);
 	}
 
 	private void stopThreadSimulerPartie() {
@@ -517,10 +551,6 @@ public class Controleur extends Application {
 	}
 
 	public void caseEnSurBrillanceSelectionnee(Case c) {
-		// List<Coup> coups =
-		// this.mapCoupsJoueurCourant.get(this.getPieceMapCoupsJouerCourant(
-		// this.pieceCourante.getPosition().getLigne(),
-		// this.pieceCourante.getPosition().getColonne()));
 		int nbEtapes = this.coupsPossiblesCourants.get(0).getDeplacement().size();
 
 		Case nouvelleCase = this.plateau.getCases()[c.getLigne()][c.getColonne()];
