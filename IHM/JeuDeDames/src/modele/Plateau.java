@@ -125,4 +125,16 @@ public class Plateau {
 		return plateau;
 	}
 
+	public Dame promouvoirPion(Pion pion) {
+		Dame dame = new Dame(pion.getCouleur(), pion.getPosition());
+		dame.getPosition().setPiece(dame);
+		if (pion.getCouleur() == Couleur.BLANC) {
+			this.blanches.remove(pion);
+			this.blanches.add(dame);
+		} else {
+			this.noires.remove(pion);
+			this.noires.add(dame);
+		}
+		return dame;
+	}
 }

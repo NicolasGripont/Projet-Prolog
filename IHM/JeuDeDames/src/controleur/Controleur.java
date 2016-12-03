@@ -172,7 +172,6 @@ public class Controleur extends Application {
 				this.stage.setScene(scene);
 				this.stage.show();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -186,7 +185,8 @@ public class Controleur extends Application {
 		this.vueJeu.dessinerPlateau();
 	}
 
-	public void jouerCoupIA() {
+	// TODO : a revoir et faire en fonction de l'ia
+	private void jouerCoupIA() {
 		Coup coup = this.getCoupIA();
 
 		/**
@@ -195,6 +195,8 @@ public class Controleur extends Application {
 		System.out.println("Etat : " + coup.getEtat());
 		if (coup.getEtat() != 3) {
 			this.pauseSimulation();
+			// TODO : Mettre dans un methode a part car appeler aussi dans
+			// simulation
 			this.vueJeu.setImageViewPlayDisable(true);
 			this.vueJeu.setImageViewFastForwardDisable(true);
 			this.vueJeu.setImageViewPauseDisable(true);
@@ -284,8 +286,8 @@ public class Controleur extends Application {
 						|| ((piecePlateau.getPosition().getLigne() == (Plateau.NB_LIGNES - 1))
 								&& (piecePlateau.getCouleur() == Couleur.NOIR)))) {
 
-			Dame dame = new Dame(piecePlateau.getCouleur(), piecePlateau.getPosition());
-			dame.getPosition().setPiece(dame);
+			Dame dame = this.plateau.promouvoirPion((Pion) piecePlateau);
+
 			this.vueJeu.creerDame((Pion) piecePlateau, dame, dureeCoup);
 		}
 		this.nbCoups++;
@@ -595,6 +597,8 @@ public class Controleur extends Application {
 			} else {
 				this.joueurCourant = this.joueur1;
 			}
+
+			// TODO tester si joueur ou IA
 			this.debuterCoupJoueeurReel();
 
 		} else {
@@ -665,4 +669,9 @@ public class Controleur extends Application {
 		}
 		return pieceATuer;
 	}
+
+	private void jouerUnCoup() {
+		// TODO : Tester le type de joueur et appeler la methode adéquat
+	}
+
 }
