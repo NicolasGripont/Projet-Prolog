@@ -11,6 +11,10 @@ gameover(Blancs,Noirs,Blancs2,Noirs2,egalite) :- length(Noirs, X), length(Noirs2
 gameover(Blancs,Noirs,Blancs2,Noirs2,continuer) :- length(Noirs, X), length(Noirs2, X), length(Blancs, Y), length(Blancs2, Y),!.
 gameover(_,_,_,_,continuer) :- retractall(cptDraw(_)), assert(cptDraw(0)).
 
+% tests
+% gameover([[5,4,pion],[8,7,pion],[4,3,pion],[7,4,pion],[5,8,pion],[2,2,pion]],[[1,1,pion]],[[5,4,pion],[8,7,pion],[4,3,pion],[7,4,pion],[5,8,pion],[0,0,dame]],[],Winner).
+
+
 %%%% Test de victoire pour les joueurs.
 winner(blanc, Blancs, Noirs) :- (length(Noirs, 0);(movePossiblePlayer(noir, Blancs, Noirs, Noirs, [],_))), !.
 winner(noir, Blancs, Noirs) :- (length(Blancs, 0);(movePossiblePlayer(blanc, Blancs, Noirs, Blancs, [],_))), !.
@@ -368,7 +372,6 @@ ia(noir,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,E):-movePossiblePlayer(noir, 
 
 
 %Changer un pion en dame
-
 changePionDame(blanc, Blancs, Noirs, ListeMouvement, [_,_,pion], Blancs2, Noirs) :- last(ListeMouvement, [X,0]), delete(Blancs, [X,0,_], L), append(L, [[X,0,dame]], Blancs2),!.
 changePionDame(noir, Blancs, Noirs, ListeMouvement, [_,_,pion], Blancs, Noirs2) :- last(ListeMouvement, [X,9]), delete(Noirs, [X,9,_], L), append(L, [[X,9,dame]], Noirs2),!.
 changePionDame(_, Blancs, Noirs, _, _, Blancs, Noirs).
@@ -384,12 +387,23 @@ applyMoves(Blancs, Noirs) :- retractall(blancs(_)), retractall(noirs(_)),assert(
 %
 
 %lancement du jeu
-% play(blanc,[[1,1,pion],[2,2,pion]],[[5,5,pion],[8,6,pion]],B,N,L,Pion).
 play(Player,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,Pion,Etat):- ia(Player,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement, Pion),
 		gameover(Blancs,Noirs,Blancs2,Noirs2,Etat).
+		
+%tests play
+% play(blanc,[[5,4,pion],[8,7,pion],[4,3,pion],[7,4,pion],[5,8,pion],[2,2,pion]],[[1,1,pion]],B,N,L,P,Winner).
+% play(blanc,[[1,1,pion],[2,2,pion]],[[5,5,pion],[8,6,pion]],B,N,L,Pion,Etat).
+% play(noir,[[2,7,pion],[7,8,pion]],[[2,5,pion],[2,1,pion],[6,1,pion],[8,3,pion],[8,1,pion],[1,2,pion],[8,9,pion],[5,2,pion],[6,3,pion],[5,4,pion],[5,6,pion],[9,4,pion]]]
 
-% play(noir, [[1,6,pion],[1,4,pion],[4,5,pion],[7,6,pion],[9,6,pion],[0,7,pion],[2,7,pion],[4,7,pion],[6,7,pion],[8,7,pion],[1,8,pion],[3,8,pion],[5,8,pion],[7,8,pion],[9,8,pion],[0,9,pion],[2,9,pion],[4,9,pion],[6,9,pion],[8,9,pion]],[[1,0,pion],[3,0,pion],[5,0,pion],[7,0,pion],[9,0,pion],[0,1,pion],[2,1,pion],[4,1,pion],[6,1,pion],[8,1,pion],[1,2,pion],[3,2,pion],[5,2,pion],[7,2,pion],[9,2,pion],[0,3,pion],[2,3,pion],[5,4,pion],[6,3,pion],[7,4,pion]],B,N,L,Pion,Etat).
-
+% play(noir, [[1,6,pion],[1,4,pion],[4,5,pion],[7,6,pion],[9,6,pion],[0,7,pion],[2,7,pion],[4,7,pion],[6,7,pion],[8,7,pion],[1,8,pion],[3,8,pion],[5,8,pion],[7,8,pion],[9,8,pion],[0,9,pion],[2,9,pion],[4,9,pion],[6,9,pion],[8,9,pion]],[[1,0,pion],[3,0,pion],[5,0,pion],[7,0,pion],[9,0,pion],[0,1,pion],[2,1,pion],[4,1,pion],[6,1,pion],[8,1,pion],[1,2,pion],[3,2,pion],[5,2,pion],[7,2,pion],[9,2,pion],[0,3,pion],[2,3,pion],[5,4,pion],[6,3,pion],[7,4,pion]],B,N,L,Pion,Etat),writeln(B),writeln(N),writeln(L).
+% reponse
+% blancs [[1,6,pion],[4,5,pion],[7,6,pion],[9,6,pion],[0,7,pion],[2,7,pion],[4,7,pion],[6,7,pion],[8,7,pion],[1,8,pion],[3,8,pion],[5,8,pion],[7,8,pion],[9,8,pion],[0,9,pion],[2,9,pion],[4,9,pion],[6,9,pion],[8,9,pion]]
+% noirs [[0,5,pion],[1,0,pion],[3,0,pion],[5,0,pion],[7,0,pion],[9,0,pion],[0,1,pion],[2,1,pion],[4,1,pion],[6,1,pion],[8,1,pion],[1,2,pion],[3,2,pion],[5,2,pion],[7,2,pion],[9,2,pion],[0,3,pion],[5,4,pion],[6,3,pion],[7,4,pion]]
+% liste [[0,5]]
+% pion [2, 3, pion]
+% Etat continuer
+% build_reply_play([[1,6,pion],[4,5,pion],[7,6,pion],[9,6,pion],[0,7,pion],[2,7,pion],[4,7,pion],[6,7,pion],[8,7,pion],[1,8,pion],[3,8,pion],[5,8,pion],[7,8,pion],[9,8,pion],[0,9,pion],[2,9,pion],[4,9,pion],[6,9,pion],[8,9,pion]],[[0,5,pion],[1,0,pion],[3,0,pion],[5,0,pion],[7,0,pion],[9,0,pion],[0,1,pion],[2,1,pion],[4,1,pion],[6,1,pion],[8,1,pion],[1,2,pion],[3,2,pion],[5,2,pion],[7,2,pion],[9,2,pion],[0,3,pion],[5,4,pion],[6,3,pion],[7,4,pion]],noir,[2, 3, pion],[[0,5]],continuer,JSON),writeln(JSON).
+ 
 % play(Player):-  write('New turn for: '), ((Player==blanc, writeln('Blancs'));(Player==noir, writeln('Noirs'))),
 % noirs(Noirs),
 % blancs(Blancs),
