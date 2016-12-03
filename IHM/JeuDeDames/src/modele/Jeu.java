@@ -29,11 +29,9 @@ public class Jeu {
 		Coup c = jeu.init(blancs, noirs);
 		blancs = (ArrayList<Piece>) c.piecesBlanches;
 		noirs = (ArrayList<Piece>) c.piecesNoires;
-		System.out.println(blancs);
-		System.out.println(noirs);
+		blancs.add(new Dame(Couleur.BLANC, new Case(Couleur.NOIR,0,0)));
 		jeu.play(1, blancs, noirs);
-		Map<Piece, List<Coup>> res = jeu.movesAllowed(1, blancs, noirs);
-		System.out.println(res);
+		//Map<Piece, List<Coup>> res = jeu.movesAllowed(1, blancs, noirs);
 	}
 
 	public Jeu(String nameServer, String portServer) {
