@@ -517,9 +517,11 @@ public class Controleur extends Application {
 	}
 
 	public void caseEnSurBrillanceSelectionnee(Case c) {
-		List<Coup> coups = this.mapCoupsJoueurCourant.get(this.getPieceMapCoupsJouerCourant(
-				this.pieceCourante.getPosition().getLigne(), this.pieceCourante.getPosition().getColonne()));
-		int nbEtapes = coups.get(0).getDeplacement().size();
+		// List<Coup> coups =
+		// this.mapCoupsJoueurCourant.get(this.getPieceMapCoupsJouerCourant(
+		// this.pieceCourante.getPosition().getLigne(),
+		// this.pieceCourante.getPosition().getColonne()));
+		int nbEtapes = this.coupsPossiblesCourants.get(0).getDeplacement().size();
 
 		Case nouvelleCase = this.plateau.getCases()[c.getLigne()][c.getColonne()];
 
