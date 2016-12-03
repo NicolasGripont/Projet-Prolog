@@ -170,14 +170,16 @@ mangeHautGauche(_,_,_,_,[]).
 
 
 %dame
-mangeSuite(blanc,Blancs,Noirs,[[X,Y]|Suite],Manges,Retour):-!,mangeSuite(blanc,[[X,Y,dame]|Blancs],Noirs,Suite,Manges,Solution1),
+mangeSuite(blanc,Blancs,Noirs,[[X,Y]|Suite],Manges,Retour):-!,mangeSuite(blanc,Blancs,Noirs,Suite,Manges,Solution1),
 		mangeTouteDirection([X,Y,dame],blanc,[[X,Y,dame]|Blancs],Noirs,Manges,R),
-		maxSolution(Solution1,R,S),
-		creerMouvement([[X,Y,dame]|Blancs],Noirs,S,Sortie),ajoutMouvement([X,Y],Sortie,Retour).
-mangeSuite(noir,Blancs,Noirs,[[X,Y]|Suite],Manges,Retour):-!,mangeSuite(noir,Blancs,[[X,Y,dame]|Noirs],Suite,Manges,Solution1),
+		creerMouvement([[X,Y,dame]|Blancs],Noirs,R,R2),
+		ajoutMouvement([X,Y],R2,Sortie),
+		maxSolution(Solution1,Sortie,Retour).
+mangeSuite(noir,Blancs,Noirs,[[X,Y]|Suite],Manges,Retour):-!,mangeSuite(noir,Blancs,Noirs,Suite,Manges,Solution1),
 		mangeTouteDirection([X,Y,dame],noir,Blancs,[[X,Y,dame]|Noirs],Manges,R),
-		maxSolution(Solution1,R,S),
-		creerMouvement(Blancs,[[X,Y,dame]|Noirs],S,Sortie),ajoutMouvement([X,Y],Sortie,Retour).
+		creerMouvement(Blancs,[[X,Y,dame]|Noirs],R,R2),
+		ajoutMouvement([X,Y],R2,Sortie),
+		maxSolution(Solution1,Sortie,Retour).
 mangeSuite(_,_,_,[],_,[]).
 
 mangeHautGauche([X,Y,dame],blanc,Blancs,Noirs,Manges,Retour):- cherchePionHautGauche(X,Y,blanc,Blancs,Noirs,[X2,Y2,T],Manges),
