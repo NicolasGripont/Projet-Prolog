@@ -132,6 +132,10 @@ public class VueJeu implements Initializable {
 		this.controleur = controleur;
 	}
 
+	public void dessinerPlateauCanvas() {
+		this.plateauGroup.dessinerPlateauCanvas();
+	}
+
 	public void dessinerPlateau() {
 		this.plateauGroup.dessinerPlateau();
 	}
@@ -151,6 +155,10 @@ public class VueJeu implements Initializable {
 
 	public void deplacerPiece(Piece piece, List<Case> deplacement, int dureeDeplacement) {
 		this.plateauGroup.deplacerPiece(piece, deplacement, dureeDeplacement);
+	}
+
+	public void tuerPiece(Piece piece, int dureeDAttente) {
+		this.plateauGroup.tuerPiece(piece, dureeDAttente);
 	}
 
 	public void tuerPieces(List<Piece> pieces, int dureeDAttente) {

@@ -58,6 +58,10 @@ public class PlateauGroup extends Group {
 		this.creerPieces();
 	}
 
+	public void dessinerPlateauCanvas() {
+		this.plateauCanvas.dessinerPlateau();
+	}
+
 	public void dessinerPlateau() {
 		this.getChildren().clear();
 		this.getChildren().add(this.plateauCanvas);
@@ -245,7 +249,6 @@ public class PlateauGroup extends Group {
 		double hauteurCase = this.plateauCanvas.getPlateauHeight() / Plateau.NB_COLONNES;
 		double margin = 5;
 		PieceVue pieceVue = null;
-
 		if (piece.getCouleur() == Couleur.BLANC) {
 			for (PieceVue p : this.pieceVuesBlanches) {
 				if (p.getPiece() == piece) {

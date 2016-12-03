@@ -56,7 +56,7 @@ public class Controleur extends Application {
 
 	private Thread threadSimulerPartie = null;
 
-	private final Semaphore sem = new Semaphore(1);
+	private Semaphore sem = new Semaphore(1);
 
 	private int coefVitesse = 1;
 
@@ -65,6 +65,10 @@ public class Controleur extends Application {
 	private Map<Piece, List<Coup>> mapCoupsJoueurCourant = null;
 
 	private int indiceCoup = 0;
+
+	private Piece pieceCourante = null;
+
+	private List<Coup> coupsPossiblesCourants = null;
 
 	@Override
 	public void start(Stage primaryStage) {
@@ -147,6 +151,15 @@ public class Controleur extends Application {
 			this.jeu = null;
 			this.joueurCourant = null;
 			this.vueJeu = null;
+			this.nbCoups = 0;
+			this.threadSimulerPartie = null;
+			this.sem = new Semaphore(1);
+			this.mapCoupsJoueurCourant = null;
+			this.indiceCoup = 0;
+			this.coefVitesse = 1;
+			this.pieceCourante = null;
+			this.coupsPossiblesCourants = null;
+
 			try {
 				FXMLLoader fxmlLoader = new FXMLLoader(this.getClass().getResource("/vue/vueMenu/VueMenu.fxml"));
 				Parent root;
@@ -179,6 +192,7 @@ public class Controleur extends Application {
 		/**
 		 * 0 : Blancs gagnent ,1 : Noir gagnent ,2 : Egalite ,3 : Non terminé
 		 */
+		System.out.println("Etat : " + coup.getEtat());
 		if (coup.getEtat() != 3) {
 			this.pauseSimulation();
 			this.vueJeu.setImageViewPlayDisable(true);
@@ -291,7 +305,6 @@ public class Controleur extends Application {
 	}
 
 	public void lancerPartie(TypeJoueur typeJoueur1, String nomJoueur1, TypeJoueur typeJoueur2, String nomJoueur2) {
-
 		// Initialisation du jeu
 		this.jeu = new Jeu("localhost", "5000");
 		if (this.jeu.init(new ArrayList<>(), new ArrayList<>()).getEtat() == -1) {
@@ -306,10 +319,7 @@ public class Controleur extends Application {
 		}
 		this.joueur1 = new Joueur(0, typeJoueur1, nomJoueur1, Couleur.BLANC);
 		this.joueur2 = new Joueur(1, typeJoueur2, nomJoueur2, Couleur.NOIR);
-		// this.joueur1 = new Joueur(0, TypeJoueur.JOUEUR_REEL, nomJoueur1,
-		// Couleur.BLANC);
-		// this.joueur2 = new Joueur(1, TypeJoueur.JOUEUR_REEL, nomJoueur2,
-		// Couleur.NOIR);
+
 		this.plateau = new Plateau();
 		this.plateau.initPions();
 		this.joueurCourant = this.joueur1;
@@ -357,6 +367,9 @@ public class Controleur extends Application {
 						while (Controleur.this.threadSimulerPartie.isInterrupted() == false) {
 							try {
 								final Coup coup = Controleur.this.getCoupIA();
+								if (coup.getEtat() != 3) {
+									System.out.println(coup);
+								}
 								Platform.runLater(new Runnable() {
 									@Override
 									public void run() {
@@ -376,10 +389,34 @@ public class Controleur extends Application {
 
 									}
 								});
+
 								int dureeDeplacement = Controleur.this.calculDureeDeplacement(coup.getPiece(),
 										coup.getDeplacement());
 								int dureeCoup = Controleur.this.calculDureeCoup(dureeDeplacement);
 								Thread.sleep(dureeCoup + (Controleur.this.dureeUnDeplacement / 2));
+								if (coup.getEtat() != 3) {
+									Platform.runLater(new Runnable() {
+										@Override
+										public void run() {
+											Controleur.this.finSimulation();
+											Controleur.this.vueJeu.setImageViewPlayDisable(true);
+											Controleur.this.vueJeu.setImageViewFastForwardDisable(true);
+											Controleur.this.vueJeu.setImageViewPauseDisable(true);
+											Alert alert = new Alert(AlertType.INFORMATION);
+											alert.setTitle("Partie terminée");
+											String message = "Egalité !";
+											if (coup.getEtat() == 0) {
+												message = Controleur.this.joueur1.getNom() + " a gagné !";
+											} else if (coup.getEtat() == 1) {
+												message = Controleur.this.joueur2.getNom() + " a gagné !";
+											}
+											alert.setHeaderText(message);
+											alert.showAndWait();
+											Controleur.this.finSimulation();
+										}
+									});
+									break;// fin simulation
+								}
 							} catch (InterruptedException e) {
 								return;
 							}
@@ -402,7 +439,6 @@ public class Controleur extends Application {
 		this.vueJeu.setTextLabelVitesse("x" + this.coefVitesse);
 		this.simulerPartie();
 		this.vueJeu.setImageViewPlayDisable(true);
-		// this.vueJeu.setImageViewFastForwardDisable(false);
 		this.vueJeu.setImageViewPauseDisable(false);
 	}
 
@@ -428,7 +464,6 @@ public class Controleur extends Application {
 		this.vueJeu.setTextLabelVitesse("x" + this.coefVitesse);
 		this.simulerPartie();
 		this.vueJeu.setImageViewPlayDisable(false);
-		// this.vueJeu.setImageViewFastForwardDisable(false);
 		this.vueJeu.setImageViewPauseDisable(false);
 	}
 
@@ -437,8 +472,13 @@ public class Controleur extends Application {
 		this.coefVitesse = 1;
 		this.vueJeu.setTextLabelVitesse("x0");
 		this.vueJeu.setImageViewPlayDisable(false);
-		// this.vueJeu.setImageViewFastForwardDisable(false);
 		this.vueJeu.setImageViewPauseDisable(true);
+	}
+
+	public void finSimulation() {
+		this.stopThreadSimulerPartie();
+		this.vueJeu.setTextLabelVitesse("x0");
+		this.vueJeu.setSimulationMode(false);
 	}
 
 	private void stopThreadSimulerPartie() {
@@ -488,23 +528,24 @@ public class Controleur extends Application {
 		this.indiceCoup = 0;
 		this.mapCoupsJoueurCourant = this.jeu.movesAllowed(this.joueurCourant.getId(), this.plateau.getBlanches(),
 				this.plateau.getNoires());
-
-		if (this.joueurCourant == this.joueur1) {
-			this.joueurCourant = this.joueur2;
-		} else {
-			this.joueurCourant = this.joueur1;
-		}
 	}
 
 	public void pieceSelectionnee(Piece piece) {
-
-		Piece p = this.getPieceMapCoupsJouerCourant(piece.getPosition().getLigne(), piece.getPosition().getColonne());
-		if (p != null) { // il y a des coups possible pour la piece selectionnée
-			for (Coup coup : this.mapCoupsJoueurCourant.get(p)) {
-				System.out.println(coup.getDeplacement());
+		if (this.indiceCoup == 0) {
+			this.pieceCourante = piece;
+			Piece p = this.getPieceMapCoupsJouerCourant(piece.getPosition().getLigne(),
+					piece.getPosition().getColonne());
+			if (p != null) { // il y a des coups possible pour la piece
+								// selectionnée
+				List<Case> cases = new ArrayList<>();
+				this.coupsPossiblesCourants = this.mapCoupsJoueurCourant.get(p);
+				for (Coup coup : this.coupsPossiblesCourants) {
+					cases.add(coup.getDeplacement().get(this.indiceCoup));
+				}
+				this.vueJeu.setCaseEnSurBrillance(cases);
+				this.vueJeu.dessinerPlateau();
 			}
 		}
-		System.out.println(this.mapCoupsJoueurCourant);
 	}
 
 	private Piece getPieceMapCoupsJouerCourant(int ligne, int colonne) {
@@ -519,7 +560,109 @@ public class Controleur extends Application {
 	}
 
 	public void caseEnSurBrillanceSelectionnee(Case c) {
-		System.out.println(c);
+		int nbEtapes = this.coupsPossiblesCourants.get(0).getDeplacement().size();
+
+		Case nouvelleCase = this.plateau.getCases()[c.getLigne()][c.getColonne()];
+
+		List<Case> tmpDeplacement = new ArrayList<>();
+		tmpDeplacement.add(nouvelleCase);
+
+		int dureeDeplacement = this.calculDureeDeplacement(this.pieceCourante, tmpDeplacement);
+		int dureeCoup = this.calculDureeCoup(dureeDeplacement);
+
+		// On check s'il y a une pieces mortes
+		Piece pieceATuer = this.getPieceATuer(this.pieceCourante.getPosition(), nouvelleCase);
+		if (pieceATuer != null) {
+			this.plateau.supprimerPiece(pieceATuer);
+		}
+		// on set la nouvelle position de la piece qui bouge
+		this.plateau.deplacerPiece(this.pieceCourante, nouvelleCase);
+
+		// appelle vue
+		this.vueJeu.deplacerPiece(this.pieceCourante, tmpDeplacement, dureeDeplacement);
+		if (pieceATuer != null) {
+			this.vueJeu.tuerPiece(pieceATuer, dureeCoup);
+		}
+
+		this.indiceCoup++;
+		if (this.indiceCoup == nbEtapes) {// fin du tour
+			this.vueJeu.setCaseEnSurBrillance(null);
+			this.coupsPossiblesCourants = null;
+			this.indiceCoup = 0;
+			this.mapCoupsJoueurCourant = null;
+			if (this.joueurCourant == this.joueur1) {
+				this.joueurCourant = this.joueur2;
+			} else {
+				this.joueurCourant = this.joueur1;
+			}
+			this.debuterCoupJoueeurReel();
+
+		} else {
+			List<Case> coupsPossiblesCourantsTmp = new ArrayList<>();
+			for (Coup coup : this.coupsPossiblesCourants) {
+				Case caseTmp = coup.getDeplacement().get(this.indiceCoup - 1);
+				if ((caseTmp.getColonne() == c.getColonne()) && (caseTmp.getLigne() == c.getLigne())) {
+					coupsPossiblesCourantsTmp.add(caseTmp);
+				}
+			}
+			List<Case> cases = new ArrayList<>();
+			for (Coup coup : this.coupsPossiblesCourants) {
+				cases.add(coup.getDeplacement().get(this.indiceCoup));
+			}
+			this.vueJeu.setCaseEnSurBrillance(cases);
+
+		}
+
+		this.vueJeu.dessinerPlateauCanvas();
 	}
 
+	private Piece getPieceATuer(Case depart, Case arrivee) {
+		Piece pieceATuer = null;
+		if ((depart.getColonne() < arrivee.getColonne()) && (depart.getLigne() > arrivee.getLigne())) {
+			int c = depart.getColonne() + 1;
+			int l = depart.getLigne() - 1;
+			while ((c < arrivee.getColonne()) && (l > arrivee.getLigne())) {
+				if (this.plateau.getCases()[l][c].getPiece() != null) {
+					pieceATuer = this.plateau.getCases()[l][c].getPiece();
+					break;
+				}
+				c++;
+				l--;
+			}
+		} else if ((depart.getColonne() < arrivee.getColonne()) && (depart.getLigne() < arrivee.getLigne())) {
+			int c = depart.getColonne() + 1;
+			int l = depart.getLigne() + 1;
+			while ((c < arrivee.getColonne()) && (l < arrivee.getLigne())) {
+				if (this.plateau.getCases()[l][c].getPiece() != null) {
+					pieceATuer = this.plateau.getCases()[l][c].getPiece();
+					break;
+				}
+				c++;
+				l++;
+			}
+		} else if ((depart.getColonne() > arrivee.getColonne()) && (depart.getLigne() < arrivee.getLigne())) {
+			int c = depart.getColonne() - 1;
+			int l = depart.getLigne() + 1;
+			while ((c > arrivee.getColonne()) && (l < arrivee.getLigne())) {
+				if (this.plateau.getCases()[l][c].getPiece() != null) {
+					pieceATuer = this.plateau.getCases()[l][c].getPiece();
+					break;
+				}
+				c--;
+				l++;
+			}
+		} else if ((depart.getColonne() > arrivee.getColonne()) && (depart.getLigne() > arrivee.getLigne())) {
+			int c = depart.getColonne() - 1;
+			int l = depart.getLigne() - 1;
+			while ((c > arrivee.getColonne()) && (l > arrivee.getLigne())) {
+				if (this.plateau.getCases()[l][c].getPiece() != null) {
+					pieceATuer = this.plateau.getCases()[l][c].getPiece();
+					break;
+				}
+				c--;
+				l--;
+			}
+		}
+		return pieceATuer;
+	}
 }
