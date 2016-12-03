@@ -294,7 +294,7 @@ public class Controleur extends Application {
 
 		// Initialisation du jeu
 		this.jeu = new Jeu("localhost", "5000");
-		if (this.jeu.init(new ArrayList<>(), new ArrayList<>()) == -1) {
+		if (this.jeu.init(new ArrayList<>(), new ArrayList<>()).getEtat() == -1) {
 			this.jeu = null;
 			Alert alert = new Alert(AlertType.ERROR);
 			alert.setTitle("Erreur");
