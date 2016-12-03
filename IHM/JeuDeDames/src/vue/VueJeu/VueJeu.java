@@ -286,4 +286,16 @@ public class VueJeu implements Initializable {
 	public void setTextLabelNbCoups(String text) {
 		this.labelNbCoups.setText(text);
 	}
+
+	public void pieceSelectionnee(Piece piece) {
+		this.controleur.pieceSelectionnee(piece);
+	}
+
+	public void setCaseEnSurBrillance(List<Case> cases) {
+		this.plateauGroup.setCaseEnSurBrillance(cases);
+	}
+
+	public void caseEnSurBrillanceSelectionnee(Case c) {
+		this.controleur.caseEnSurBrillanceSelectionnee(c);
+	}
 }

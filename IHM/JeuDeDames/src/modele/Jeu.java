@@ -31,7 +31,7 @@ public class Jeu {
 		System.out.println(blancs);
 		System.out.println(noirs);
 		jeu.play(1, blancs, noirs);
-		Map<Piece, ArrayList<Coup>> res = jeu.movesAllowed(1, blancs, noirs);
+		Map<Piece, List<Coup>> res = jeu.movesAllowed(1, blancs, noirs);
 		System.out.println(res);
 	}
 
@@ -215,7 +215,7 @@ public class Jeu {
 		}
 	}
 
-	public Map<Piece,ArrayList<Coup> > movesAllowed(int joueur, List<Piece> blancs, List<Piece> noirs) {
+	public Map<Piece, List<Coup>> movesAllowed(int joueur, List<Piece> blancs, List<Piece> noirs) {
 		try {
 			JsonArray blancsArray = this.buildObjectListPiece(blancs, "blancs");
 			JsonArray noirsArray = this.buildObjectListPiece(noirs, "noirs");
@@ -238,15 +238,15 @@ public class Jeu {
 			JsonObject root = jp.parse(new InputStreamReader((InputStream) request.getContent())).getAsJsonObject();
 			System.out.println(root);
 			request.disconnect();
-			Map<Piece,ArrayList<Coup> > mapPossibilites = new HashMap<Piece, ArrayList<Coup>>();
+			Map<Piece, List<Coup>> mapPossibilites = new HashMap<>();
 			if ((root.get("move") != null)) {
 				JsonArray possibilites = root.get("move").getAsJsonArray();
 				for (int i = 0; i < possibilites.size(); i++) {
 					JsonObject possibilite = possibilites.get(i).getAsJsonObject();
 					Piece p = null;
-					if(possibilite.get("pion") != null) {
+					if (possibilite.get("pion") != null) {
 						JsonObject elt = possibilite.get("pion").getAsJsonObject();
-						//Gestion du pion
+						// Gestion du pion
 						int x = 0, y = 0;
 						if (elt.get("x") != null) {
 							x = elt.get("x").getAsInt();
@@ -260,10 +260,10 @@ public class Jeu {
 							p = new Dame(Couleur.BLANC, new Case(Couleur.NOIR, y, x));
 						}
 					}
-					if(possibilite.get("posibilite") != null) {
+					if (possibilite.get("posibilite") != null) {
 						JsonArray possi = possibilite.get("posibilite").getAsJsonArray();
-						ArrayList<Coup> listCoups = new ArrayList<Coup>();
-						for (int j = 0;j < possi.size(); j++) {
+						ArrayList<Coup> listCoups = new ArrayList<>();
+						for (int j = 0; j < possi.size(); j++) {
 							ArrayList<Piece> newBlancs = new ArrayList<>();
 							if ((root.get("blancs") != null)) {
 								blancsArray = root.get("blancs").getAsJsonArray();
@@ -321,7 +321,7 @@ public class Jeu {
 									deplacements.add(new Case(Couleur.NOIR, y, x));
 								}
 							}
-							Coup c = new Coup(3, newBlancs, newNoirs, deplacements, p);	
+							Coup c = new Coup(3, newBlancs, newNoirs, deplacements, p);
 							listCoups.add(c);
 						}
 						mapPossibilites.put(p, listCoups);
@@ -334,7 +334,7 @@ public class Jeu {
 			return null;
 		}
 	}
-	
+
 	private JsonArray buildObjectListPiece(List<Piece> pieces, String key) {
 		JsonArray array = new JsonArray();
 		for (Piece p : pieces) {

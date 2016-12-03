@@ -43,7 +43,7 @@ public class PlateauGroup extends Group {
 
 	public PlateauGroup(double width, double height, VueJeu vueJeu) {
 		super();
-		this.plateauCanvas = new PlateauCanvas(width, height);
+		this.plateauCanvas = new PlateauCanvas(width, height, this);
 		this.getChildren().add(this.plateauCanvas);
 		this.vueJeu = vueJeu;
 	}
@@ -110,35 +110,45 @@ public class PlateauGroup extends Group {
 			pieceVue.setOnMousePressed(new EventHandler<MouseEvent>() {
 				@Override
 				public void handle(MouseEvent t) {
-					PlateauGroup.this.orgSceneX = t.getSceneX();
-					PlateauGroup.this.orgSceneY = t.getSceneY();
+					// PlateauGroup.this.orgSceneX = t.getSceneX();
+					// PlateauGroup.this.orgSceneY = t.getSceneY();
+					//
+					// PieceVue c = (PieceVue) (t.getSource());
+					// c.toFront();
 
-					PieceVue c = (PieceVue) (t.getSource());
-					c.toFront();
 				}
 			});
 
 			pieceVue.setOnMouseDragged(new EventHandler<MouseEvent>() {
 				@Override
 				public void handle(MouseEvent t) {
-					double largeurCase = PlateauGroup.this.plateauCanvas.getPlateauWidth() / Plateau.NB_LIGNES;
-					double hauteurCase = PlateauGroup.this.plateauCanvas.getPlateauHeight() / Plateau.NB_COLONNES;
-					double offsetX = t.getSceneX() - PlateauGroup.this.orgSceneX;
-					double offsetY = t.getSceneY() - PlateauGroup.this.orgSceneY;
-
-					PieceVue c = (PieceVue) (t.getSource());
-
-					if (((c.getCenterX() + offsetX) > (largeurCase / 2))
-							&& ((c.getCenterX() + offsetX) < (PlateauGroup.this.plateauCanvas.getWidth()
-									- (largeurCase / 2)))
-							&& ((c.getCenterY() + offsetY) > (hauteurCase / 2)) && ((c.getCenterY()
-									+ offsetY) < (PlateauGroup.this.plateauCanvas.getHeight() - (hauteurCase / 2)))) {
-						c.setCenterX(c.getCenterX() + offsetX);
-						c.setCenterY(c.getCenterY() + offsetY);
-
-						PlateauGroup.this.orgSceneX = t.getSceneX();
-						PlateauGroup.this.orgSceneY = t.getSceneY();
-					}
+					// double largeurCase =
+					// PlateauGroup.this.plateauCanvas.getPlateauWidth() /
+					// Plateau.NB_LIGNES;
+					// double hauteurCase =
+					// PlateauGroup.this.plateauCanvas.getPlateauHeight() /
+					// Plateau.NB_COLONNES;
+					// double offsetX = t.getSceneX() -
+					// PlateauGroup.this.orgSceneX;
+					// double offsetY = t.getSceneY() -
+					// PlateauGroup.this.orgSceneY;
+					//
+					// PieceVue c = (PieceVue) (t.getSource());
+					//
+					// if (((c.getCenterX() + offsetX) > (largeurCase / 2))
+					// && ((c.getCenterX() + offsetX) <
+					// (PlateauGroup.this.plateauCanvas.getWidth()
+					// - (largeurCase / 2)))
+					// && ((c.getCenterY() + offsetY) > (hauteurCase / 2)) &&
+					// ((c.getCenterY()
+					// + offsetY) < (PlateauGroup.this.plateauCanvas.getHeight()
+					// - (hauteurCase / 2)))) {
+					// c.setCenterX(c.getCenterX() + offsetX);
+					// c.setCenterY(c.getCenterY() + offsetY);
+					//
+					// PlateauGroup.this.orgSceneX = t.getSceneX();
+					// PlateauGroup.this.orgSceneY = t.getSceneY();
+					// }
 				}
 			});
 
@@ -146,24 +156,34 @@ public class PlateauGroup extends Group {
 				@Override
 				public void handle(MouseEvent t) {
 
-					double x = t.getX();
-					double y = t.getY();
-					double largeurCase = PlateauGroup.this.plateauCanvas.getPlateauWidth() / Plateau.NB_LIGNES;
-					double hauteurCase = PlateauGroup.this.plateauCanvas.getPlateauHeight() / Plateau.NB_COLONNES;
-					Case nouvellePosition = null;
-					for (int i = 0; i < Plateau.NB_LIGNES; i++) {
-						for (int j = 0; j < Plateau.NB_COLONNES; j++) {
-							double x1 = (j * largeurCase) + PlateauGroup.this.plateauCanvas.getOffsetX();
-							double x2 = x1 + largeurCase;
-							double y1 = (i * hauteurCase) + PlateauGroup.this.plateauCanvas.getOffsetY();
-							double y2 = y1 + hauteurCase;
-							if ((x >= x1) && (x < x2) && (y >= y1) && (y < y2)) {
-								nouvellePosition = PlateauGroup.this.plateau.getCases()[i][j];
-								break;
-							}
-						}
-					}
-					PlateauGroup.this.vueJeu.dragAndDropPiece(pieceVue.getPiece(), nouvellePosition);
+					// double x = t.getX();
+					// double y = t.getY();
+					// double largeurCase =
+					// PlateauGroup.this.plateauCanvas.getPlateauWidth() /
+					// Plateau.NB_LIGNES;
+					// double hauteurCase =
+					// PlateauGroup.this.plateauCanvas.getPlateauHeight() /
+					// Plateau.NB_COLONNES;
+					// Case nouvellePosition = null;
+					// for (int i = 0; i < Plateau.NB_LIGNES; i++) {
+					// for (int j = 0; j < Plateau.NB_COLONNES; j++) {
+					// double x1 = (j * largeurCase) +
+					// PlateauGroup.this.plateauCanvas.getOffsetX();
+					// double x2 = x1 + largeurCase;
+					// double y1 = (i * hauteurCase) +
+					// PlateauGroup.this.plateauCanvas.getOffsetY();
+					// double y2 = y1 + hauteurCase;
+					// if ((x >= x1) && (x < x2) && (y >= y1) && (y < y2)) {
+					// nouvellePosition =
+					// PlateauGroup.this.plateau.getCases()[i][j];
+					// break;
+					// }
+					// }
+					// }
+					// PlateauGroup.this.vueJeu.dragAndDropPiece(pieceVue.getPiece(),
+					// nouvellePosition);
+
+					PlateauGroup.this.vueJeu.pieceSelectionnee(pieceVue.getPiece());
 				}
 			});
 		} else {
@@ -405,6 +425,14 @@ public class PlateauGroup extends Group {
 			});
 
 		}
+	}
+
+	public void setCaseEnSurBrillance(List<Case> cases) {
+		this.plateauCanvas.setCaseEnSurBrillance(cases);
+	}
+
+	public void caseEnSurBrillanceSelectionnee(Case c) {
+		this.vueJeu.caseEnSurBrillanceSelectionnee(c);
 	}
 
 }
