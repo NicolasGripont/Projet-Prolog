@@ -56,7 +56,7 @@ public class Controleur extends Application {
 
 	private Thread threadSimulerPartie = null;
 
-	private final Semaphore sem = new Semaphore(1);
+	private Semaphore sem = new Semaphore(1);
 
 	private int coefVitesse = 1;
 
@@ -151,6 +151,15 @@ public class Controleur extends Application {
 			this.jeu = null;
 			this.joueurCourant = null;
 			this.vueJeu = null;
+			this.nbCoups = 0;
+			this.threadSimulerPartie = null;
+			this.sem = new Semaphore(1);
+			this.mapCoupsJoueurCourant = null;
+			this.indiceCoup = 0;
+			this.coefVitesse = 1;
+			this.pieceCourante = null;
+			this.coupsPossiblesCourants = null;
+
 			try {
 				FXMLLoader fxmlLoader = new FXMLLoader(this.getClass().getResource("/vue/vueMenu/VueMenu.fxml"));
 				Parent root;
