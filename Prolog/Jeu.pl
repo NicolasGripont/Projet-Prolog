@@ -23,6 +23,10 @@ winner(noir, Blancs, Noirs) :- (length(Blancs, 0);(movePossiblePlayer(blanc, Bla
 changePlayer(blanc,noir).
 changePlayer(noir,blanc).
 
+%%%% Predicate to get the camp of the current player
+returnPionsCamp(blanc, Blancs, _, Blancs).
+returnPionsCamp(noir, _, Noirs, Noirs).
+
 %%%% Verify if the place has a pion
 isPion(X,Y,blanc) :- blancs(Blancs), member([X, Y, pion],Blancs).
 isPion(X,Y,noir) :- noirs(Noirs), member([X, Y, pion],Noirs).
@@ -365,6 +369,49 @@ movePossiblePlayer(_, _, _, [],[], deplacement).
 % movePossiblePlayer(noir,[[4,2,pion]],[[1,1,pion],[3,1,pion],[5,1,pion]],[[1,1,pion],[3,1,pion],[5,1,pion]],S,Type),writeln(S).
 % movePossiblePlayer(blanc,[[4,2,pion]],[[1,1,pion],[3,1,pion],[5,1,pion]],[[4,2,pion]],S,Type),writeln(S).
 % movePossiblePlayer(blanc,[[0,7,pion]],[[1,1,pion]],[[0,7,pion]],S,Type),writeln(S).
+
+
+% explore l'arbre des mouvements possibles à partir de chaque mouvement initial d'un pion donné
+% TODO : Format de retour qui merde, trouver une solution pour que une ligne = une suite de mouvements différentes
+%         et pas que tout s'agglutine sur la même ligne
+%         C'est à cause de ma concaténation avec le M1 rendu par explore
+%         Il faudrait rajouter à chaque ligne de M1 à l'en-tête [Pion, Blancs2, Noirs2, Moves] de manière séparée
+exploreMoves(Camp, Pion, [[Blancs2, Noirs2, Moves]|Reste], [[[Pion, Blancs2, Noirs2, Moves]|M1]|M2], Cpt) :-
+    returnPionsCamp(Camp, Blancs2, Noirs2, Pions), explore(Camp, Blancs2, Noirs2, Pions, M1, Cpt), exploreMoves(Camp, Pion, Reste, M2, Cpt).
+exploreMoves(_,_,[],[],_).
+    
+% explore l'arbre des mouvements possibles pour chaque pion
+explorePion(Camp, [[Pion, MovesPion]|RestePions], [M1|M2], Cpt) :-
+    exploreMoves(Camp, Pion, MovesPion, M1, Cpt), explorePion(Camp, RestePions, M2, Cpt).
+explorePion(_,[],[],_).
+
+% explore l'arbre des mouvements possibles (on alternera chaque fois entre les camps)
+% le retour M attendu devra être de la forme suivante :
+% 	[ [Pion1,Blancs,Noirs,Move1], [Pion1, Blancs,Noirs,Move2], [Pion2,Blancs,Noirs,Move3],... ]
+% Ainsi on pourra par la suite selectionner le dernier membre de chaque élément de la liste,
+% pour étudier le nombre de pièces blanches et noires
+% et sélectionner en conséquence le mouvement à effectuer d'après la meilleure évolution possible du jeu
+% 
+% TODO : Vérifier formats retour
+% explore avec mange
+explore(Camp, Blancs, Noirs, Pions, M, Cpt) :-
+    Cpt > 0, NewCpt is Cpt-1, movePossiblePlayer(Camp, Blancs, Noirs, Pions, PionsMoves, mange), PionsMoves \== [], !, changePlayer(Camp, Camp2), explorePion(Camp2, PionsMoves, M, NewCpt).
+% explore avec deplacement
+explore(Camp, Blancs, Noirs, Pions, M, Cpt) :-
+    Cpt > 0, NewCpt is Cpt-1, movePossiblePlayer(Camp, Blancs, Noirs, Pions, PionsMoves, deplacement),PionsMoves \== [],!, changePlayer(Camp, Camp2), writeln(PionsMoves),explorePion(Camp2, PionsMoves, M, NewCpt).
+% critère d'arrêt de la récursivité -> Cpt à 0 ou pas de move possible
+explore(_,_,_,_,[],_).
+
+%TESTS
+% Degré 1
+%   Déplacement
+%     explore(blanc, [[4,2,pion]], [[4,3,pion]], [[4,2,pion]], M, 1).
+%   Mange
+%     explore(blanc, [[4,2,pion]], [[3,3,pion]], [[4,2,pion]], M, 1).
+% Degré 2
+%   2 déplacements
+%     explore(blanc, [[4,2,pion]], [[4,3,pion]], [[4,2,pion]], M, 2).
+
 
 ia(blanc,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,E):-movePossiblePlayer(blanc, Blancs, Noirs, Blancs, Liste,_),length(Liste,X),X>0,!,choixMove(X,Liste,Blancs2,Noirs2,ListeMouvement,E).
 ia(noir,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,E):-movePossiblePlayer(noir, Blancs, Noirs, Noirs, Liste,_),length(Liste,X),X>0,choixMove(X,Liste,Blancs2,Noirs2,ListeMouvement,E).
