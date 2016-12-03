@@ -4,7 +4,7 @@
 
 
 %%%% Test is the game is finished %%%
-gameover(Blancs,Noirs,_,_,Winner) :- winner(Winner, Blancs, Noirs), !.  % There exists a winning configuration: We cut!
+gameover(_,_,Blancs,Noirs,Winner) :- winner(Winner, Blancs, Noirs), !.  % There exists a winning configuration: We cut!
 gameover(Blancs,Noirs,Blancs2,Noirs2,egalite) :- length(Noirs, X), length(Noirs2, X), length(Blancs, Y), length(Blancs2, Y),
 										cptDraw(CptDraw), NewCptDraw is CptDraw+1, retractall(cptDraw(_)), assert(cptDraw(NewCptDraw)),
 										NewCptDraw == 25,!.
@@ -67,28 +67,28 @@ cherchePionHautGauche(X,Y,blanc,Blancs,Noirs,[X1,Y1,T],Manges):-X1 is X-1, Y1 is
 cherchePionHautGauche(X,Y,noir,Blancs,Noirs,[X1,Y1,T],Manges):-X1 is X-1, Y1 is Y-1, X1>=0, Y1>=0, not(member([X1,Y1,_],Noirs)),
 		not(member([X1,Y1,_],Manges)),member([X1,Y1,T],Blancs),!.
 cherchePionHautGauche(X,Y,Camp,Blancs,Noirs,[X2,Y2,T],Manges):-X1 is X-1, Y1 is Y-1, X1>=0, Y1>=0, not(member([X1,Y1,_],Blancs)),
-		not(member([X1,Y1,T],Noirs)),not(member([X1,Y1,_],Manges)),cherchePionHautGauche(X1,Y1,Camp,Blancs,Noirs,[X2,Y2,T]).
-		
+		not(member([X1,Y1,T],Noirs)),not(member([X1,Y1,_],Manges)),cherchePionHautGauche(X1,Y1,Camp,Blancs,Noirs,[X2,Y2,T],Manges).
+
 cherchePionHautDroite(X,Y,blanc,Blancs,Noirs,[X1,Y1,T],Manges):-X1 is X+1, Y1 is Y-1, X1=<9, Y1>=0, not(member([X1,Y1,_],Blancs)),
 		not(member([X1,Y1,_],Manges)),member([X1,Y1,T],Noirs),!.
 cherchePionHautDroite(X,Y,noir,Blancs,Noirs,[X1,Y1,T],Manges):-X1 is X+1, Y1 is Y-1, X1=<9, Y1>=0, not(member([X1,Y1,_],Noirs)),
 		not(member([X1,Y1,_],Manges)),member([X1,Y1,T],Blancs),!.
 cherchePionHautDroite(X,Y,Camp,Blancs,Noirs,[X2,Y2,T],Manges):-X1 is X+1, Y1 is Y-1, X1=<9, Y1>=0, not(member([X1,Y1,_],Blancs)),
-		not(member([X1,Y1,T],Noirs)),not(member([X1,Y1,_],Manges)),cherchePionHautDroite(X1,Y1,Camp,Blancs,Noirs,[X2,Y2,T]).
+		not(member([X1,Y1,T],Noirs)),not(member([X1,Y1,_],Manges)),cherchePionHautDroite(X1,Y1,Camp,Blancs,Noirs,[X2,Y2,T],Manges).
 
 cherchePionBasGauche(X,Y,blanc,Blancs,Noirs,[X1,Y1,T],Manges):-X1 is X-1, Y1 is Y+1, X1>=0, Y1=<9, not(member([X1,Y1,_],Blancs)),
 		not(member([X1,Y1,_],Manges)),member([X1,Y1,T],Noirs),!.
 cherchePionBasGauche(X,Y,noir,Blancs,Noirs,[X1,Y1,T],Manges):-X1 is X-1, Y1 is Y+1, X1>=0, Y1=<9, not(member([X1,Y1,_],Noirs)),
 		not(member([X1,Y1,_],Manges)),member([X1,Y1,T],Blancs),!.
 cherchePionBasGauche(X,Y,Camp,Blancs,Noirs,[X2,Y2,T],Manges):-X1 is X-1, Y1 is Y+1, X1>=0, Y1=<9, not(member([X1,Y1,_],Blancs)),
-		not(member([X1,Y1,T],Noirs)),not(member([X1,Y1,_],Manges)),cherchePionBasGauche(X1,Y1,Camp,Blancs,Noirs,[X2,Y2,T]).
-		
+		not(member([X1,Y1,T],Noirs)),not(member([X1,Y1,_],Manges)),cherchePionBasGauche(X1,Y1,Camp,Blancs,Noirs,[X2,Y2,T],Manges).
+
 cherchePionBasDroite(X,Y,blanc,Blancs,Noirs,[X1,Y1,T],Manges):-X1 is X+1, Y1 is Y+1, X1=<9, Y1=<9, not(member([X1,Y1,_],Blancs)),
 		not(member([X1,Y1,_],Manges)),member([X1,Y1,T],Noirs),!.
 cherchePionBasDroite(X,Y,noir,Blancs,Noirs,[X1,Y1,T],Manges):-X1 is X+1, Y1 is Y+1, X1=<9, Y1=<9, not(member([X1,Y1,_],Noirs)),
 		not(member([X1,Y1,_],Manges)),member([X1,Y1,T],Blancs),!.
 cherchePionBasDroite(X,Y,Camp,Blancs,Noirs,[X2,Y2,T],Manges):-X1 is X+1, Y1 is Y+1, X1=<9, Y1=<9, not(member([X1,Y1,_],Blancs)),
-		not(member([X1,Y1,T],Noirs)),not(member([X1,Y1,_],Manges)),cherchePionBasDroite(X1,Y1,Camp,Blancs,Noirs,[X2,Y2,T]).
+		not(member([X1,Y1,T],Noirs)),not(member([X1,Y1,_],Manges)),cherchePionBasDroite(X1,Y1,Camp,Blancs,Noirs,[X2,Y2,T],Manges).
 %tests
 % cherchePionHautGauche(4,4,blanc,[[4,4,pion]],[[1,1,pion],[3,3,pion]],R).
 % cherchePionHautGauche(4,4,blanc,[[4,4,pion]],[[1,1,pion],[3,1,pion]],R).
@@ -102,6 +102,30 @@ chercheCaseVideHautGauche(X,Y,Blancs,Noirs, Manges, [[X1,Y1]|L]) :-
     not(member([X1,Y1],Manges)),
     chercheCaseVideHautGauche(X1,Y1,Blancs,Noirs,Manges,L),!.
 chercheCaseVideHautGauche(_,_,_,_,_,[]).
+
+chercheCaseVideHautDroite(X,Y,Blancs,Noirs, Manges, [[X1,Y1]|L]) :-
+    X1 is X+1, Y1 is Y-1, X1=<9, Y1>=0,
+    not(member([X1,Y1,_],Blancs)),
+    not(member([X1,Y1,_],Noirs)),
+    not(member([X1,Y1],Manges)),
+    chercheCaseVideHautDroite(X1,Y1,Blancs,Noirs,Manges,L),!.
+chercheCaseVideHautDroite(_,_,_,_,_,[]).
+
+chercheCaseVideBasGauche(X,Y,Blancs,Noirs, Manges, [[X1,Y1]|L]) :-
+    X1 is X-1, Y1 is Y+1, X1>=0, Y1=<9,
+    not(member([X1,Y1,_],Blancs)),
+    not(member([X1,Y1,_],Noirs)),
+    not(member([X1,Y1],Manges)),
+    chercheCaseVideBasGauche(X1,Y1,Blancs,Noirs,Manges,L),!.
+chercheCaseVideBasGauche(_,_,_,_,_,[]).
+
+chercheCaseVideBasDroite(X,Y,Blancs,Noirs, Manges, [[X1,Y1]|L]) :-
+    X1 is X+1, Y1 is Y+1, X1=<9, Y1=<9,
+    not(member([X1,Y1,_],Blancs)),
+    not(member([X1,Y1,_],Noirs)),
+    not(member([X1,Y1],Manges)),
+    chercheCaseVideBasDroite(X1,Y1,Blancs,Noirs,Manges,L),!.
+chercheCaseVideBasDroite(_,_,_,_,_,[]).
 
 %tests
 % chercheCaseVideHautGauche(4,4,[[4,4,pion]],[[1,1,pion]], [], R).
@@ -119,38 +143,64 @@ ajoutMouvement(_,[],[]).
 %ajoutMouvement([1,2],[[[],[],[[0,0]]],[[],[],[[1,1]]]],R).
 %ajoutMouvement([1,2],[[[],[],[[0,0]]],[[],[],[[1,1]]]],R).
 
-%pion
+%pion et premier appel dame
 mangeBasGauche([X,Y,pion],blanc,Blancs,Noirs,Retour):- X2 is X-1, Y2 is Y+1,X3 is X-2,Y3 is Y+2,X3 >= 0 ,Y3 =< 9,member([X2,Y2,_],Noirs),not(member([X3,Y3,_],Noirs)),not(member([X3,Y3,_],Blancs)),!,delete(Noirs,[X2,Y2,_],Noirs2),delete(Blancs,[X,Y,pion],Blancs2),mangeTouteDirection([X3,Y3,pion],blanc,[[X3,Y3,pion]|Blancs2],Noirs2,R),creerMouvement([[X3,Y3,pion]|Blancs2],Noirs2,R,Sortie),ajoutMouvement([X3,Y3],Sortie,Retour).
 mangeBasGauche([X,Y,pion],noir,Blancs,Noirs,Retour):- X2 is X-1, Y2 is Y+1,X3 is X-2,Y3 is Y+2,X3 >= 0 ,Y3 =< 9,member([X2,Y2,_],Blancs),not(member([X3,Y3,_],Noirs)),not(member([X3,Y3,_],Blancs)),!,delete(Blancs,[X2,Y2,_],Blancs2),delete(Noirs,[X,Y,pion],Noirs2),mangeTouteDirection([X3,Y3,pion],noir,Blancs2,[[X3,Y3,pion]|Noirs2],R),creerMouvement(Blancs2,[[X3,Y3,pion]|Noirs2],R,Sortie),ajoutMouvement([X3,Y3],Sortie,Retour).
+mangeBasGauche([X,Y,dame],Camp,Blancs,Noirs,Retour):-mangeBasGauche([X,Y,dame],Camp,Blancs,Noirs,[],Retour),!.
 mangeBasGauche(_,_,_,_,[]).
 
 mangeBasDroite([X,Y,pion],blanc,Blancs,Noirs,Retour):- X2 is X+1, Y2 is Y+1,X3 is X+2,Y3 is Y+2,X3 =< 9 ,Y3 =< 9,member([X2,Y2,_],Noirs),not(member([X3,Y3,_],Noirs)),not(member([X3,Y3,_],Blancs)),!,delete(Noirs,[X2,Y2,_],Noirs2),delete(Blancs,[X,Y,pion],Blancs2),mangeTouteDirection([X3,Y3,pion],blanc,[[X3,Y3,pion]|Blancs2],Noirs2,R),creerMouvement([[X3,Y3,pion]|Blancs2],Noirs2,R,Sortie),ajoutMouvement([X3,Y3],Sortie,Retour).
 mangeBasDroite([X,Y,pion],noir,Blancs,Noirs,Retour):- X2 is X+1, Y2 is Y+1,X3 is X+2,Y3 is Y+2,X3 =< 9 ,Y3 =< 9,member([X2,Y2,_],Blancs),not(member([X3,Y3,_],Noirs)),not(member([X3,Y3,_],Blancs)),!,delete(Blancs,[X2,Y2,_],Blancs2),delete(Noirs,[X,Y,pion],Noirs2),mangeTouteDirection([X3,Y3,pion],noir,Blancs2,[[X3,Y3,pion]|Noirs2],R),creerMouvement(Blancs2,[[X3,Y3,pion]|Noirs2],R,Sortie),ajoutMouvement([X3,Y3],Sortie,Retour).
+mangeBasDroite([X,Y,dame],Camp,Blancs,Noirs,Retour):-mangeBasDroite([X,Y,dame],Camp,Blancs,Noirs,[],Retour),!.
 mangeBasDroite(_,_,_,_,[]).
 
 mangeHautDroite([X,Y,pion],blanc,Blancs,Noirs,Retour):- X2 is X+1, Y2 is Y-1,X3 is X+2,Y3 is Y-2,X3 =< 9 ,Y3 >= 0,member([X2,Y2,_],Noirs),not(member([X3,Y3,_],Noirs)),not(member([X3,Y3,_],Blancs)),!,delete(Noirs,[X2,Y2,_],Noirs2),delete(Blancs,[X,Y,pion],Blancs2),mangeTouteDirection([X3,Y3,pion],blanc,[[X3,Y3,pion]|Blancs2],Noirs2,R),creerMouvement([[X3,Y3,pion]|Blancs2],Noirs2,R,Sortie),ajoutMouvement([X3,Y3],Sortie,Retour).
 mangeHautDroite([X,Y,pion],noir,Blancs,Noirs,Retour):- X2 is X+1, Y2 is Y-1,X3 is X+2,Y3 is Y-2,X3 =< 9 ,Y3 >= 0,member([X2,Y2,_],Blancs),not(member([X3,Y3,_],Noirs)),not(member([X3,Y3,_],Blancs)),!,delete(Blancs,[X2,Y2,_],Blancs2),delete(Noirs,[X,Y,pion],Noirs2),mangeTouteDirection([X3,Y3,pion],noir,Blancs2,[[X3,Y3,pion]|Noirs2],R),creerMouvement(Blancs2,[[X3,Y3,pion]|Noirs2],R,Sortie),ajoutMouvement([X3,Y3],Sortie,Retour).
+mangeHautDroite([X,Y,dame],Camp,Blancs,Noirs,Retour):-mangeHautDroite([X,Y,dame],Camp,Blancs,Noirs,[],Retour),!.
 mangeHautDroite(_,_,_,_,[]).
 
 mangeHautGauche([X,Y,pion],blanc,Blancs,Noirs,Retour):- X2 is X-1, Y2 is Y-1,X3 is X-2,Y3 is Y-2,X3 >= 0,Y3 >= 0,member([X2,Y2,_],Noirs),not(member([X3,Y3,_],Noirs)),not(member([X3,Y3,_],Blancs)),!,delete(Noirs,[X2,Y2,_],Noirs2),delete(Blancs,[X,Y,pion],Blancs2),mangeTouteDirection([X3,Y3,pion],blanc,[[X3,Y3,pion]|Blancs2],Noirs2,R),creerMouvement([[X3,Y3,pion]|Blancs2],Noirs2,R,Sortie),ajoutMouvement([X3,Y3],Sortie,Retour).
 mangeHautGauche([X,Y,pion],noir,Blancs,Noirs,Retour):- X2 is X-1, Y2 is Y-1,X3 is X-2,Y3 is Y-2,X3 >= 0,Y3 >= 0,member([X2,Y2,_],Blancs),not(member([X3,Y3,_],Noirs)),not(member([X3,Y3,_],Blancs)),!,delete(Blancs,[X2,Y2,_],Blancs2),delete(Noirs,[X,Y,pion],Noirs2),mangeTouteDirection([X3,Y3,pion],noir,Blancs2,[[X3,Y3,pion]|Noirs2],R),creerMouvement(Blancs2,[[X3,Y3,pion]|Noirs2],R,Sortie),ajoutMouvement([X3,Y3],Sortie,Retour).
+mangeHautGauche([X,Y,dame],Camp,Blancs,Noirs,Retour):-mangeHautGauche([X,Y,dame],Camp,Blancs,Noirs,[],Retour),!.
 mangeHautGauche(_,_,_,_,[]).
 %test mangehautgauche
 % mangeHautGauche([4,4,pion],blanc,[[4,4,pion]],[[1,1,pion],[3,3,pion]],R).
 
-%
 
 %dame
-mangeHautGauche2(blanc,Blancs,Noirs,[[X,Y]|Suite],Manges,Retour):-mangeHautGauche2(blanc,Blancs,Noirs,Suite,Manges,Solution1),
-		mangeTouteDirection([X,Y,dame],blanc,Blancs,Noirs,Manges,R),
+mangeSuite(Camp,Blancs,Noirs,[[X,Y]|Suite],Manges,Retour):-mangeSuite(Camp,Blancs,Noirs,Suite,Manges,Solution1),
+		mangeTouteDirection([X,Y,dame],Camp,Blancs,Noirs,Manges,R),
 		maxSolution(Solution1,R,S),
 		creerMouvement(Blancs,Noirs,S,Sortie),ajoutMouvement([X,Y],Sortie,Retour).
-mangeHautGauche2(_,_,_,[],_,[]).
+mangeSuite(_,_,_,[],_,[]).
 
-mangeHautGauche([X,Y,dame],blanc,Blancs,Noirs,Manges,Retour):- cherchePionHautGauche(X,Y,blanc,Blancs,Noirs,[X2,Y2,T]),
+mangeHautGauche([X,Y,dame],blanc,Blancs,Noirs,Manges,Retour):- cherchePionHautGauche(X,Y,blanc,Blancs,Noirs,[X2,Y2,T],Manges),
 		chercheCaseVideHautGauche(X,Y,Blancs,Noirs, [], R),R \== [],!, delete(Noirs,[X2,Y2,T],Noirs2),
-		delete(Blancs,[X,Y,dame],Blancs2),mangeHautGauche2(blanc,Blancs2,Noirs2,R,[[X2,Y2,dame]|Manges],Retour).
-mangeHautGauche([X,Y,dame],Camp,Blancs,Noirs,Retour):-mangeHautGauche([X,Y,dame],Camp,Blancs,Noirs,[],Retour),!.
+		delete(Blancs,[X,Y,dame],Blancs2),mangeSuite(blanc,Blancs2,Noirs2,R,[[X2,Y2,dame]|Manges],Retour).
+mangeHautGauche([X,Y,dame],noir,Blancs,Noirs,Manges,Retour):- cherchePionHautGauche(X,Y,noir,Blancs,Noirs,[X2,Y2,T],Manges),
+		chercheCaseVideHautGauche(X,Y,Blancs,Noirs, [], R),R \== [],!, delete(Blancs,[X2,Y2,T],Blancs2),
+		delete(Noirs,[X,Y,dame],Noirs2),mangeSuite(noir,Blancs2,Noirs2,R,[[X2,Y2,dame]|Manges],Retour).
+
+mangeHautDroite([X,Y,dame],blanc,Blancs,Noirs,Manges,Retour):- cherchePionHautDroite(X,Y,blanc,Blancs,Noirs,[X2,Y2,T],Manges),
+		chercheCaseVideHautDroite(X,Y,Blancs,Noirs, [], R),R \== [],!, delete(Noirs,[X2,Y2,T],Noirs2),
+		delete(Blancs,[X,Y,dame],Blancs2),mangeSuite(blanc,Blancs2,Noirs2,R,[[X2,Y2,dame]|Manges],Retour).
+mangeHautDroite([X,Y,dame],noir,Blancs,Noirs,Manges,Retour):- cherchePionHautDroite(X,Y,noir,Blancs,Noirs,[X2,Y2,T],Manges),
+		chercheCaseVideHautDroite(X,Y,Blancs,Noirs, [], R),R \== [],!, delete(Blancs,[X2,Y2,T],Blancs2),
+		delete(Noirs,[X,Y,dame],Noirs2),mangeSuite(noir,Blancs2,Noirs2,R,[[X2,Y2,dame]|Manges],Retour).
+
+mangeBasDroite([X,Y,dame],blanc,Blancs,Noirs,Manges,Retour):- cherchePionBasDroite(X,Y,blanc,Blancs,Noirs,[X2,Y2,T],Manges),
+		chercheCaseVideBasDroite(X,Y,Blancs,Noirs, [], R),R \== [],!, delete(Noirs,[X2,Y2,T],Noirs2),
+		delete(Blancs,[X,Y,dame],Blancs2),mangeSuite(blanc,Blancs2,Noirs2,R,[[X2,Y2,dame]|Manges],Retour).
+mangeBasDroite([X,Y,dame],noir,Blancs,Noirs,Manges,Retour):- cherchePionBasDroite(X,Y,noir,Blancs,Noirs,[X2,Y2,T],Manges),
+		chercheCaseVideBasDroite(X,Y,Blancs,Noirs, [], R),R \== [],!, delete(Blancs,[X2,Y2,T],Blancs2),
+		delete(Noirs,[X,Y,dame],Noirs2),mangeSuite(noir,Blancs2,Noirs2,R,[[X2,Y2,dame]|Manges],Retour).
+
+mangeBasGauche([X,Y,dame],blanc,Blancs,Noirs,Manges,Retour):- cherchePionBasGauche(X,Y,blanc,Blancs,Noirs,[X2,Y2,T],Manges),
+		chercheCaseVideBasGauche(X,Y,Blancs,Noirs, [], R),R \== [],!, delete(Noirs,[X2,Y2,T],Noirs2),
+		delete(Blancs,[X,Y,dame],Blancs2),mangeSuite(blanc,Blancs2,Noirs2,R,[[X2,Y2,dame]|Manges],Retour).
+mangeBasGauche([X,Y,dame],noir,Blancs,Noirs,Manges,Retour):- cherchePionBasGauche(X,Y,noir,Blancs,Noirs,[X2,Y2,T],Manges),
+		chercheCaseVideBasGauche(X,Y,Blancs,Noirs, [], R),R \== [],!, delete(Blancs,[X2,Y2,T],Blancs2),
+		delete(Noirs,[X,Y,dame],Noirs2),mangeSuite(noir,Blancs2,Noirs2,R,[[X2,Y2,dame]|Manges],Retour).
 
 
 
@@ -211,7 +261,7 @@ moveBasDroite(_,_,_,_,[],deplacement).
 % moveBasDroite([4,2,pion],blanc,[[4,2,pion]],[[1,1,pion]],R,T),writeln(R).
 % moveBasDroite([0,7,pion],blanc,[[0,7,pion]],[[1,1,pion]],R,T),writeln(R).
 % movePossible([0,7,pion],blanc,[[0,7,pion]],[[1,1,pion]],R,T),writeln(R).
-% movePossiblePlayer(blanc,[[0,7,pion]],[[1,1,pion]],[[0,7,pion]],S,Type),writeln(S).
+
 
 
 %moveHautGauche
@@ -262,6 +312,7 @@ movePossiblePlayer(_, _, _, [],[], deplacement).
 % movePossiblePlayer(blanc,[[4,2,pion]],[[1,1,pion]],[[4,2,pion]],S,Type),writeln(S).
 % movePossiblePlayer(noir,[[4,2,pion]],[[1,1,pion],[3,1,pion],[5,1,pion]],[[1,1,pion],[3,1,pion],[5,1,pion]],S,Type),writeln(S).
 % movePossiblePlayer(blanc,[[4,2,pion]],[[1,1,pion],[3,1,pion],[5,1,pion]],[[4,2,pion]],S,Type),writeln(S).
+% movePossiblePlayer(blanc,[[0,7,pion]],[[1,1,pion]],[[0,7,pion]],S,Type),writeln(S).
 
 ia(blanc,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,E):-movePossiblePlayer(blanc, Blancs, Noirs, Blancs, Liste,_),length(Liste,X),X>0,!,choixMove(X,Liste,Blancs2,Noirs2,ListeMouvement,E).
 ia(noir,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,E):-movePossiblePlayer(noir, Blancs, Noirs, Noirs, Liste,_),length(Liste,X),X>0,choixMove(X,Liste,Blancs2,Noirs2,ListeMouvement,E).
@@ -345,49 +396,49 @@ init :-retractall(blancs(_)), retractall(noirs(_)), retractall(cptDraw(_)), cree
 % Predicat qui lance le server
 server(Port) :-	http_server(http_dispatch, [port(Port)]).
 
-% Prédicat init qui est appellé quand on appelle l'url /init
+% Prédicat init qui est appellé quand on appelle l'url //init
 % Le prédicat lance le jeu en appelant la méthode init du jeu
 % Le prédicat renvoie la liste des pions blancs et noirs et le joueur qui doit jouer en format JSON
-init_server(_Request) :- 	init,
+init_server(_Request) :-	init,
 							noirs(ListeNoirs),
 							blancs(ListeBlancs),
 							build_reply_init(ListeBlancs,ListeNoirs, 0, JSON),
 							reply_json(JSON).
 
-% Prédicat play_server qui est appellé quand on appelle l'url /play
+% Prédicat play_server qui est appellé quand on appelle l'url //play
 % Le prédicat reconstruit la liste des blancs et des noirs
 % Le prédicat appelle le predicat ia qui va jouer un cout
 % Le prédicat renvoie la liste des pions blancs et noirs et le joueur qui doit jouer en format JSON
 play_server(Request) :- http_read_json(Request, JsonIn,[json_object(term)]),
 						format(user_output,"JsonIn is: ~p~n",[JsonIn]),
- 						json_to_prolog(JsonIn, Data), game_get_data_informations(Data, J, Blancs, Noirs),
- 						format(user_output,"Data is: ~p~n",[Data]),
- 						format(user_output,"J is: ~p~n",[J]),
- 						format(user_output,"Blancs is: ~p~n",[Blancs]),
- 						format(user_output,"Noirs is: ~p~n",[Noirs]),
- 						play(J,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,Pion,Etat),
- 						format(user_output,"Blancs2 is: ~p~n",[Blancs2]),
- 						format(user_output,"Noirs2 is: ~p~n",[Noirs2]),
- 						format(user_output,"ListeMouvement is: ~p~n",[ListeMouvement]),
- 						format(user_output,"Pion is: ~p~n",[Pion]),
- 						format(user_output,"Etat is: ~p~n",[Etat]),
+						json_to_prolog(JsonIn, Data), game_get_data_informations(Data, J, Blancs, Noirs),
+						format(user_output,"Data is: ~p~n",[Data]),
+						format(user_output,"J is: ~p~n",[J]),
+						format(user_output,"Blancs is: ~p~n",[Blancs]),
+						format(user_output,"Noirs is: ~p~n",[Noirs]),
+						play(J,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,Pion,Etat),
+						format(user_output,"Blancs2 is: ~p~n",[Blancs2]),
+						format(user_output,"Noirs2 is: ~p~n",[Noirs2]),
+						format(user_output,"ListeMouvement is: ~p~n",[ListeMouvement]),
+						format(user_output,"Pion is: ~p~n",[Pion]),
+						format(user_output,"Etat is: ~p~n",[Etat]),
 						build_reply_play(Blancs2,Noirs2,J,Pion,ListeMouvement,Etat,JSON),
 						format(user_output,"JSON is: ~p~n",[JSON]),
-				   		reply_json(JSON).
+						reply_json(JSON).
 
 
-moves_allowed_server(Request) :- 	http_read_json(Request, JsonIn,[json_object(term)]),
+moves_allowed_server(Request) :-	http_read_json(Request, JsonIn,[json_object(term)]),
 									format(user_output,"JsonIn is: ~p~n",[JsonIn]),
- 									json_to_prolog(JsonIn, Data), game_get_data_informations(Data, J, Blancs, Noirs),
- 									format(user_output,"Data is: ~p~n",[Data]),
-			 						format(user_output,"J is: ~p~n",[J]),
-			 						format(user_output,"Blancs is: ~p~n",[Blancs]),
-			 						format(user_output,"Noirs is: ~p~n",[Noirs]),
- 									call_movePossiblePlayer(J,Blancs, Noirs,S),
- 									format(user_output,"S is: ~p~n",[S]),
- 									build_reply_moves_allowed(S,Json),
+									json_to_prolog(JsonIn, Data), game_get_data_informations(Data, J, Blancs, Noirs),
+									format(user_output,"Data is: ~p~n",[Data]),
+									format(user_output,"J is: ~p~n",[J]),
+									format(user_output,"Blancs is: ~p~n",[Blancs]),
+									format(user_output,"Noirs is: ~p~n",[Noirs]),
+									call_movePossiblePlayer(J,Blancs, Noirs,S),
+									format(user_output,"S is: ~p~n",[S]),
+									build_reply_moves_allowed(S,Json),
 									format(user_output,"json is: ~p~n",[JSON]),
-							   		reply_json(Json).
+									reply_json(Json).
 
 
 call_movePossiblePlayer(blanc, Blancs, Noirs, S) :- movePossiblePlayer(blanc, Blancs, Noirs, Blancs, S,_).
@@ -396,20 +447,21 @@ call_movePossiblePlayer(noir, Blancs, Noirs, S) :- movePossiblePlayer(noir, Blan
 % Predicat qui permet de construire le JSON relatif à la reponse d'init
 %	ListeBlancs = Liste contenant des pions et des dames
 %	ListeNoirs = Liste contenant des pions et des dames
-build_reply_init(ListeBlancs,ListeNoirs,Joueur,JSON) :- 	convert_list_pion_to_json_object(ListeBlancs, LB), 
+build_reply_init(ListeBlancs,ListeNoirs,Joueur,JSON) :-		convert_list_pion_to_json_object(ListeBlancs, LB),
 															convert_list_pion_to_json_object(ListeNoirs, LN),
-															J = game(Joueur, LB, LN), 
+															J = game(Joueur, LB, LN),
 															prolog_to_json(J,JSON).
 
 
 % Predicat qui permet de construire le JSON relatif à la reponse de play
 %	ListeBlancs = Liste contenant des pions et des dames
 %	ListeNoirs = Liste contenant des pions et des dames
-%	Joueur = Joueur qui joue le tour (blanc/noir)
+%	Joueur = Joueur qui joue le tour (blanc//noir)
 %	Pion = Le pion qui a bougé pour ce tour
 %	ListeMouvement = Liste des mouvements du pion
 %	Etat = Etat de la partie (blanc gagne, noir gagne, égalité, se poursuit)
-build_reply_play(ListeBlancs,ListeNoirs,Joueur,Pion,ListeMouvement,Etat,JSON) :- convert_list_pion_to_json_object(ListeBlancs, LB), 
+
+build_reply_play(ListeBlancs,ListeNoirs,Joueur,Pion,ListeMouvement,Etat,JSON) :- convert_list_pion_to_json_object(ListeBlancs, LB),
 																			convert_list_pion_to_json_object(ListeNoirs, LN),
 																			convert_list_position_to_json_object(ListeMouvement, LM),
 																			convert_pion_to_json_object_pion(Pion, P1),
@@ -417,13 +469,13 @@ build_reply_play(ListeBlancs,ListeNoirs,Joueur,Pion,ListeMouvement,Etat,JSON) :-
 																			changePlayer(Joueur,JPredicat),
 																			build_joueur_predicat_int(JPredicat,JInt),
 																			build_etat_predicat_int(Etat,EInt),
-																			JSONProlog = turn(EInt,JInt, LB, LN, P, LM), 
+																			JSONProlog = turn(EInt,JInt, LB, LN, P, LM),
 																			prolog_to_json(JSONProlog,JSON).
 
 % Predicat qui permet de construire le JSON relatif à la reponse de moves_allowed
 %	L = Liste de mouvements possible de la forme [[[X,Y,pion],[[Blancs,Noirs,ListeMouvement],...]],...]
-build_reply_moves_allowed(L,JSON) :- 	build_liste_move_json(L,Moves),
-										JSONProlog = movesAllowed(Moves), 
+build_reply_moves_allowed(L,JSON) :-	build_liste_move_json(L,Moves),
+										JSONProlog = movesAllowed(Moves),
 										prolog_to_json(JSONProlog,JSON).
 
 %[[X,Y,pion],[[Blancs,Noirs,ListeMouvement],...]]
@@ -447,18 +499,18 @@ build_move_possibilites_json_Mouvements([H|_],M) :- convert_list_position_to_jso
 %[Blancs,Noirs,ListeMouvement]
 %[Blancs,Noirs,ListeMouvement]
 % Prédicat game_get_data_informations qui permet de recuperer la Liste Blancs, la Liste Noirs et le joueur dans un objet JSON de type game
-game_get_data_informations(Data, J, Blancs, Noirs):- 	game_get_joueur(Data, J), 
-														game_get_blancs(Data, LB), 
+game_get_data_informations(Data, J, Blancs, Noirs):-	game_get_joueur(Data, J),
+														game_get_blancs(Data, LB),
 														convert_list_pion_json_to_object(LB,Blancs),
 														game_get_noirs(Data, LN),
 														convert_list_pion_json_to_object(LN,Noirs).
 
 % Prédicat game_get_data_informations qui permet de recuperer le numero du joueur dans un objet JSON de type game
-game_get_joueur(game(0,_,_),blanc). 
-game_get_joueur(game(1,_,_),noir). 
+game_get_joueur(game(0,_,_),blanc).
+game_get_joueur(game(1,_,_),noir).
 
 % Prédicat game_get_data_informations qui permet de recuperer la Liste Blancs dans un objet JSON de type game
-game_get_blancs(game(_,Y,_),Y). 
+game_get_blancs(game(_,Y,_),Y).
 
 % Prédicat game_get_data_informations qui permet de recuperer la Liste Noirs dans un objet JSON de type game
 game_get_noirs(game(_,_,Z),Z).
@@ -490,7 +542,7 @@ convert_list_position_to_json_object([], []).
 convert_list_position_to_json_object([H|T],O2) :- convert_list_position_to_json_object(T, O), convert_position_to_json_object_position(H,X), append([X],O,O2), !.
 
 % Méthode de conversion d'un pion ou d'une dame ([1, 2, pion] ou [1, 2, dame]) en Objet JSON Prolog (pion(1,2) ou dame(1,2))
-convert_pion_to_json_object_pion(L,O) :- 	convert_pion_to_json_object_pion_X(L,X), convert_pion_to_json_object_pion_Y(L,X,Y), convert_pion_to_json_object_pion_Name(L,X,Y,O), !.
+convert_pion_to_json_object_pion(L,O) :-	convert_pion_to_json_object_pion_X(L,X), convert_pion_to_json_object_pion_Y(L,X,Y), convert_pion_to_json_object_pion_Name(L,X,Y,O), !.
 convert_pion_to_json_object_pion_X([H|_],X) :- X = H.
 convert_pion_to_json_object_pion_Y([],_,_).
 convert_pion_to_json_object_pion_Y([X|T],X,Y) :- convert_pion_to_json_object_pion_Y(T,X,Y).
@@ -501,7 +553,7 @@ convert_pion_to_json_object_pion_Name([dame|_], X, Y, O) :- O = dame(X,Y).
 convert_pion_to_json_object_pion_Name([_|T], X, Y, O) :- convert_pion_to_json_object_pion_Name(T,X,Y,O).
 
 % Méthode de conversion d'un pion ou d'une dame JSON (pion(1,2) ou dame(1,2)) en Objet Prolog ([1, 2, pion] ou [1, 2, dame])
-convert_pion_json_to_object_pion(L,O4) :- 	convert_pion_json_to_object_pion_X(L,X), convert_pion_json_to_object_pion_Y(L,Y), convert_pion_json_to_object_pion_Name(L,N),append([N],[],O2),append([Y],O2,O3), append([X],O3,O4), !.
+convert_pion_json_to_object_pion(L,O4) :-	convert_pion_json_to_object_pion_X(L,X), convert_pion_json_to_object_pion_Y(L,Y), convert_pion_json_to_object_pion_Name(L,N),append([N],[],O2),append([Y],O2,O3), append([X],O3,O4), !.
 convert_pion_json_to_object_pion_X(pion(X,_),X).
 convert_pion_json_to_object_pion_X(dame(X,_),X).
 convert_pion_json_to_object_pion_Y(pion(_,Y),Y).
