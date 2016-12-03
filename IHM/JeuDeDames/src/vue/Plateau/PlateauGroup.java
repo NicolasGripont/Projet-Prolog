@@ -245,7 +245,6 @@ public class PlateauGroup extends Group {
 		double hauteurCase = this.plateauCanvas.getPlateauHeight() / Plateau.NB_COLONNES;
 		double margin = 5;
 		PieceVue pieceVue = null;
-
 		if (piece.getCouleur() == Couleur.BLANC) {
 			for (PieceVue p : this.pieceVuesBlanches) {
 				if (p.getPiece() == piece) {

@@ -153,6 +153,10 @@ public class VueJeu implements Initializable {
 		this.plateauGroup.deplacerPiece(piece, deplacement, dureeDeplacement);
 	}
 
+	public void tuerPiece(Piece piece, int dureeDAttente) {
+		this.plateauGroup.tuerPiece(piece, dureeDAttente);
+	}
+
 	public void tuerPieces(List<Piece> pieces, int dureeDAttente) {
 		for (Piece p : pieces) {
 			this.plateauGroup.tuerPiece(p, dureeDAttente);

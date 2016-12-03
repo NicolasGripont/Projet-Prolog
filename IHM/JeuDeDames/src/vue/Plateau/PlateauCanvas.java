@@ -90,6 +90,7 @@ public class PlateauCanvas extends Canvas {
 			this.dessinerFond();
 			this.dessinerFondPlateau();
 			this.dessinerCases();
+			this.dessinerCasesEnSurBrillances();
 		}
 	}
 
@@ -170,8 +171,6 @@ public class PlateauCanvas extends Canvas {
 
 	public void setCaseEnSurBrillance(List<Case> cases) {
 		this.casesEnSurbrillance = cases;
-		this.dessinerCases();
-		this.dessinerCasesEnSurBrillances();
 	}
 
 	private void dessinerCasesEnSurBrillances() {
