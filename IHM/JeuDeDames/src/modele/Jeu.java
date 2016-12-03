@@ -188,6 +188,7 @@ public class Jeu {
 					if (possibilite.get("posibilite") != null) {
 						JsonArray possi = possibilite.get("posibilite").getAsJsonArray();
 						ArrayList<Coup> listCoups = new ArrayList<>();
+						System.out.println("Nb possibilite pour ce pion : " + possi.size());
 						for (int j = 0; j < possi.size(); j++) {
 							ArrayList<Piece> newBlancs = new ArrayList<>();
 							if ((possi.get(j).getAsJsonObject().get("blancs") != null)) {

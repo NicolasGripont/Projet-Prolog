@@ -502,18 +502,19 @@ build_liste_move_json([],[]).
 build_liste_move_json([H|T],Moves) :- build_liste_move_json(T,M), build_possibilites_for_pion_json(H,Move), append([Move],M,Moves).
 
 
-%[X,Y,pion],[[[Blancs,Noirs,ListeMouvement],...]]
-build_possibilites_for_pion_json([H|T],M) :- convert_pion_to_json_object_pion(H,P), prolog_to_json(P,Pion), build_move_possibilites_json(T,Possibilities), Move = move(Pion,Possibilities), prolog_to_json(Move, M).
+%[Pion, [[Blancs,Noirs,ListeMouvement],...]]
+build_possibilites_for_pion_json([H|T],M) :- convert_pion_to_json_object_pion(H,P), prolog_to_json(P,Pion), decompose(T,TD), build_move_possibilites_json(TD,Possibilities), Move = move(Pion,Possibilities), prolog_to_json(Move, M).
 
-%[[Blancs,Noirs,ListeMouvement],...]
+%OK ! Tested : [[ [[1,6,pion]],[[3,0,pion],[5,0,pion],[7,0,pion],[2,1,pion]],[[2,1]] ],[ [[1,6,pion]],[[3,0,pion],[5,0,pion],[7,0,pion],[2,1,pion]],[[2,1]] ]]  % [[Blancs,Noirs,ListeMouvement],...]
 build_move_possibilites_json([],[]).
-build_move_possibilites_json([H|T],Poss) :- build_move_possibilites_json(T,Poss2), decompose(H,HD),build_move_possibilite_json(HD,P), append([P],Poss2,Poss).
+build_move_possibilites_json([H|T],Poss) :- build_move_possibilites_json(T,Poss2), build_move_possibilite_json(H,P), append([P],Poss2,Poss).
 
 decompose([H|_],H).
-%[Blancs,Noirs,ListeMouvement]
-build_move_possibilite_json([H|T],P):- convert_list_pion_to_json_object(H,B), build_move_possibilites_json_Noir_Mouvements(T,N,M), Poss = posibilite(B,N,M), prolog_to_json(Poss,P).
-build_move_possibilites_json_Noir_Mouvements([H|T],N,M) :- build_move_possibilites_json_Mouvements(T,M), convert_list_pion_to_json_object(H,N).
-build_move_possibilites_json_Mouvements([H|_],M) :- convert_list_position_to_json_object(H,M).
+
+%OK ! Tested : [ [[1,6,pion]],[[3,0,pion],[5,0,pion],[7,0,pion],[2,1,pion]],[[2,1]] ] % [Blancs,Noirs,ListeMouvement]
+build_move_possibilite_json([H|T],P):- convert_list_pion_to_json_object(H,B), build_move_possibilite_json_Noir_Mouvements(T,N,M), Poss = posibilite(B,N,M), prolog_to_json(Poss,P).
+build_move_possibilite_json_Noir_Mouvements([H|T],N,M) :- build_move_possibilite_json_Mouvements(T,M), convert_list_pion_to_json_object(H,N).
+build_move_possibilite_json_Mouvements([H|_],M) :- convert_list_position_to_json_object(H,M).
 
 %[Blancs,Noirs,ListeMouvement]
 %[Blancs,Noirs,ListeMouvement]
