@@ -163,44 +163,54 @@ mangeHautGauche([X,Y,pion],blanc,Blancs,Noirs,Retour):- X2 is X-1, Y2 is Y-1,X3 
 mangeHautGauche([X,Y,pion],noir,Blancs,Noirs,Retour):- X2 is X-1, Y2 is Y-1,X3 is X-2,Y3 is Y-2,X3 >= 0,Y3 >= 0,member([X2,Y2,_],Blancs),not(member([X3,Y3,_],Noirs)),not(member([X3,Y3,_],Blancs)),!,delete(Blancs,[X2,Y2,_],Blancs2),delete(Noirs,[X,Y,pion],Noirs2),mangeTouteDirection([X3,Y3,pion],noir,Blancs2,[[X3,Y3,pion]|Noirs2],R),creerMouvement(Blancs2,[[X3,Y3,pion]|Noirs2],R,Sortie),ajoutMouvement([X3,Y3],Sortie,Retour).
 mangeHautGauche([X,Y,dame],Camp,Blancs,Noirs,Retour):-mangeHautGauche([X,Y,dame],Camp,Blancs,Noirs,[],Retour),!.
 mangeHautGauche(_,_,_,_,[]).
+
 %test mangehautgauche
 % mangeHautGauche([4,4,pion],blanc,[[4,4,pion]],[[1,1,pion],[3,3,pion]],R).
+% mangeHautGauche([4,2,dame],blanc,[[4,2,dame]],[[3,1,pion],[1,1,pion],[3,3,pion]],R).
 
 
 %dame
-mangeSuite(Camp,Blancs,Noirs,[[X,Y]|Suite],Manges,Retour):-mangeSuite(Camp,Blancs,Noirs,Suite,Manges,Solution1),
-		mangeTouteDirection([X,Y,dame],Camp,Blancs,Noirs,Manges,R),
+mangeSuite(blanc,Blancs,Noirs,[[X,Y]|Suite],Manges,Retour):-!,mangeSuite(blanc,[[X,Y,dame]|Blancs],Noirs,Suite,Manges,Solution1),
+		mangeTouteDirection([X,Y,dame],blanc,[[X,Y,dame]|Blancs],Noirs,Manges,R),
 		maxSolution(Solution1,R,S),
-		creerMouvement(Blancs,Noirs,S,Sortie),ajoutMouvement([X,Y],Sortie,Retour).
+		creerMouvement([[X,Y,dame]|Blancs],Noirs,S,Sortie),ajoutMouvement([X,Y],Sortie,Retour).
+mangeSuite(noir,Blancs,Noirs,[[X,Y]|Suite],Manges,Retour):-!,mangeSuite(noir,Blancs,[[X,Y,dame]|Noirs],Suite,Manges,Solution1),
+		mangeTouteDirection([X,Y,dame],noir,Blancs,[[X,Y,dame]|Noirs],Manges,R),
+		maxSolution(Solution1,R,S),
+		creerMouvement(Blancs,[[X,Y,dame]|Noirs],S,Sortie),ajoutMouvement([X,Y],Sortie,Retour).
 mangeSuite(_,_,_,[],_,[]).
 
 mangeHautGauche([X,Y,dame],blanc,Blancs,Noirs,Manges,Retour):- cherchePionHautGauche(X,Y,blanc,Blancs,Noirs,[X2,Y2,T],Manges),
-		chercheCaseVideHautGauche(X,Y,Blancs,Noirs, [], R),R \== [],!, delete(Noirs,[X2,Y2,T],Noirs2),
-		delete(Blancs,[X,Y,dame],Blancs2),mangeSuite(blanc,Blancs2,Noirs2,R,[[X2,Y2,dame]|Manges],Retour).
+		chercheCaseVideHautGauche(X2,Y2,Blancs,Noirs, [], R),R \== [],!, delete(Noirs,[X2,Y2,T],Noirs2),
+		delete(Blancs,[X,Y,dame],Blancs2),mangeSuite(blanc,Blancs2,Noirs2,R,[[X2,Y2,T]|Manges],Retour).
 mangeHautGauche([X,Y,dame],noir,Blancs,Noirs,Manges,Retour):- cherchePionHautGauche(X,Y,noir,Blancs,Noirs,[X2,Y2,T],Manges),
-		chercheCaseVideHautGauche(X,Y,Blancs,Noirs, [], R),R \== [],!, delete(Blancs,[X2,Y2,T],Blancs2),
-		delete(Noirs,[X,Y,dame],Noirs2),mangeSuite(noir,Blancs2,Noirs2,R,[[X2,Y2,dame]|Manges],Retour).
+		chercheCaseVideHautGauche(X2,Y2,Blancs,Noirs, [], R),R \== [],!, delete(Blancs,[X2,Y2,T],Blancs2),
+		delete(Noirs,[X,Y,dame],Noirs2),mangeSuite(noir,Blancs2,Noirs2,R,[[X2,Y2,T]|Manges],Retour).
+mangeHautGauche(_,_,_,_,_,[]).
 
 mangeHautDroite([X,Y,dame],blanc,Blancs,Noirs,Manges,Retour):- cherchePionHautDroite(X,Y,blanc,Blancs,Noirs,[X2,Y2,T],Manges),
-		chercheCaseVideHautDroite(X,Y,Blancs,Noirs, [], R),R \== [],!, delete(Noirs,[X2,Y2,T],Noirs2),
-		delete(Blancs,[X,Y,dame],Blancs2),mangeSuite(blanc,Blancs2,Noirs2,R,[[X2,Y2,dame]|Manges],Retour).
+		chercheCaseVideHautDroite(X2,Y2,Blancs,Noirs, [], R),R \== [],!, delete(Noirs,[X2,Y2,T],Noirs2),
+		delete(Blancs,[X,Y,dame],Blancs2),mangeSuite(blanc,Blancs2,Noirs2,R,[[X2,Y2,T]|Manges],Retour).
 mangeHautDroite([X,Y,dame],noir,Blancs,Noirs,Manges,Retour):- cherchePionHautDroite(X,Y,noir,Blancs,Noirs,[X2,Y2,T],Manges),
-		chercheCaseVideHautDroite(X,Y,Blancs,Noirs, [], R),R \== [],!, delete(Blancs,[X2,Y2,T],Blancs2),
-		delete(Noirs,[X,Y,dame],Noirs2),mangeSuite(noir,Blancs2,Noirs2,R,[[X2,Y2,dame]|Manges],Retour).
+		chercheCaseVideHautDroite(X2,Y2,Blancs,Noirs, [], R),R \== [],!, delete(Blancs,[X2,Y2,T],Blancs2),
+		delete(Noirs,[X,Y,dame],Noirs2),mangeSuite(noir,Blancs2,Noirs2,R,[[X2,Y2,T]|Manges],Retour).
+mangeHautDroite(_,_,_,_,_,[]).
 
 mangeBasDroite([X,Y,dame],blanc,Blancs,Noirs,Manges,Retour):- cherchePionBasDroite(X,Y,blanc,Blancs,Noirs,[X2,Y2,T],Manges),
-		chercheCaseVideBasDroite(X,Y,Blancs,Noirs, [], R),R \== [],!, delete(Noirs,[X2,Y2,T],Noirs2),
-		delete(Blancs,[X,Y,dame],Blancs2),mangeSuite(blanc,Blancs2,Noirs2,R,[[X2,Y2,dame]|Manges],Retour).
+		chercheCaseVideBasDroite(X2,Y2,Blancs,Noirs, [], R),R \== [],!, delete(Noirs,[X2,Y2,T],Noirs2),
+		delete(Blancs,[X,Y,dame],Blancs2),mangeSuite(blanc,Blancs2,Noirs2,R,[[X2,Y2,T]|Manges],Retour).
 mangeBasDroite([X,Y,dame],noir,Blancs,Noirs,Manges,Retour):- cherchePionBasDroite(X,Y,noir,Blancs,Noirs,[X2,Y2,T],Manges),
-		chercheCaseVideBasDroite(X,Y,Blancs,Noirs, [], R),R \== [],!, delete(Blancs,[X2,Y2,T],Blancs2),
-		delete(Noirs,[X,Y,dame],Noirs2),mangeSuite(noir,Blancs2,Noirs2,R,[[X2,Y2,dame]|Manges],Retour).
+		chercheCaseVideBasDroite(X2,Y2,Blancs,Noirs, [], R),R \== [],!, delete(Blancs,[X2,Y2,T],Blancs2),
+		delete(Noirs,[X,Y,dame],Noirs2),mangeSuite(noir,Blancs2,Noirs2,R,[[X2,Y2,T]|Manges],Retour).
+mangeBasDroite(_,_,_,_,_,[]).
 
 mangeBasGauche([X,Y,dame],blanc,Blancs,Noirs,Manges,Retour):- cherchePionBasGauche(X,Y,blanc,Blancs,Noirs,[X2,Y2,T],Manges),
-		chercheCaseVideBasGauche(X,Y,Blancs,Noirs, [], R),R \== [],!, delete(Noirs,[X2,Y2,T],Noirs2),
-		delete(Blancs,[X,Y,dame],Blancs2),mangeSuite(blanc,Blancs2,Noirs2,R,[[X2,Y2,dame]|Manges],Retour).
+		chercheCaseVideBasGauche(X2,Y2,Blancs,Noirs, [], R),R \== [],!, delete(Noirs,[X2,Y2,T],Noirs2),
+		delete(Blancs,[X,Y,dame],Blancs2),mangeSuite(blanc,Blancs2,Noirs2,R,[[X2,Y2,T]|Manges],Retour).
 mangeBasGauche([X,Y,dame],noir,Blancs,Noirs,Manges,Retour):- cherchePionBasGauche(X,Y,noir,Blancs,Noirs,[X2,Y2,T],Manges),
-		chercheCaseVideBasGauche(X,Y,Blancs,Noirs, [], R),R \== [],!, delete(Blancs,[X2,Y2,T],Blancs2),
-		delete(Noirs,[X,Y,dame],Noirs2),mangeSuite(noir,Blancs2,Noirs2,R,[[X2,Y2,dame]|Manges],Retour).
+		chercheCaseVideBasGauche(X2,Y2,Blancs,Noirs, [], R),R \== [],!, delete(Blancs,[X2,Y2,T],Blancs2),
+		delete(Noirs,[X,Y,dame],Noirs2),mangeSuite(noir,Blancs2,Noirs2,R,[[X2,Y2,T]|Manges],Retour).
+mangeBasGauche(_,_,_,_,_,[]).
 
 
 
@@ -225,11 +235,18 @@ maxSolutionJoueur([[Pion1,T1]|Suite3],[[Pion2,T2]|Suite4],S):-longueurChaine(T1,
 mangeTouteDirection([X,Y,pion],Couleur,Blancs,Noirs,R):-mangeHautGauche([X,Y,pion],Couleur,Blancs,Noirs,R1),
 		mangeHautDroite([X,Y,pion],Couleur,Blancs,Noirs,R2),mangeBasGauche([X,Y,pion],Couleur,Blancs,Noirs,R3),
 		mangeBasDroite([X,Y,pion],Couleur,Blancs,Noirs,R4),maxSolution(R1,R2,R3,R4,R).
+
+%pour une dame
 mangeTouteDirection([X,Y,dame],Couleur,Blancs,Noirs,Manges,R):-mangeHautGauche([X,Y,dame],Couleur,Blancs,Noirs,Manges,R1),
 		mangeHautDroite([X,Y,dame],Couleur,Blancs,Noirs,Manges,R2),mangeBasGauche([X,Y,dame],Couleur,Blancs,Noirs,Manges,R3),
 		mangeBasDroite([X,Y,dame],Couleur,Blancs,Noirs,Manges,R4),maxSolution(R1,R2,R3,R4,R).
 %tests
 % mangeTouteDirection([4,2,pion],blanc,[[4,2,pion]],[[5,1,pion],[3,1,pion],[1,1,pion],[1,3,pion],[3,3,pion]],R),writeln(R).
+% mangeTouteDirection([4,2,dame],blanc,[[4,2,dame]],[[5,1,pion],[3,1,pion],[1,1,pion],[1,3,pion],[3,3,pion]],[],R),writeln(R).
+% mangeHautGauche([4,2,dame],blanc,[[4,2,dame]],[[5,1,pion],[3,1,pion],[1,1,pion],[1,3,pion],[3,3,pion]],R),writeln(R).
+% mangeHautDroite([4,2,dame],blanc,[[4,2,dame]],[[5,1,pion],[3,1,pion],[1,1,pion],[1,3,pion],[3,3,pion]],R),writeln(R).
+% mangeBasGauche([4,2,dame],blanc,[[4,2,dame]],[[5,1,pion],[3,1,pion],[1,1,pion],[1,3,pion],[3,3,pion]],R),writeln(R).
+% mangeBasDroite([4,2,dame],blanc,[[4,2,dame]],[[5,1,pion],[3,1,pion],[1,1,pion],[1,3,pion],[3,3,pion]],R),writeln(R).
 
 
 %mouvement pour un pion
