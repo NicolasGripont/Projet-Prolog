@@ -604,33 +604,15 @@ convert_list_pion_to_json_object([H|T],O2) :- convert_list_pion_to_json_object(T
 
 % Predicat qui permet de construire le prolog d'une liste de pion JSON
 convert_list_pion_json_to_object([], []).
-convert_list_pion_json_to_object([H|T],O2) :- convert_list_pion_json_to_object(T, O), convert_pion_json_to_object_pion(H,X), append([X],O,O2), !.
+convert_list_pion_json_to_object([H|T],O2) :- convert_list_pion_json_to_object(T, O), convert_pion_to_json_object_pion(X,H), append([X],O,O2), !.
 
 % Predicat qui permet de construire le JSON d'une liste de position
 convert_list_position_to_json_object([], []).
 convert_list_position_to_json_object([H|T],O2) :- convert_list_position_to_json_object(T, O), convert_position_to_json_object_position(H,X), append([X],O,O2), !.
 
 % Méthode de conversion d'un pion ou d'une dame ([1, 2, pion] ou [1, 2, dame]) en Objet JSON Prolog (pion(1,2) ou dame(1,2))
-convert_pion_to_json_object_pion(L,O) :-	convert_pion_to_json_object_pion_X(L,X), convert_pion_to_json_object_pion_Y(L,X,Y), convert_pion_to_json_object_pion_Name(L,X,Y,O), !.
-convert_pion_to_json_object_pion_X([H|_],X) :- X = H.
-convert_pion_to_json_object_pion_Y([_|T],X,Y) :- convert_pion_to_json_object_pion_Y1(T,X,Y).
-convert_pion_to_json_object_pion_Y1([H|_],_,H).
-convert_pion_to_json_object_pion_Name([pion|_], X, Y, pion(X,Y)) :- !.
-convert_pion_to_json_object_pion_Name([dame|_], X, Y, dame(X,Y)) :- !.
-convert_pion_to_json_object_pion_Name([_|T], X, Y, O) :- convert_pion_to_json_object_pion_Name(T,X,Y,O).
-
-% Méthode de conversion d'un pion ou d'une dame JSON (pion(1,2) ou dame(1,2)) en Objet Prolog ([1, 2, pion] ou [1, 2, dame])
-convert_pion_json_to_object_pion(L,O4) :-	convert_pion_json_to_object_pion_X(L,X), convert_pion_json_to_object_pion_Y(L,Y), convert_pion_json_to_object_pion_Name(L,N),append([N],[],O2),append([Y],O2,O3), append([X],O3,O4), !.
-convert_pion_json_to_object_pion_X(pion(X,_),X).
-convert_pion_json_to_object_pion_X(dame(X,_),X).
-convert_pion_json_to_object_pion_Y(pion(_,Y),Y).
-convert_pion_json_to_object_pion_Y(dame(_,Y),Y).
-convert_pion_json_to_object_pion_Name(pion(_,_),pion).
-convert_pion_json_to_object_pion_Name(dame(_,_),dame).
+convert_pion_to_json_object_pion([X,Y,pion],pion(X,Y)) :- !.
+convert_pion_to_json_object_pion([X,Y,dame],dame(X,Y)).
 
 % Méthode de conversion d'une position ([1, 2]) en Objet JSON Prolog (position(1,2))
-convert_position_to_json_object_position(L,O) :- convert_position_to_json_object_position_X(L,X), convert_position_to_json_object_position_Y(L,X,Y), O = position(X,Y), !.
-convert_position_to_json_object_position_X([H|_],X) :- X = H.
-convert_position_to_json_object_position_Y([],_,_).
-convert_position_to_json_object_position_Y([X|T],X,Y) :- convert_position_to_json_object_position_Y(T,X,Y).
-convert_position_to_json_object_position_Y([H|_],_,Y) :- Y = H.
+convert_position_to_json_object_position([X,Y],position(X,Y)).
