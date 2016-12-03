@@ -255,27 +255,48 @@ mangeTouteDirection([X,Y,dame],Couleur,Blancs,Noirs,Manges,R):-mangeHautGauche([
 %mouvement pour un pion
 moveHautGauche([X,_,_],_,_,_,[],deplacement):- X2 is X-1,X2<0,!.
 moveHautGauche([_,Y,_],_,_,_,[],deplacement):- Y2 is Y-1,Y2<0,!.
-moveHautGauche([X,Y,pion],Player,Blancs,Noirs,R,mange):- mangeHautGauche([X,Y,pion],Player,Blancs,Noirs,R), R\==[],!.
+moveHautGauche([X,Y,Pion],Player,Blancs,Noirs,R,mange):- mangeHautGauche([X,Y,Pion],Player,Blancs,Noirs,R), R\==[],!.
 moveHautGauche([X,Y,pion],blanc,Blancs,Noirs,[[Blancs3, Noirs, [[X2,Y2]]]],deplacement):-  X2 is X-1,Y2 is Y-1,not(member([X2,Y2,_],Blancs)), not(member([X2,Y2,_],Noirs)),!, delete(Blancs, [X,Y,pion], Blancs2), append(Blancs2, [[X2,Y2,pion]], Blancs3).
+moveHautGauche([X,Y,dame],Player,Blancs,Noirs,S,deplacement):- chercheCaseVideHautGauche(X,Y,Blancs,Noirs,[],Retour), !, delete(Blancs, [X,Y,dame], Blancs2), moveDameHautGauche(Player, Blancs2, Noirs, Retour, S).
 moveHautGauche(_,_,_,_,[],deplacement).
+
+moveDameHautGauche(blanc, Blancs2, Noirs, [[X,Y]|Suite], Liste) :- !, moveDameHautGauche(blanc, Blancs2, Noirs, Suite,Resultat), append(Resultat, [[[[X,Y,dame]|Blancs2], Noirs, [[X,Y]]]], Liste).
+moveDameHautGauche(noir, Blancs, Noirs2, [[X,Y]|Suite], Liste) :- !, moveDameHautGauche(noir, Blancs, Noirs2, Suite,Resultat), append(Resultat, [[Blancs, [[X,Y,dame]|Noirs2], [[X,Y]]]], Liste).
+moveDameHautGauche(_,_,_,[],[]).
 
 moveHautDroite([X,_,_],_,_,_,[],deplacement):- X2 is X+1,X2>9,!.
 moveHautDroite([_,Y,_],_,_,_,[],deplacement):- Y2 is Y-1,Y2<0,!.
-moveHautDroite([X,Y,pion],Player,Blancs,Noirs,R,mange):- mangeHautDroite([X,Y,pion],Player,Blancs,Noirs,R), R\==[],!.
+moveHautDroite([X,Y,Pion],Player,Blancs,Noirs,R,mange):- mangeHautDroite([X,Y,Pion],Player,Blancs,Noirs,R), R\==[],!.
 moveHautDroite([X,Y,pion],blanc,Blancs,Noirs,[[Blancs3, Noirs, [[X2,Y2]]]],deplacement):- X2 is X+1,Y2 is Y-1,not(member([X2,Y2,_],Blancs)), not(member([X2,Y2,_],Noirs)),!, delete(Blancs, [X,Y,pion], Blancs2), append(Blancs2, [[X2,Y2,pion]], Blancs3).
+moveHautDroite([X,Y,dame],Player,Blancs,Noirs,S,deplacement):- chercheCaseVideHautDroite(X,Y,Blancs,Noirs,[],Retour), !, delete(Blancs, [X,Y,dame], Blancs2), moveDameHautDroite(Player, Blancs2, Noirs, Retour, S).
 moveHautDroite(_,_,_,_,[],deplacement).
+
+moveDameHautDroite(blanc, Blancs2, Noirs, [[X,Y]|Suite], Liste) :- !, moveDameHautDroite(blanc, Blancs2, Noirs, Suite,Resultat), append(Resultat, [[[[X,Y,dame]|Blancs2], Noirs, [[X,Y]]]], Liste).
+moveDameHautDroite(noir, Blancs, Noirs2, [[X,Y]|Suite], Liste) :- !, moveDameHautDroite(noir, Blancs, Noirs2, Suite,Resultat), append(Resultat, [[Blancs, [[X,Y,dame]|Noirs2], [[X,Y]]]], Liste).
+moveDameHautDroite(_,_,_,[],[]).
 
 moveBasGauche([X,_,_],_,_,_,[],deplacement):- X2 is X-1,X2<0,!.
 moveBasGauche([_,Y,_],_,_,_,[],deplacement):- Y2 is Y+1,Y2>9,!.
-moveBasGauche([X,Y,pion],Player,Blancs,Noirs,R,mange):- mangeBasGauche([X,Y,pion],Player,Blancs,Noirs,R), R\==[],!.
+moveBasGauche([X,Y,Pion],Player,Blancs,Noirs,R,mange):- mangeBasGauche([X,Y,Pion],Player,Blancs,Noirs,R), R\==[],!.
 moveBasGauche([X,Y,pion],noir,Blancs,Noirs,[[Blancs, Noirs3, [[X2,Y2]]]],deplacement):-  X2 is X-1,Y2 is Y+1,not(member([X2,Y2,_],Blancs)), not(member([X2,Y2,_],Noirs)),!, delete(Noirs, [X,Y,pion], Noirs2), append(Noirs2, [[X2,Y2,pion]], Noirs3).
+moveBasGauche([X,Y,dame],Player,Blancs,Noirs,S,deplacement):- chercheCaseVideBasGauche(X,Y,Blancs,Noirs,[],Retour), !, delete(Blancs, [X,Y,dame], Blancs2), moveDameBasGauche(Player, Blancs2, Noirs, Retour, S).
 moveBasGauche(_,_,_,_,[],deplacement).
+
+moveDameBasGauche(blanc, Blancs2, Noirs, [[X,Y]|Suite], Liste) :- !, moveDameBasGauche(blanc, Blancs2, Noirs, Suite,Resultat), append(Resultat, [[[[X,Y,dame]|Blancs2], Noirs, [[X,Y]]]], Liste).
+moveDameBasGauche(noir, Blancs, Noirs2, [[X,Y]|Suite], Liste) :- !, moveDameBasGauche(noir, Blancs, Noirs2, Suite,Resultat), append(Resultat, [[Blancs, [[X,Y,dame]|Noirs2], [[X,Y]]]], Liste).
+moveDameBasGauche(_,_,_,[],[]).
 
 moveBasDroite([X,_,_],_,_,_,[],deplacement):- X2 is X+1,X2>9,!.
 moveBasDroite([_,Y,_],_,_,_,[],deplacement):- Y2 is Y+1,Y2>9,!.
-moveBasDroite([X,Y,pion],Player,Blancs,Noirs,R,mange):- mangeBasDroite([X,Y,pion],Player,Blancs,Noirs,R), R\==[],!.
+moveBasDroite([X,Y,Pion],Player,Blancs,Noirs,R,mange):- mangeBasDroite([X,Y,Pion],Player,Blancs,Noirs,R), R\==[],!.
 moveBasDroite([X,Y,pion],noir,Blancs,Noirs,[[Blancs, Noirs3, [[X2,Y2]]]],deplacement):-  X2 is X+1,Y2 is Y+1,not(member([X2,Y2,_],Blancs)), not(member([X2,Y2,_],Noirs)),!, delete(Noirs, [X,Y,pion], Noirs2), append(Noirs2, [[X2,Y2,pion]], Noirs3).
+moveBasDroite([X,Y,dame],Player,Blancs,Noirs,S,deplacement):- chercheCaseVideBasDroite(X,Y,Blancs,Noirs,[],Retour), !, delete(Blancs, [X,Y,dame], Blancs2), moveDameBasDroite(Player, Blancs2, Noirs, Retour, S).
 moveBasDroite(_,_,_,_,[],deplacement).
+
+moveDameBasDroite(blanc, Blancs2, Noirs, [[X,Y]|Suite], Liste) :- !, moveDameBasDroite(blanc, Blancs2, Noirs, Suite,Resultat), append(Resultat, [[[[X,Y,dame]|Blancs2], Noirs, [[X,Y]]]], Liste).
+moveDameBasDroite(noir, Blancs, Noirs2, [[X,Y]|Suite], Liste) :- !, moveDameBasDroite(noir, Blancs, Noirs2, Suite,Resultat), append(Resultat, [[Blancs, [[X,Y,dame]|Noirs2], [[X,Y]]]], Liste).
+moveDameBasDroite(_,_,_,[],[]).
+
 %test
 % moveBasDroite([4,2,pion],blanc,[[4,2,pion]],[[5,1,pion],[3,1,pion],[5,3,pion],[3,3,pion]],R,T),writeln(R).
 % moveBasDroite([4,2,pion],blanc,[[4,2,pion]],[[1,1,pion]],R,T),writeln(R).
