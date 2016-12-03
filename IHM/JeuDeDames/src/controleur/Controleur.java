@@ -307,10 +307,9 @@ public class Controleur extends Application {
 			alert.showAndWait();
 			return;
 		}
-		// this.joueur1 = new Joueur(0, typeJoueur1, nomJoueur1, Couleur.BLANC);
-		// this.joueur2 = new Joueur(1, typeJoueur2, nomJoueur2, Couleur.NOIR);
-		this.joueur1 = new Joueur(0, TypeJoueur.JOUEUR_REEL, nomJoueur1, Couleur.BLANC);
-		this.joueur2 = new Joueur(1, TypeJoueur.JOUEUR_REEL, nomJoueur2, Couleur.NOIR);
+		this.joueur1 = new Joueur(0, typeJoueur1, nomJoueur1, Couleur.BLANC);
+		this.joueur2 = new Joueur(1, typeJoueur2, nomJoueur2, Couleur.NOIR);
+
 		this.plateau = new Plateau();
 		this.plateau.initPions();
 		this.joueurCourant = this.joueur1;
@@ -403,7 +402,6 @@ public class Controleur extends Application {
 		this.vueJeu.setTextLabelVitesse("x" + this.coefVitesse);
 		this.simulerPartie();
 		this.vueJeu.setImageViewPlayDisable(true);
-		// this.vueJeu.setImageViewFastForwardDisable(false);
 		this.vueJeu.setImageViewPauseDisable(false);
 	}
 
@@ -429,7 +427,6 @@ public class Controleur extends Application {
 		this.vueJeu.setTextLabelVitesse("x" + this.coefVitesse);
 		this.simulerPartie();
 		this.vueJeu.setImageViewPlayDisable(false);
-		// this.vueJeu.setImageViewFastForwardDisable(false);
 		this.vueJeu.setImageViewPauseDisable(false);
 	}
 
@@ -438,7 +435,6 @@ public class Controleur extends Application {
 		this.coefVitesse = 1;
 		this.vueJeu.setTextLabelVitesse("x0");
 		this.vueJeu.setImageViewPlayDisable(false);
-		// this.vueJeu.setImageViewFastForwardDisable(false);
 		this.vueJeu.setImageViewPauseDisable(true);
 	}
 
@@ -525,19 +521,21 @@ public class Controleur extends Application {
 				this.pieceCourante.getPosition().getLigne(), this.pieceCourante.getPosition().getColonne()));
 		int nbEtapes = coups.get(0).getDeplacement().size();
 
+		Case nouvelleCase = this.plateau.getCases()[c.getLigne()][c.getColonne()];
+
 		List<Case> tmpDeplacement = new ArrayList<>();
-		tmpDeplacement.add(c);
+		tmpDeplacement.add(nouvelleCase);
 
 		int dureeDeplacement = this.calculDureeDeplacement(this.pieceCourante, tmpDeplacement);
 		int dureeCoup = this.calculDureeCoup(dureeDeplacement);
 
 		// On check s'il y a une pieces mortes
-		Piece pieceATuer = this.getPieceATuer(this.pieceCourante.getPosition(), c);
+		Piece pieceATuer = this.getPieceATuer(this.pieceCourante.getPosition(), nouvelleCase);
 		if (pieceATuer != null) {
 			this.plateau.supprimerPiece(pieceATuer);
 		}
 		// on set la nouvelle position de la piece qui bouge
-		this.plateau.deplacerPiece(this.pieceCourante, c);
+		this.plateau.deplacerPiece(this.pieceCourante, nouvelleCase);
 
 		// appelle vue
 		this.vueJeu.deplacerPiece(this.pieceCourante, tmpDeplacement, dureeDeplacement);
@@ -574,7 +572,7 @@ public class Controleur extends Application {
 
 		}
 
-		this.vueJeu.dessinerPlateau();
+		this.vueJeu.dessinerPlateauCanvas();
 	}
 
 	private Piece getPieceATuer(Case depart, Case arrivee) {
@@ -593,7 +591,7 @@ public class Controleur extends Application {
 		} else if ((depart.getColonne() < arrivee.getColonne()) && (depart.getLigne() < arrivee.getLigne())) {
 			int c = depart.getColonne() + 1;
 			int l = depart.getLigne() + 1;
-			while ((c < arrivee.getColonne()) && (l > arrivee.getLigne())) {
+			while ((c < arrivee.getColonne()) && (l < arrivee.getLigne())) {
 				if (this.plateau.getCases()[l][c].getPiece() != null) {
 					pieceATuer = this.plateau.getCases()[l][c].getPiece();
 					break;
@@ -604,7 +602,7 @@ public class Controleur extends Application {
 		} else if ((depart.getColonne() > arrivee.getColonne()) && (depart.getLigne() < arrivee.getLigne())) {
 			int c = depart.getColonne() - 1;
 			int l = depart.getLigne() + 1;
-			while ((c < arrivee.getColonne()) && (l > arrivee.getLigne())) {
+			while ((c > arrivee.getColonne()) && (l < arrivee.getLigne())) {
 				if (this.plateau.getCases()[l][c].getPiece() != null) {
 					pieceATuer = this.plateau.getCases()[l][c].getPiece();
 					break;
@@ -615,7 +613,7 @@ public class Controleur extends Application {
 		} else if ((depart.getColonne() > arrivee.getColonne()) && (depart.getLigne() > arrivee.getLigne())) {
 			int c = depart.getColonne() - 1;
 			int l = depart.getLigne() - 1;
-			while ((c < arrivee.getColonne()) && (l > arrivee.getLigne())) {
+			while ((c > arrivee.getColonne()) && (l > arrivee.getLigne())) {
 				if (this.plateau.getCases()[l][c].getPiece() != null) {
 					pieceATuer = this.plateau.getCases()[l][c].getPiece();
 					break;
@@ -624,7 +622,6 @@ public class Controleur extends Application {
 				l--;
 			}
 		}
-		System.out.println(">" + pieceATuer);
 		return pieceATuer;
 	}
 }

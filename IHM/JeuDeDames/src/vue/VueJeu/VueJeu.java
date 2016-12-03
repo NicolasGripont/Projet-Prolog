@@ -132,6 +132,10 @@ public class VueJeu implements Initializable {
 		this.controleur = controleur;
 	}
 
+	public void dessinerPlateauCanvas() {
+		this.plateauGroup.dessinerPlateauCanvas();
+	}
+
 	public void dessinerPlateau() {
 		this.plateauGroup.dessinerPlateau();
 	}

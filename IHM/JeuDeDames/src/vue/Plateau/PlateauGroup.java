@@ -58,6 +58,10 @@ public class PlateauGroup extends Group {
 		this.creerPieces();
 	}
 
+	public void dessinerPlateauCanvas() {
+		this.plateauCanvas.dessinerPlateau();
+	}
+
 	public void dessinerPlateau() {
 		this.getChildren().clear();
 		this.getChildren().add(this.plateauCanvas);
