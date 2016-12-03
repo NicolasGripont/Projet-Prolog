@@ -26,12 +26,13 @@ public class Jeu {
 		Jeu jeu = new Jeu("localhost", "5000");
 		ArrayList<Piece> blancs = new ArrayList<>();
 		ArrayList<Piece> noirs = new ArrayList<>();
-		Integer j1 = jeu.init(blancs, noirs);
-		System.out.println(j1);
+		Coup c = jeu.init(blancs, noirs);
+		blancs = (ArrayList<Piece>) c.piecesBlanches;
+		noirs = (ArrayList<Piece>) c.piecesNoires;
 		System.out.println(blancs);
 		System.out.println(noirs);
 		jeu.play(1, blancs, noirs);
-		Map<Piece, ArrayList<Coup>> res = jeu.movesAllowed(1, blancs, noirs);
+		Map<Piece, List<Coup>> res = jeu.movesAllowed(1, blancs, noirs);
 		System.out.println(res);
 	}
 
@@ -45,7 +46,7 @@ public class Jeu {
 	 * { "joueur":0, "blancs": [ {"x":1, "y":2, "type":"dame"} ], "noirs": [
 	 * {"x":1, "y":3, "type":"pion"} ] }
 	 */
-	public int init(ArrayList<Piece> blancs, ArrayList<Piece> noirs) {
+	public Coup init(ArrayList<Piece> blancs, ArrayList<Piece> noirs) {
 		try {
 			URL url = new URL("http://" + this.nameServer + ":" + this.portServer + "/" + urlInit);
 			HttpURLConnection request;
@@ -59,50 +60,17 @@ public class Jeu {
 				j = root.get("joueur").getAsInt();
 			}
 			if ((root.get("blancs") != null) && (blancs != null)) {
-				JsonArray blancsArray = root.get("blancs").getAsJsonArray();
-				for (int i = 0; i < blancsArray.size(); i++) {
-					JsonObject elt = blancsArray.get(i).getAsJsonObject();
-					int x = 0, y = 0;
-					if (elt.get("x") != null) {
-						x = elt.get("x").getAsInt();
-					}
-					if (elt.get("y") != null) {
-						y = elt.get("y").getAsInt();
-					}
-					if (elt.get("type").getAsString().equals("pion")) {
-						Pion p = new Pion(Couleur.BLANC, new Case(Couleur.NOIR, y, x));
-						blancs.add(p);
-					} else if (elt.get("type").getAsString().equals("dame")) {
-						Dame d = new Dame(Couleur.BLANC, new Case(Couleur.NOIR, y, x));
-						blancs.add(d);
-					}
-				}
+				System.out.println(root.get("blancs"));
+				blancs = buildListPiece(root.get("blancs").getAsJsonArray());
 			}
 			if ((root.get("noirs") != null) && (noirs != null)) {
-				JsonArray noirsArray = root.get("noirs").getAsJsonArray();
-				for (int i = 0; i < noirsArray.size(); i++) {
-					JsonObject elt = noirsArray.get(i).getAsJsonObject();
-					int x = 0, y = 0;
-					if (elt.get("x") != null) {
-						x = elt.get("x").getAsInt();
-					}
-					if (elt.get("y") != null) {
-						y = elt.get("y").getAsInt();
-					}
-					if (elt.get("type").getAsString().equals("pion")) {
-						Pion p = new Pion(Couleur.NOIR, new Case(Couleur.NOIR, y, x));
-						noirs.add(p);
-					} else if (elt.get("type").getAsString().equals("dame")) {
-						Dame d = new Dame(Couleur.NOIR, new Case(Couleur.NOIR, y, x));
-						noirs.add(d);
-					}
-				}
+				noirs = buildListPiece(root.get("noirs").getAsJsonArray());
 			}
 			request.disconnect();
-			return j;
+			return new Coup(j,blancs, noirs, null, null);
 		} catch (IOException e) {
 			e.printStackTrace();
-			return -1;
+			return null;
 		}
 	}
 
@@ -122,6 +90,7 @@ public class Jeu {
 			request.setDoOutput(true);
 			request.setDoInput(true);
 			OutputStream os = request.getOutputStream();
+			System.out.println("parameters : " + parameters.toString());
 			os.write(parameters.toString().getBytes("UTF8"));
 			os.close();
 			System.out.println(parameters.toString());
@@ -134,62 +103,16 @@ public class Jeu {
 				etat = root.get("etat").getAsInt();
 			}
 			ArrayList<Piece> newBlancs = new ArrayList<>();
-
 			if ((root.get("blancs") != null)) {
-				blancsArray = root.get("blancs").getAsJsonArray();
-				for (int i = 0; i < blancsArray.size(); i++) {
-					JsonObject elt = blancsArray.get(i).getAsJsonObject();
-					int x = 0, y = 0;
-					if (elt.get("x") != null) {
-						x = elt.get("x").getAsInt();
-					}
-					if (elt.get("y") != null) {
-						y = elt.get("y").getAsInt();
-					}
-					if (elt.get("type").getAsString().equals("pion")) {
-						Pion p = new Pion(Couleur.BLANC, new Case(Couleur.NOIR, y, x));
-						newBlancs.add(p);
-					} else if (elt.get("type").getAsString().equals("dame")) {
-						Dame d = new Dame(Couleur.BLANC, new Case(Couleur.NOIR, y, x));
-						newBlancs.add(d);
-					}
-				}
+				newBlancs = buildListPiece(root.get("blancs").getAsJsonArray());
 			}
 			ArrayList<Piece> newNoirs = new ArrayList<>();
 			if ((root.get("noirs") != null)) {
-				noirsArray = root.get("noirs").getAsJsonArray();
-				for (int i = 0; i < noirsArray.size(); i++) {
-					JsonObject elt = noirsArray.get(i).getAsJsonObject();
-					int x = 0, y = 0;
-					if (elt.get("x") != null) {
-						x = elt.get("x").getAsInt();
-					}
-					if (elt.get("y") != null) {
-						y = elt.get("y").getAsInt();
-					}
-					if (elt.get("type").getAsString().equals("pion")) {
-						Pion p = new Pion(Couleur.NOIR, new Case(Couleur.NOIR, y, x));
-						newNoirs.add(p);
-					} else if (elt.get("type").getAsString().equals("dame")) {
-						Dame d = new Dame(Couleur.NOIR, new Case(Couleur.NOIR, y, x));
-						newNoirs.add(d);
-					}
-				}
+				newNoirs = buildListPiece(root.get("noirs").getAsJsonArray());
 			}
 			ArrayList<Case> deplacements = new ArrayList<>();
 			if ((root.get("mouvements") != null)) {
-				JsonArray mouvementsArray = root.get("mouvements").getAsJsonArray();
-				for (int i = 0; i < mouvementsArray.size(); i++) {
-					JsonObject elt = mouvementsArray.get(i).getAsJsonObject();
-					int x = 0, y = 0;
-					if (elt.get("x") != null) {
-						x = elt.get("x").getAsInt();
-					}
-					if (elt.get("y") != null) {
-						y = elt.get("y").getAsInt();
-					}
-					deplacements.add(new Case(Couleur.NOIR, y, x));
-				}
+				deplacements = buildListCase(root.get("mouvements").getAsJsonArray());
 			}
 			Piece piece = null;
 			if ((root.get("pion") != null)) {
@@ -215,7 +138,7 @@ public class Jeu {
 		}
 	}
 
-	public Map<Piece,ArrayList<Coup> > movesAllowed(int joueur, List<Piece> blancs, List<Piece> noirs) {
+	public Map<Piece, List<Coup>> movesAllowed(int joueur, List<Piece> blancs, List<Piece> noirs) {
 		try {
 			JsonArray blancsArray = this.buildObjectListPiece(blancs, "blancs");
 			JsonArray noirsArray = this.buildObjectListPiece(noirs, "noirs");
@@ -238,15 +161,16 @@ public class Jeu {
 			JsonObject root = jp.parse(new InputStreamReader((InputStream) request.getContent())).getAsJsonObject();
 			System.out.println(root);
 			request.disconnect();
-			Map<Piece,ArrayList<Coup> > mapPossibilites = new HashMap<Piece, ArrayList<Coup>>();
+			Map<Piece, List<Coup>> mapPossibilites = new HashMap<>();
 			if ((root.get("move") != null)) {
 				JsonArray possibilites = root.get("move").getAsJsonArray();
+				System.out.println("Nb possibilites de pion: " + possibilites.size());
 				for (int i = 0; i < possibilites.size(); i++) {
 					JsonObject possibilite = possibilites.get(i).getAsJsonObject();
 					Piece p = null;
-					if(possibilite.get("pion") != null) {
+					// Gestion du pion
+					if (possibilite.get("pion") != null) {
 						JsonObject elt = possibilite.get("pion").getAsJsonObject();
-						//Gestion du pion
 						int x = 0, y = 0;
 						if (elt.get("x") != null) {
 							x = elt.get("x").getAsInt();
@@ -260,68 +184,24 @@ public class Jeu {
 							p = new Dame(Couleur.BLANC, new Case(Couleur.NOIR, y, x));
 						}
 					}
-					if(possibilite.get("posibilite") != null) {
+					// Gestion des possibilite
+					if (possibilite.get("posibilite") != null) {
 						JsonArray possi = possibilite.get("posibilite").getAsJsonArray();
-						ArrayList<Coup> listCoups = new ArrayList<Coup>();
-						for (int j = 0;j < possi.size(); j++) {
+						ArrayList<Coup> listCoups = new ArrayList<>();
+						for (int j = 0; j < possi.size(); j++) {
 							ArrayList<Piece> newBlancs = new ArrayList<>();
-							if ((root.get("blancs") != null)) {
-								blancsArray = root.get("blancs").getAsJsonArray();
-								for (int z = 0; z < blancsArray.size(); z++) {
-									JsonObject elt = blancsArray.get(z).getAsJsonObject();
-									int x = 0, y = 0;
-									if (elt.get("x") != null) {
-										x = elt.get("x").getAsInt();
-									}
-									if (elt.get("y") != null) {
-										y = elt.get("y").getAsInt();
-									}
-									if (elt.get("type").getAsString().equals("pion")) {
-										Pion pion = new Pion(Couleur.BLANC, new Case(Couleur.NOIR, y, x));
-										newBlancs.add(pion);
-									} else if (elt.get("type").getAsString().equals("dame")) {
-										Dame d = new Dame(Couleur.BLANC, new Case(Couleur.NOIR, y, x));
-										newBlancs.add(d);
-									}
-								}
+							if ((possi.get(j).getAsJsonObject().get("blancs") != null)) {
+								newBlancs = buildListPiece(possi.get(j).getAsJsonObject().get("blancs").getAsJsonArray());
 							}
 							ArrayList<Piece> newNoirs = new ArrayList<>();
-							if ((root.get("noirs") != null)) {
-								noirsArray = root.get("noirs").getAsJsonArray();
-								for (int z = 0; z < noirsArray.size(); z++) {
-									JsonObject elt = noirsArray.get(z).getAsJsonObject();
-									int x = 0, y = 0;
-									if (elt.get("x") != null) {
-										x = elt.get("x").getAsInt();
-									}
-									if (elt.get("y") != null) {
-										y = elt.get("y").getAsInt();
-									}
-									if (elt.get("type").getAsString().equals("pion")) {
-										Pion pion = new Pion(Couleur.NOIR, new Case(Couleur.NOIR, y, x));
-										newNoirs.add(pion);
-									} else if (elt.get("type").getAsString().equals("dame")) {
-										Dame d = new Dame(Couleur.NOIR, new Case(Couleur.NOIR, y, x));
-										newNoirs.add(d);
-									}
-								}
+							if ((possi.get(j).getAsJsonObject().get("noirs") != null)) {
+								newNoirs = buildListPiece(possi.get(j).getAsJsonObject().get("noirs").getAsJsonArray());
 							}
 							ArrayList<Case> deplacements = new ArrayList<>();
-							if ((root.get("mouvements") != null)) {
-								JsonArray mouvementsArray = root.get("mouvements").getAsJsonArray();
-								for (int z = 0; z < mouvementsArray.size(); z++) {
-									JsonObject elt = mouvementsArray.get(z).getAsJsonObject();
-									int x = 0, y = 0;
-									if (elt.get("x") != null) {
-										x = elt.get("x").getAsInt();
-									}
-									if (elt.get("y") != null) {
-										y = elt.get("y").getAsInt();
-									}
-									deplacements.add(new Case(Couleur.NOIR, y, x));
-								}
+							if ((possi.get(j).getAsJsonObject().get("mouvements") != null)) {
+								deplacements = buildListCase(possi.get(j).getAsJsonObject().get("mouvements").getAsJsonArray());
 							}
-							Coup c = new Coup(3, newBlancs, newNoirs, deplacements, p);	
+							Coup c = new Coup(3, newBlancs, newNoirs, deplacements, p);
 							listCoups.add(c);
 						}
 						mapPossibilites.put(p, listCoups);
@@ -333,6 +213,44 @@ public class Jeu {
 			e.printStackTrace();
 			return null;
 		}
+	}
+	
+	private ArrayList<Case> buildListCase(JsonArray array) {
+		ArrayList<Case> deplacements = new ArrayList<>();
+		for (int i = 0; i < array.size(); i++) {
+			JsonObject elt = array.get(i).getAsJsonObject();
+			int x = 0, y = 0;
+			if (elt.get("x") != null) {
+				x = elt.get("x").getAsInt();
+			}
+			if (elt.get("y") != null) {
+				y = elt.get("y").getAsInt();
+			}
+			deplacements.add(new Case(Couleur.NOIR, y, x));
+		}
+		return deplacements;
+	}
+	
+	private ArrayList<Piece> buildListPiece(JsonArray array) {
+		ArrayList<Piece> arrayPiece = new ArrayList<Piece>();
+		for (int i = 0; i < array.size(); i++) {
+			JsonObject elt = array.get(i).getAsJsonObject();
+			int x = 0, y = 0;
+			if (elt.get("x") != null) {
+				x = elt.get("x").getAsInt();
+			}
+			if (elt.get("y") != null) {
+				y = elt.get("y").getAsInt();
+			}
+			if (elt.get("type").getAsString().equals("pion")) {
+				Pion pion = new Pion(Couleur.NOIR, new Case(Couleur.NOIR, y, x));
+				arrayPiece.add(pion);
+			} else if (elt.get("type").getAsString().equals("dame")) {
+				Dame d = new Dame(Couleur.NOIR, new Case(Couleur.NOIR, y, x));
+				arrayPiece.add(d);
+			}
+		}
+		return arrayPiece;
 	}
 	
 	private JsonArray buildObjectListPiece(List<Piece> pieces, String key) {

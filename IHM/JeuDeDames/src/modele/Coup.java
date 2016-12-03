@@ -82,4 +82,10 @@ public class Coup {
 		this.piece = piece;
 	}
 
+	@Override
+	public String toString() {
+		return "Coup [etat=" + this.etat + ", piecesBlanches=" + this.piecesBlanches + ", piecesNoires="
+				+ this.piecesNoires + ", deplacement=" + this.deplacement + ", piece=" + this.piece + "]";
+	}
+
 }
