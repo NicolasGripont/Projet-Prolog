@@ -169,7 +169,7 @@ mangeHautGauche(_,_,_,_,[]).
 % mangeHautGauche([4,2,dame],blanc,[[4,2,dame]],[[3,1,pion],[1,1,pion],[3,3,pion]],R).
 
 
-%dame
+% cherche pour chaque case de la liste [[X,Y]|Suite] les solutions possibles pour manger
 mangeSuite(blanc,Blancs,Noirs,[[X,Y]|Suite],Manges,Retour):-!,mangeSuite(blanc,Blancs,Noirs,Suite,Manges,Solution1),
 		mangeTouteDirection([X,Y,dame],blanc,[[X,Y,dame]|Blancs],Noirs,Manges,R),
 		creerMouvement([[X,Y,dame]|Blancs],Noirs,R,R2),
@@ -182,6 +182,7 @@ mangeSuite(noir,Blancs,Noirs,[[X,Y]|Suite],Manges,Retour):-!,mangeSuite(noir,Bla
 		maxSolution(Solution1,Sortie,Retour).
 mangeSuite(_,_,_,[],_,[]).
 
+%dame
 mangeHautGauche([X,Y,dame],blanc,Blancs,Noirs,Manges,Retour):- cherchePionHautGauche(X,Y,blanc,Blancs,Noirs,[X2,Y2,T],Manges),
 		chercheCaseVideHautGauche(X2,Y2,Blancs,Noirs, [], R),R \== [],!, delete(Noirs,[X2,Y2,T],Noirs2),
 		delete(Blancs,[X,Y,dame],Blancs2),mangeSuite(blanc,Blancs2,Noirs2,R,[[X2,Y2,T]|Manges],Retour).
@@ -308,7 +309,14 @@ verifieSolutionJoueur(R1,R2,mange,mange,S,mange):- maxSolutionJoueur(R1,R2,S).
 
 
 % S est du type [[Blancs,Noirs,[[posX,posY],...]],...]
-movePossible(E,Camp,Blancs,Noirs,S,Stype):-moveHautGauche(E,Camp,Blancs,Noirs,R1,Type1),moveHautDroite(E,Camp,Blancs,Noirs,R2,Type2),moveBasGauche(E,Camp,Blancs,Noirs,R3,Type3),moveBasDroite(E,Camp,Blancs,Noirs,R4,Type4),verifieSolution(R1,R2,Type1,Type2,S1,Stype1),verifieSolution(R3,S1,Type3,Stype1,S2,Stype2),verifieSolution(R4,S2,Type4,Stype2,S,Stype).
+movePossible(E,Camp,Blancs,Noirs,Solution2,Stype):-moveHautGauche(E,Camp,Blancs,Noirs,R1,Type1),
+		moveHautDroite(E,Camp,Blancs,Noirs,R2,Type2),
+		moveBasGauche(E,Camp,Blancs,Noirs,R3,Type3),
+		moveBasDroite(E,Camp,Blancs,Noirs,R4,Type4),
+		verifieSolution(R1,R2,Type1,Type2,S1,Stype1),
+		verifieSolution(R3,S1,Type3,Stype1,S2,Stype2),
+		verifieSolution(R4,S2,Type4,Stype2,S,Stype),
+		changePionDameListeSolution(Camp,E,S,Solution2).
 %tests
 % movePossible([4,2,pion],blanc,[[4,2,pion]],[[5,1,pion],[3,1,pion],[1,1,pion],[1,3,pion],[3,3,pion]],R,S),writeln(R).
 % movePossible([4,2,pion],blanc,[[4,2,pion]],[[5,1,pion],[3,1,pion],[5,3,pion],[3,3,pion]],R,S),writeln(R).
@@ -344,14 +352,20 @@ changePionDame(blanc, Blancs, Noirs, ListeMouvement, [_,_,pion], Blancs2, Noirs)
 changePionDame(noir, Blancs, Noirs, ListeMouvement, [_,_,pion], Blancs, Noirs2) :- last(ListeMouvement, [X,9]), delete(Noirs, [X,9,_], L), append(L, [[X,9,dame]], Noirs2),!.
 changePionDame(_, Blancs, Noirs, _, _, Blancs, Noirs).
 
+changePionDameListeSolution(Camp,Pion,[[Blancs,Noirs,L]|S],[[Blancs2,Noirs2,L]|S2]):-!,
+		changePionDame(Camp, Blancs, Noirs, L, Pion, Blancs2, Noirs2),
+		changePionDameListeSolution(Camp,Pion,S,S2).
+changePionDameListeSolution(_,_,[],[]).
+
+
+
 applyMoves(Blancs, Noirs) :- retractall(blancs(_)), retractall(noirs(_)),assert(blancs(Blancs)), assert(noirs(Noirs)).
 %
 
 %lancement du jeu
 % play(blanc,[[1,1,pion],[2,2,pion]],[[5,5,pion],[8,6,pion]],B,N,L,Pion).
-play(Player,Blancs,Noirs,Blancs3,Noirs3,ListeMouvement,Pion,Etat):- ia(Player,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement, Pion),
-		changePionDame(Player, Blancs2, Noirs2, ListeMouvement, Pion, Blancs3, Noirs3),
-		gameover(Blancs,Noirs,Blancs3,Noirs3,Etat).
+play(Player,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,Pion,Etat):- ia(Player,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement, Pion),
+		gameover(Blancs,Noirs,Blancs2,Noirs2,Etat).
 
 % play(noir, [[1,6,pion],[1,4,pion],[4,5,pion],[7,6,pion],[9,6,pion],[0,7,pion],[2,7,pion],[4,7,pion],[6,7,pion],[8,7,pion],[1,8,pion],[3,8,pion],[5,8,pion],[7,8,pion],[9,8,pion],[0,9,pion],[2,9,pion],[4,9,pion],[6,9,pion],[8,9,pion]],[[1,0,pion],[3,0,pion],[5,0,pion],[7,0,pion],[9,0,pion],[0,1,pion],[2,1,pion],[4,1,pion],[6,1,pion],[8,1,pion],[1,2,pion],[3,2,pion],[5,2,pion],[7,2,pion],[9,2,pion],[0,3,pion],[2,3,pion],[5,4,pion],[6,3,pion],[7,4,pion]],B,N,L,Pion,Etat).
 
