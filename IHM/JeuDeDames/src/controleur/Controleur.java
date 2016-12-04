@@ -34,7 +34,7 @@ import vue.VueMenu.VueMenu;
 
 public class Controleur extends Application {
 
-	private final int DUREE_UN_DEPLACEMENT_NORMAL = 1000 / 2;
+	private final int DUREE_UN_DEPLACEMENT_NORMAL = 1000;
 
 	private int dureeUnDeplacement = this.DUREE_UN_DEPLACEMENT_NORMAL;
 
@@ -112,6 +112,18 @@ public class Controleur extends Application {
 					alert.setHeaderText("Voulez-vous vraiment quitter le jeu ?");
 					Optional<ButtonType> result = alert.showAndWait();
 					if (result.get() == ButtonType.OK) { // Quitter
+						if ((Controleur.this.threadAttenteCoup != null)
+								&& Controleur.this.threadAttenteCoup.isAlive()) {
+							Controleur.this.threadAttenteCoup.interrupt();
+						}
+						if ((Controleur.this.threadCoupIA != null) && Controleur.this.threadCoupIA.isAlive()) {
+							Controleur.this.threadCoupIA.interrupt();
+						}
+						if ((Controleur.this.threadSimulerPartie != null)
+								&& Controleur.this.threadSimulerPartie.isAlive()) {
+							Controleur.this.threadSimulerPartie.interrupt();
+						}
+
 						Controleur.this.stage.close();
 					}
 					// Si on arrive la alors c'est qu'on a annuler
@@ -154,6 +166,7 @@ public class Controleur extends Application {
 			this.threadCoupIA = null;
 			this.threadAttenteCoup = null;
 			this.plateauSave = null;
+			this.dureeUnDeplacement = this.DUREE_UN_DEPLACEMENT_NORMAL;
 
 			try {
 				FXMLLoader fxmlLoader = new FXMLLoader(this.getClass().getResource("/vue/vueMenu/VueMenu.fxml"));
@@ -361,6 +374,7 @@ public class Controleur extends Application {
 			System.out.println(this.joueur2);
 			if ((this.joueur1.getTypeJoueur() == TypeJoueur.JOUEUR_REEL)
 					|| (this.joueur2.getTypeJoueur() == TypeJoueur.JOUEUR_REEL)) {
+				this.dureeUnDeplacement /= 2;
 				this.jouerUnCoup();
 			}
 
