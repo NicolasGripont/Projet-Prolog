@@ -345,6 +345,7 @@ public class PlateauGroup extends Group {
 					} else {
 						PlateauGroup.this.pieceVuesNoires.remove(pieceVue);
 					}
+					PlateauGroup.this.vueJeu.getControleur().majAffichageNbPieces();
 				}
 			});
 		}
@@ -423,7 +424,7 @@ public class PlateauGroup extends Group {
 
 					PlateauGroup.this.getChildren().remove(pionVue);
 					PlateauGroup.this.getChildren().add(dameVue);
-
+					PlateauGroup.this.vueJeu.getControleur().majAffichageNbPieces();
 				}
 			});
 

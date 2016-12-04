@@ -88,6 +88,18 @@ public class VueJeu implements Initializable {
 	@FXML
 	private VBox vBox;
 
+	@FXML
+	private Label labelPionsBlancs;
+
+	@FXML
+	private Label labelDamesBlanches;
+
+	@FXML
+	private Label labelPionsNoirs;
+
+	@FXML
+	private Label labelDamesNoires;
+
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 
@@ -305,5 +317,12 @@ public class VueJeu implements Initializable {
 
 	public void caseEnSurBrillanceSelectionnee(Case c) {
 		this.controleur.caseEnSurBrillanceSelectionnee(c);
+	}
+
+	public void majAffichageNbPieces(int nbPionsNoirs, int nbDamesNoires, int nbPionsBlancs, int nbDamesBlanches) {
+		this.labelPionsNoirs.setText("" + nbPionsNoirs);
+		this.labelDamesNoires.setText("" + nbDamesNoires);
+		this.labelPionsBlancs.setText("" + nbPionsBlancs);
+		this.labelDamesBlanches.setText("" + nbDamesBlanches);
 	}
 }
