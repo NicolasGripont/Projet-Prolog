@@ -371,7 +371,7 @@ movePossiblePlayer(_, _, _, [],[], deplacement).
 % movePossiblePlayer(blanc,[[0,7,pion]],[[1,1,pion]],[[0,7,pion]],S,Type),writeln(S).
 
 
-remplitRetourExplore(EnTete, [Tete|Reste], [Retour1|Retour2]) :- append(EnTete, Tete, Retour1), remplitRetourExplore(EnTete,Reste, Retour2). 
+remplitRetourExplore(EnTete, [Tete|Reste], [Retour1|Retour2]) :- append(EnTete, Tete, Retour1), remplitRetourExplore(EnTete,Reste, Retour2).
 remplitRetourExplore(_, [], []).
 
 % explore l'arbre des mouvements possibles à partir de chaque mouvement initial d'un pion donné
@@ -382,7 +382,7 @@ remplitRetourExplore(_, [], []).
 exploreMoves(Camp, Pion, [[Blancs2, Noirs2, Moves]|Reste], [[[Pion, Blancs2, Noirs2, Moves]|M1]|M2], Cpt) :-
     returnPionsCamp(Camp, Blancs2, Noirs2, Pions), explore(Camp, Blancs2, Noirs2, Pions, M1, Cpt), exploreMoves(Camp, Pion, Reste, M2, Cpt).
 exploreMoves(_,_,[],[],_).
-    
+
 % explore l'arbre des mouvements possibles pour chaque pion
 explorePion(Camp, [[Pion, MovesPion]|RestePions], [M1|M2], Cpt) :-
     exploreMoves(Camp, Pion, MovesPion, M1, Cpt), explorePion(Camp, RestePions, M2, Cpt).
@@ -390,11 +390,11 @@ explorePion(_,[],[],_).
 
 % explore l'arbre des mouvements possibles (on alternera chaque fois entre les camps)
 % le retour M attendu devra être de la forme suivante :
-% 	[ [Pion1,Blancs,Noirs,Move1], [Pion1, Blancs,Noirs,Move2], [Pion2,Blancs,Noirs,Move3],... ]
+%	[ [Pion1,Blancs,Noirs,Move1], [Pion1, Blancs,Noirs,Move2], [Pion2,Blancs,Noirs,Move3],... ]
 % Ainsi on pourra par la suite selectionner le dernier membre de chaque élément de la liste,
 % pour étudier le nombre de pièces blanches et noires
 % et sélectionner en conséquence le mouvement à effectuer d'après la meilleure évolution possible du jeu
-% 
+%
 % TODO : Vérifier formats retour
 % explore avec mange
 explore(Camp, Blancs, Noirs, Pions, M, Cpt) :-
@@ -414,6 +414,63 @@ explore(_,_,_,_,[],_).
 % Degré 2
 %   2 déplacements
 %     explore(blanc, [[4,2,pion]], [[4,3,pion]], [[4,2,pion]], M, 2).
+
+
+calculCout(blanc,Blancs,Noirs,Cout):-!,length(Blancs,X), length(Noirs,Y), Cout is X-Y.
+calculCout(noir,Blancs,Noirs,Cout):-length(Blancs,X), length(Noirs,Y), Cout is Y-X.
+
+solutionMax(Pion,_,Solution,_,Cout2,Cout3,Pion,Solution,Cout2):-Cout2 > Cout3,!.
+solutionMax(_,ResPion,_,ResSolution,_,Cout3,ResPion,ResSolution,Cout3).
+
+trouverSolMax(L1,_,Cout2,Cout3,L1,Cout2):- Cout2 > Cout3,!.
+trouverSolMax(_,L2,_,Cout3,L2,Cout3).
+
+rechercheMouvement(Camp,[[Blancs,Noirs,_]|Suite],Cout,Cpt):- !,rechercheJoueur(Camp,Blancs,Noirs,CoutContraire,Cpt),
+		Cout2 is 0-CoutContraire,
+		rechercheMouvement(Camp,Suite,Cout3,Cpt),
+		max_list([Cout2,Cout3],Cout).
+rechercheMouvement(_,[], -21,_).
+
+
+recherchePion(Camp,[[_,Solutions]|Suite],Cout,Cpt):-!,rechercheMouvement(Camp,Solutions,Cout2,Cpt),
+		recherchePion(Camp,Suite,Cout3,Cpt),
+		max_list([Cout2,Cout3],Cout).
+recherchePion(_,[], -21,_).
+
+%permet de calculer le cout d'un mouvement
+rechercheJoueur(Camp,Blancs,Noirs,Cout,_):- length(Blancs,X),length(Noirs,Y),(X=0 ; Y=0),!,changePlayer(Camp, Camp2),
+		calculCout(Camp2,Blancs,Noirs,Cout).
+rechercheJoueur(Camp,Blancs,Noirs,Cout,Cpt):-Cpt>0,!,Cpt2 is Cpt-1,
+		changePlayer(Camp, Camp2),
+		returnPionsCamp(Camp2, Blancs, Noirs, Pions),
+		movePossiblePlayer(Camp2, Blancs, Noirs, Pions, S, _),
+		recherchePion(Camp2,S,Cout,Cpt2).
+rechercheJoueur(Camp,Blancs,Noirs,Cout,_):-changePlayer(Camp, Camp2),calculCout(Camp2,Blancs,Noirs,Cout).
+
+% permet de parcourir la liste de mouvement et de trouver le meilleur coup de la liste de mouvement
+parcoursMouvement(Camp,[[Blancs,Noirs,L]|Suite],Solution,Cout,Cpt):- !,rechercheJoueur(Camp,Blancs,Noirs,CoutContraire,Cpt),
+		Cout2 is 0-CoutContraire,
+		parcoursMouvement(Camp,Suite,Solution2,Cout3,Cpt),
+		trouverSolMax([Blancs,Noirs,L],Solution2,Cout2,Cout3,Solution,Cout).
+parcoursMouvement(_,[],[], -21,_).
+
+
+% permet de parcourir les pions et de trouver le meilleur coup a jouer
+parcoursPion(Camp,[[Pion,Liste]|Suite],RetourPion,RetourSolution,Cout,Cpt):-!,parcoursMouvement(Camp,Liste,Solution,Cout2,Cpt),
+		parcoursPion(Camp,Suite,ResPion,ResSolution,Cout3,Cpt),
+		solutionMax(Pion,ResPion,Solution,ResSolution,Cout2,Cout3,RetourPion,RetourSolution,Cout).
+parcoursPion(_,[],[],[], -21,_).
+
+%lance la recherche du meilleur coup a jouer
+lanceRecherche(Camp,Blancs,Noirs,Pion,Solution,Cpt):-returnPionsCamp(Camp, Blancs, Noirs, Pions),
+		movePossiblePlayer(Camp, Blancs, Noirs, Pions, S, _),
+		Cpt2 is Cpt-1,
+		parcoursPion(Camp,S,Pion,Solution,_,Cpt2).
+
+%tests lancerecherche
+% lanceRecherche(noir,[[1,3,pion],[3,3,pion]],[[2,0,pion],[3,1,pion]],Pion,Solution,4).
+% test coup du tiroir
+% lanceRecherche(blanc,[[0,5,pion],[2,5,pion],[4,5,pion],[3,6,pion],[2,7,pion],[1,8,pion],[2,9,pion]],[[0,3,pion],[1,4,pion],[2,3,pion],[3,2,pion],[4,1,pion],[4,3,pion],[6,3,pion],[7,2,pion]],Pion,Solution,6).
 
 
 ia(blanc,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,E):-movePossiblePlayer(blanc, Blancs, Noirs, Blancs, Liste,_),length(Liste,X),X>0,!,choixMove(X,Liste,Blancs2,Noirs2,ListeMouvement,E).
@@ -439,7 +496,7 @@ applyMoves(Blancs, Noirs) :- retractall(blancs(_)), retractall(noirs(_)),assert(
 %lancement du jeu
 play(Player,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,Pion,Etat):- ia(Player,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement, Pion),
 		gameover(Blancs,Noirs,Blancs2,Noirs2,Etat).
-		
+
 %tests play
 % play(blanc,[[5,4,pion],[8,7,pion],[4,3,pion],[7,4,pion],[5,8,pion],[2,2,pion]],[[1,1,pion]],B,N,L,P,Winner).
 % play(blanc,[[1,1,pion],[2,2,pion]],[[5,5,pion],[8,6,pion]],B,N,L,Pion,Etat).
@@ -453,7 +510,7 @@ play(Player,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,Pion,Etat):- ia(Player,Bl
 % pion [2, 3, pion]
 % Etat continuer
 % build_reply_play([[1,6,pion],[4,5,pion],[7,6,pion],[9,6,pion],[0,7,pion],[2,7,pion],[4,7,pion],[6,7,pion],[8,7,pion],[1,8,pion],[3,8,pion],[5,8,pion],[7,8,pion],[9,8,pion],[0,9,pion],[2,9,pion],[4,9,pion],[6,9,pion],[8,9,pion]],[[0,5,pion],[1,0,pion],[3,0,pion],[5,0,pion],[7,0,pion],[9,0,pion],[0,1,pion],[2,1,pion],[4,1,pion],[6,1,pion],[8,1,pion],[1,2,pion],[3,2,pion],[5,2,pion],[7,2,pion],[9,2,pion],[0,3,pion],[5,4,pion],[6,3,pion],[7,4,pion]],noir,[2, 3, pion],[[0,5]],continuer,JSON),writeln(JSON).
- 
+
 % play(Player):-  write('New turn for: '), ((Player==blanc, writeln('Blancs'));(Player==noir, writeln('Noirs'))),
 % noirs(Noirs),
 % blancs(Blancs),
@@ -562,7 +619,7 @@ moves_allowed_server(Request) :-	http_read_json(Request, JsonIn,[json_object(ter
 									reply_json(Json).
 
 
-game_state(Request) :- 	http_read_json(Request, JsonIn,[json_object(term)]),
+game_state(Request) :-	http_read_json(Request, JsonIn,[json_object(term)]),
 						json_to_prolog(JsonIn, Data), requestState_get_data_informations(Data, Blancs, Noirs, Blancs2, Noirs2),
 						gameover(Blancs, Noirs, Blancs2, Noirs2, Winner),
 						build_etat_predicat_int(Winner,W),
@@ -626,7 +683,7 @@ build_move_possibilite_json([H|T],P):- convert_list_pion_to_json_object(H,B), bu
 build_move_possibilite_json_Noir_Mouvements([H|T],N,M) :- build_move_possibilite_json_Mouvements(T,M), convert_list_pion_to_json_object(H,N).
 build_move_possibilite_json_Mouvements([H|_],M) :- convert_list_position_to_json_object(H,M).
 
-requestState_get_data_informations(Data, B, N, B2, N2) :- 	requestState_get_blancs(Data, LB),
+requestState_get_data_informations(Data, B, N, B2, N2) :-	requestState_get_blancs(Data, LB),
 															convert_list_pion_json_to_object(LB,B),
 															requestState_get_noirs(Data, LN),
 															convert_list_pion_json_to_object(LN,N),
