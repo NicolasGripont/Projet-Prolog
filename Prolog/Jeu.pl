@@ -477,6 +477,10 @@ ia(blanc,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,E):-movePossiblePlayer(blanc
 ia(noir,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,E):-movePossiblePlayer(noir, Blancs, Noirs, Noirs, Liste,_),length(Liste,X),X>0,choixMove(X,Liste,Blancs2,Noirs2,ListeMouvement,E).
 % ia(blanc,[[4,2,pion]],[[5,1,pion],[3,1,pion],[1,1,pion],[1,3,pion],[3,3,pion]],Blancs,Noirs,L,E).
 
+iaMinMax(Camp,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,E):-lanceRecherche(Camp,Blancs,Noirs,E,[Blancs2,Noirs2,ListeMouvement],6).
+
+
+
 
 %Changer un pion en dame
 changePionDame(blanc, Blancs, Noirs, ListeMouvement, [_,_,pion], Blancs2, Noirs) :- last(ListeMouvement, [X,0]), delete(Blancs, [X,0,_], L), append(L, [[X,0,dame]], Blancs2),!.
@@ -491,7 +495,7 @@ changePionDameListeSolution(_,_,[],[]).
 
 
 applyMoves(Blancs, Noirs) :- retractall(blancs(_)), retractall(noirs(_)),assert(blancs(Blancs)), assert(noirs(Noirs)).
-%
+
 
 %lancement du jeu
 play(Player,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,Pion,Etat):- ia(Player,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement, Pion),
@@ -502,34 +506,21 @@ play(Player,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,Pion,Etat):- ia(Player,Bl
 % play(blanc,[[1,1,pion],[2,2,pion]],[[5,5,pion],[8,6,pion]],B,N,L,Pion,Etat).
 % play(noir,[[2,7,pion],[7,8,pion]],[[2,5,pion],[2,1,pion],[6,1,pion],[8,3,pion],[8,1,pion],[1,2,pion],[8,9,pion],[5,2,pion],[6,3,pion],[5,4,pion],[5,6,pion],[9,4,pion]]]
 
-% play(noir, [[1,6,pion],[1,4,pion],[4,5,pion],[7,6,pion],[9,6,pion],[0,7,pion],[2,7,pion],[4,7,pion],[6,7,pion],[8,7,pion],[1,8,pion],[3,8,pion],[5,8,pion],[7,8,pion],[9,8,pion],[0,9,pion],[2,9,pion],[4,9,pion],[6,9,pion],[8,9,pion]],[[1,0,pion],[3,0,pion],[5,0,pion],[7,0,pion],[9,0,pion],[0,1,pion],[2,1,pion],[4,1,pion],[6,1,pion],[8,1,pion],[1,2,pion],[3,2,pion],[5,2,pion],[7,2,pion],[9,2,pion],[0,3,pion],[2,3,pion],[5,4,pion],[6,3,pion],[7,4,pion]],B,N,L,Pion,Etat),writeln(B),writeln(N),writeln(L).
-% reponse
-% blancs [[1,6,pion],[4,5,pion],[7,6,pion],[9,6,pion],[0,7,pion],[2,7,pion],[4,7,pion],[6,7,pion],[8,7,pion],[1,8,pion],[3,8,pion],[5,8,pion],[7,8,pion],[9,8,pion],[0,9,pion],[2,9,pion],[4,9,pion],[6,9,pion],[8,9,pion]]
-% noirs [[0,5,pion],[1,0,pion],[3,0,pion],[5,0,pion],[7,0,pion],[9,0,pion],[0,1,pion],[2,1,pion],[4,1,pion],[6,1,pion],[8,1,pion],[1,2,pion],[3,2,pion],[5,2,pion],[7,2,pion],[9,2,pion],[0,3,pion],[5,4,pion],[6,3,pion],[7,4,pion]]
-% liste [[0,5]]
-% pion [2, 3, pion]
-% Etat continuer
-% build_reply_play([[1,6,pion],[4,5,pion],[7,6,pion],[9,6,pion],[0,7,pion],[2,7,pion],[4,7,pion],[6,7,pion],[8,7,pion],[1,8,pion],[3,8,pion],[5,8,pion],[7,8,pion],[9,8,pion],[0,9,pion],[2,9,pion],[4,9,pion],[6,9,pion],[8,9,pion]],[[0,5,pion],[1,0,pion],[3,0,pion],[5,0,pion],[7,0,pion],[9,0,pion],[0,1,pion],[2,1,pion],[4,1,pion],[6,1,pion],[8,1,pion],[1,2,pion],[3,2,pion],[5,2,pion],[7,2,pion],[9,2,pion],[0,3,pion],[5,4,pion],[6,3,pion],[7,4,pion]],noir,[2, 3, pion],[[0,5]],continuer,JSON),writeln(JSON).
 
-% play(Player):-  write('New turn for: '), ((Player==blanc, writeln('Blancs'));(Player==noir, writeln('Noirs'))),
-% noirs(Noirs),
-% blancs(Blancs),
+%play(Player):-  write('New turn for: '), ((Player==blanc, writeln('Blancs'));(Player==noir, writeln('Noirs'))),
+%		noirs(Noirs),
+%		blancs(Blancs),
+%		display1(0,10,_),
+%		writeln(" "),
+%		iaMinMax(Player,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement, E),
+%		applyMoves(Blancs2, Noirs2),
+%		changePlayer(Player,NextPlayer), % Change the player before next turn
+%		sleep(1),
+%		play(NextPlayer). % next turn!
+ 
+initConsole(L1,L2):- retractall(blancs(_)), retractall(noirs(_)), retractall(cptDraw(_)),assert(noirs(L2)),assert(blancs(L1)), assert(cptDraw(0)), play(blanc).
 
-% display1(0,10,_),
-% writeln(" "),
-
-% ia(Player,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement, E),
-
-% changePionDame(Player, Blancs2, Noirs2, ListeMouvement, E, Blancs3, Noirs3),
-
-% not(((gameover(blanc), !, write('Game is Over. Winner: '), writeln('Blancs'));
-		% (gameover(noir), !, write('Game is Over. Winner: '), writeln('Noirs'));
-% (gameover('Draw', Blancs3, Noirs3), !, writeln('Game is Over. Draw')))),
-
-% applyMoves(Blancs3, Noirs3),
-% changePlayer(Player,NextPlayer), % Change the player before next turn
-% sleep(1),
-% play(NextPlayer). % next turn!
+% initConsole([[0,5,pion],[2,5,pion],[4,5,pion],[3,6,pion],[2,7,pion],[1,8,pion],[2,9,pion]],[[0,3,pion],[1,4,pion],[2,3,pion],[3,2,pion],[4,1,pion],[4,3,pion],[6,3,pion],[7,2,pion]]).
 
 % ATTENTION : play est commenté pour pouvoir utiliser l'IHM
 init :-retractall(blancs(_)), retractall(noirs(_)), retractall(cptDraw(_)), creerListe(noir,L1),creerListe(blanc,L2),assert(noirs(L1)),assert(blancs(L2)), assert(cptDraw(0)).%, play(blanc).
