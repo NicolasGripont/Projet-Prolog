@@ -359,10 +359,10 @@ public class Controleur extends Application {
 			this.vueJeu.setTextLabelJoueur2(this.joueur2.getNom());
 			this.vueJeu.setPlateau(this.plateau);
 			this.vueJeu.dessinerPlateau();
+			this.majAffichageNbPieces();
 			Scene scene = new Scene(root, this.stage.getScene().getWidth(), this.stage.getScene().getHeight());
 			this.stage.setScene(scene);
 			this.stage.show();
-
 			// Si on a pas 2 IA on masque les boutons de simulation
 			this.pauseSimulation();
 			this.vueJeu.setSimulationMode((this.joueur1.getTypeJoueur() != TypeJoueur.JOUEUR_REEL)
@@ -381,6 +381,29 @@ public class Controleur extends Application {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public void majAffichageNbPieces() {
+		int nbPionsNoirs = 0;
+		int nbDamesNoires = 0;
+		int nbPionsBlancs = 0;
+		int nbDamesBlanches = 0;
+		for (Piece p : this.plateau.getBlanches()) {
+			if (Dame.class.isInstance(p)) {
+				nbDamesBlanches++;
+			} else {
+				nbPionsBlancs++;
+			}
+		}
+
+		for (Piece p : this.plateau.getNoires()) {
+			if (Dame.class.isInstance(p)) {
+				nbDamesNoires++;
+			} else {
+				nbPionsNoirs++;
+			}
+		}
+		this.vueJeu.majAffichageNbPieces(nbPionsNoirs, nbDamesNoires, nbPionsBlancs, nbDamesBlanches);
 	}
 
 	private void simulerPartie() {
@@ -430,7 +453,6 @@ public class Controleur extends Application {
 											Controleur.this.vueJeu.setImageViewPlayDisable(true);
 											Controleur.this.vueJeu.setImageViewFastForwardDisable(true);
 											Controleur.this.vueJeu.setImageViewPauseDisable(true);
-
 											Controleur.this.afficherPopupFin(coup.getEtat());
 										}
 									});
@@ -551,6 +573,7 @@ public class Controleur extends Application {
 	}
 
 	public void debuterCoupJoueeurReel() {
+
 		if (this.joueurCourant.getCouleur() == Couleur.BLANC) {
 			this.vueJeu.setPiecesBlanchesClickable(true);
 			this.vueJeu.setPiecesNoiresClickable(false);
@@ -564,7 +587,6 @@ public class Controleur extends Application {
 		this.indiceCoup = 0;
 		this.mapCoupsJoueurCourant = this.jeu.movesAllowed(this.joueurCourant.getId(), this.plateau.getBlanches(),
 				this.plateau.getNoires());
-		System.out.println(this.mapCoupsJoueurCourant);
 	}
 
 	public void pieceSelectionnee(Piece piece) {
@@ -660,7 +682,6 @@ public class Controleur extends Application {
 							int etat = Controleur.this.jeu.gameState(Controleur.this.plateauSave.getBlanches(),
 									Controleur.this.plateauSave.getNoires(), Controleur.this.plateau.getBlanches(),
 									Controleur.this.plateau.getNoires());
-							System.out.println(">" + etat);
 							Controleur.this.coupsPossiblesCourants = null;
 							Controleur.this.indiceCoup = 0;
 							Controleur.this.mapCoupsJoueurCourant = null;
@@ -669,6 +690,9 @@ public class Controleur extends Application {
 							} else {
 								Controleur.this.joueurCourant = Controleur.this.joueur1;
 							}
+
+							Controleur.this.nbCoups++;
+							Controleur.this.vueJeu.setTextLabelNbCoups("" + Controleur.this.nbCoups);
 
 							if (etat == 3) {
 								Controleur.this.dureeTour = dureeCoup;
