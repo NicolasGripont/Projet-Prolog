@@ -21,7 +21,8 @@ public class Jeu {
 	private static final String urlInit = "init";
 	private static final String urlPlay = "play";
 	private static final String urlMovesAllowed = "moves_allowed";
-
+	private static final String urlGameState = "game_state";
+	
 	public static void main(String[] args) {
 		Jeu jeu = new Jeu("localhost", "5000");
 		ArrayList<Piece> blancs = new ArrayList<>();
@@ -32,6 +33,10 @@ public class Jeu {
 		blancs.add(new Dame(Couleur.BLANC, new Case(Couleur.NOIR,0,0)));
 		jeu.play(1, blancs, noirs);
 		//Map<Piece, List<Coup>> res = jeu.movesAllowed(1, blancs, noirs);
+		ArrayList<Piece> noirs2 = noirs;
+		noirs2.remove(0);
+		int r = jeu.gameState(blancs, noirs, blancs, noirs2);
+		System.out.print("State : " + r);
 	}
 
 	public Jeu(String nameServer, String portServer) {
@@ -211,6 +216,44 @@ public class Jeu {
 		} catch (IOException e) {
 			e.printStackTrace();
 			return null;
+		}
+	}
+
+	public int gameState(List<Piece> blancs, List<Piece> noirs, List<Piece> blancs2, List<Piece> noirs2) {
+		try {
+			JsonArray blancsArray = this.buildObjectListPiece(blancs, "blancs");
+			JsonArray noirsArray = this.buildObjectListPiece(noirs, "noirs");
+			JsonArray blancsArray2 = this.buildObjectListPiece(blancs2, "blancs2");
+			JsonArray noirsArray2 = this.buildObjectListPiece(noirs2, "noirs2");
+			JsonObject parameters = new JsonObject();
+			parameters.add("blancs", blancsArray);
+			parameters.add("noirs", noirsArray);
+			parameters.add("blancs2", blancsArray2);
+			parameters.add("noirs2", noirsArray2);
+			URL url = new URL("http://" + this.nameServer + ":" + this.portServer + "/" + urlGameState);
+			HttpURLConnection request;
+			request = (HttpURLConnection) url.openConnection();
+			request.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+			request.setRequestMethod("POST");
+			request.setDoOutput(true);
+			request.setDoInput(true);
+			OutputStream os = request.getOutputStream();
+			System.out.println("parameters : " + parameters.toString());
+			os.write(parameters.toString().getBytes("UTF8"));
+			os.close();
+			System.out.println(parameters.toString());
+			JsonParser jp = new JsonParser();
+			JsonObject root = jp.parse(new InputStreamReader((InputStream) request.getContent())).getAsJsonObject();
+			System.out.println(root);
+			request.disconnect();
+			int etat = -1;
+			if ((root.get("etat") != null)) {
+				etat = root.get("etat").getAsInt();
+			}
+			return etat;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return -1;
 		}
 	}
 	

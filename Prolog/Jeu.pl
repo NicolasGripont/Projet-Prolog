@@ -496,6 +496,7 @@ init :-retractall(blancs(_)), retractall(noirs(_)), retractall(cptDraw(_)), cree
 :- http_handler(root(init), init_server, []).
 :- http_handler(root(play), play_server, []).
 :- http_handler(root(moves_allowed), moves_allowed_server, []).
+:- http_handler(root(game_state), game_state, []).
 
 % Creation des objets JSON utilisé dans l'application
 :- json_object pion(x:integer, y:integer) + [type=pion].
@@ -506,10 +507,12 @@ init :-retractall(blancs(_)), retractall(noirs(_)), retractall(cptDraw(_)), cree
 :- json_object noirs(noirs:list).
 :- json_object positions(positions:list).
 :- json_object game(joueur: integer, blancs:list, noirs:list).
+:- json_object requestState(blancs:list, noirs:list,blancs2:list, noirs2:list).
 :- json_object turn(etat:integer, joueur: integer, blancs:list, noirs:list, pion:compound, mouvements:list).
 :- json_object posibilite(blancs:list, noirs:list, mouvements:list).
 :- json_object move(pion: compound, posibilite:list).
 :- json_object movesAllowed(move:list).
+:- json_object state(etat:integer).
 
 % Predicat qui lance le server
 server(Port) :-	http_server(http_dispatch, [port(Port)]).
@@ -558,6 +561,14 @@ moves_allowed_server(Request) :-	http_read_json(Request, JsonIn,[json_object(ter
 									%format(user_output,"json is: ~p~n",[Json]),
 									reply_json(Json).
 
+
+game_state(Request) :- 	http_read_json(Request, JsonIn,[json_object(term)]),
+						json_to_prolog(JsonIn, Data), requestState_get_data_informations(Data, Blancs, Noirs, Blancs2, Noirs2),
+						gameover(Blancs, Noirs, Blancs2, Noirs2, Winner),
+						build_etat_predicat_int(Winner,W),
+						S = state(W),
+						prolog_to_json(S,Json),
+						reply_json(Json).
 
 call_movePossiblePlayer(blanc, Blancs, Noirs, S) :- movePossiblePlayer(blanc, Blancs, Noirs, Blancs, S,_).
 call_movePossiblePlayer(noir, Blancs, Noirs, S) :- movePossiblePlayer(noir, Blancs, Noirs, Noirs, S,_).
@@ -615,8 +626,16 @@ build_move_possibilite_json([H|T],P):- convert_list_pion_to_json_object(H,B), bu
 build_move_possibilite_json_Noir_Mouvements([H|T],N,M) :- build_move_possibilite_json_Mouvements(T,M), convert_list_pion_to_json_object(H,N).
 build_move_possibilite_json_Mouvements([H|_],M) :- convert_list_position_to_json_object(H,M).
 
-%[Blancs,Noirs,ListeMouvement]
-%[Blancs,Noirs,ListeMouvement]
+requestState_get_data_informations(Data, B, N, B2, N2) :- 	requestState_get_blancs(Data, LB),
+															convert_list_pion_json_to_object(LB,B),
+															requestState_get_noirs(Data, LN),
+															convert_list_pion_json_to_object(LN,N),
+															requestState_get_blancs2(Data, LB2),
+															convert_list_pion_json_to_object(LB2,B2),
+															requestState_get_noirs2(Data, LN2),
+															convert_list_pion_json_to_object(LN2,N2).
+
+
 % Prédicat game_get_data_informations qui permet de recuperer la Liste Blancs, la Liste Noirs et le joueur dans un objet JSON de type game
 game_get_data_informations(Data, J, Blancs, Noirs):-	game_get_joueur(Data, J),
 														game_get_blancs(Data, LB),
@@ -629,10 +648,18 @@ game_get_joueur(game(0,_,_),blanc).
 game_get_joueur(game(1,_,_),noir).
 
 % Prédicat game_get_data_informations qui permet de recuperer la Liste Blancs dans un objet JSON de type game
-game_get_blancs(game(_,Y,_),Y).
+game_get_blancs(game(_,X,_),X).
 
 % Prédicat game_get_data_informations qui permet de recuperer la Liste Noirs dans un objet JSON de type game
-game_get_noirs(game(_,_,Z),Z).
+game_get_noirs(game(_,_,X),X).
+
+% Prédicat requestState_get_blancs qui permet de recuperer la Liste Blancs (1 ou 2) dans un objet JSON de type requestState
+requestState_get_blancs(requestState(X,_,_,_),X).
+requestState_get_blancs2(requestState(_,_,X,_),X).
+
+% Prédicat requestState_get_noirs qui permet de recuperer la Liste Noirs (1 ou 2) dans un objet JSON de type requestState
+requestState_get_noirs(requestState(_,X,_,_),X).
+requestState_get_noirs2(requestState(_,_,_,X),X).
 
 % Predicat qui permet de construire le int d'un joueur avec le predicat
 build_joueur_predicat_int(blanc,0).
