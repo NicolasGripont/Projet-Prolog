@@ -580,8 +580,10 @@ public class Controleur extends Application {
 					cases.add(coup.getDeplacement().get(this.indiceCoup));
 				}
 				this.vueJeu.setCaseEnSurBrillance(cases);
-				this.vueJeu.dessinerPlateau();
+			} else {
+				this.vueJeu.setCaseEnSurBrillance(null);
 			}
+			this.vueJeu.dessinerPlateau();
 		}
 	}
 
