@@ -180,12 +180,12 @@ public class VueJeu implements Initializable {
 		this.labelJoueur2.setText(text);
 	}
 
-	public void setPiecesNoiresDraggable(boolean draggable) {
-		this.plateauGroup.setPiecesVuesNoiresDraggable(draggable);
+	public void setPiecesNoiresClickable(boolean clickable) {
+		this.plateauGroup.setPiecesVuesNoiresClickable(clickable);
 	}
 
-	public void setPiecesBlanchesDraggable(boolean draggable) {
-		this.plateauGroup.setPiecesVuesBlanchesDraggable(draggable);
+	public void setPiecesBlanchesClickable(boolean clickable) {
+		this.plateauGroup.setPiecesVuesBlanchesClickable(clickable);
 	}
 
 	@FXML

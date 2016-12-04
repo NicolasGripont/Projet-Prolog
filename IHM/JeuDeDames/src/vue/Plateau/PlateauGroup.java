@@ -84,31 +84,31 @@ public class PlateauGroup extends Group {
 			PieceVue pieceVue = new PieceVue(p);
 			this.getChildren().add(pieceVue);
 			this.pieceVuesBlanches.add(pieceVue);
-			this.setPieceVueDraggable(pieceVue, false);
+			this.setPieceVueClickable(pieceVue, false);
 		}
 
 		for (Piece p : this.plateau.getNoires()) {
 			PieceVue pieceVue = new PieceVue(p);
 			this.getChildren().add(pieceVue);
 			this.pieceVuesNoires.add(pieceVue);
-			this.setPieceVueDraggable(pieceVue, false);
+			this.setPieceVueClickable(pieceVue, false);
 		}
 	}
 
-	public void setPiecesVuesNoiresDraggable(boolean draggable) {
+	public void setPiecesVuesNoiresClickable(boolean clickable) {
 		for (PieceVue p : this.pieceVuesNoires) {
-			this.setPieceVueDraggable(p, draggable);
+			this.setPieceVueClickable(p, clickable);
 		}
 	}
 
-	public void setPiecesVuesBlanchesDraggable(boolean draggable) {
+	public void setPiecesVuesBlanchesClickable(boolean clickable) {
 		for (PieceVue p : this.pieceVuesBlanches) {
-			this.setPieceVueDraggable(p, draggable);
+			this.setPieceVueClickable(p, clickable);
 		}
 	}
 
-	private void setPieceVueDraggable(PieceVue pieceVue, boolean draggable) {
-		if (draggable) {
+	private void setPieceVueClickable(PieceVue pieceVue, boolean clickable) {
+		if (clickable) {
 			pieceVue.setCursor(Cursor.HAND);
 
 			pieceVue.setOnMousePressed(new EventHandler<MouseEvent>() {

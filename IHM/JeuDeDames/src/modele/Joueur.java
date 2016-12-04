@@ -50,4 +50,10 @@ public class Joueur {
 		this.couleur = couleur;
 	}
 
+	@Override
+	public String toString() {
+		return "Joueur [id=" + this.id + ", nom=" + this.nom + ", typeJoueur=" + this.typeJoueur + ", couleur="
+				+ this.couleur + "]";
+	}
+
 }
