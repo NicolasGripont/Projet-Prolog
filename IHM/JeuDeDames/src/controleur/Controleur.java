@@ -623,6 +623,8 @@ public class Controleur extends Application {
 	}
 
 	public void caseEnSurBrillanceSelectionnee(Case c) {
+		this.vueJeu.setCaseEnSurBrillance(null);
+		this.vueJeu.dessinerPlateau();
 		this.mouvementEnCours = true;
 		int nbEtapes = this.coupsPossiblesCourants.get(0).getDeplacement().size();
 
