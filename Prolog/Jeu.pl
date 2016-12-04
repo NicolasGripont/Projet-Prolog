@@ -371,8 +371,11 @@ movePossiblePlayer(_, _, _, [],[], deplacement).
 % movePossiblePlayer(blanc,[[0,7,pion]],[[1,1,pion]],[[0,7,pion]],S,Type),writeln(S).
 
 
+remplitRetourExplore(EnTete, [Tete|Reste], [Retour1|Retour2]) :- append(EnTete, Tete, Retour1), remplitRetourExplore(EnTete,Reste, Retour2). 
+remplitRetourExplore(_, [], []).
+
 % explore l'arbre des mouvements possibles à partir de chaque mouvement initial d'un pion donné
-% TODO : Format de retour qui merde, trouver une solution pour que une ligne = une suite de mouvements différentes
+% TODO : Format de retour qui merde, trouver une solution pour que une ligne = une suite de mouvements différente
 %         et pas que tout s'agglutine sur la même ligne
 %         C'est à cause de ma concaténation avec le M1 rendu par explore
 %         Il faudrait rajouter à chaque ligne de M1 à l'en-tête [Pion, Blancs2, Noirs2, Moves] de manière séparée
