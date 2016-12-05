@@ -216,30 +216,37 @@ public class Controleur extends Application {
 				Platform.runLater(new Runnable() {
 					@Override
 					public void run() {
-
-						if (coup.getEtat() != 3) {// fin partie
-							Controleur.this.afficherPopupFin(coup.getEtat());
-						} else {
-							Controleur.this.jouerCoup(coup.getPiecesBlanches(), coup.getPiecesNoires(), coup.getPiece(),
-									coup.getDeplacement());
+						Controleur.this.jouerCoup(coup.getPiecesBlanches(), coup.getPiecesNoires(), coup.getPiece(),
+								coup.getDeplacement());
+	
 							if (Controleur.this.joueurCourant == Controleur.this.joueur1) {
 								Controleur.this.joueurCourant = Controleur.this.joueur2;
 							} else {
 								Controleur.this.joueurCourant = Controleur.this.joueur1;
 							}
-
-						}
+						
 					}
 				});
 				try {
 					Thread.sleep(Controleur.this.calculDureeCoup(Controleur.this.calculDureeDeplacement(coup.getPiece(),
 							coup.getDeplacement(), Controleur.this.dureeUnDeplacement),
 							Controleur.this.dureeUnDeplacement));
+					
+					Platform.runLater(new Runnable() {
+						@Override
+						public void run() {
+							if(coup.getEtat() != 3) {
+								afficherPopupFin(coup.getEtat());
+							}
+						}
+					});
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 
 				}
-				Controleur.this.jouerUnCoup();
+				if(coup.getEtat() == 3) {
+					Controleur.this.jouerUnCoup();
+				}
 
 			}
 		};
