@@ -477,7 +477,12 @@ ia(blanc,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,E):-movePossiblePlayer(blanc
 ia(noir,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,E):-movePossiblePlayer(noir, Blancs, Noirs, Noirs, Liste,_),length(Liste,X),X>0,choixMove(X,Liste,Blancs2,Noirs2,ListeMouvement,E).
 % ia(blanc,[[4,2,pion]],[[5,1,pion],[3,1,pion],[1,1,pion],[1,3,pion],[3,3,pion]],Blancs,Noirs,L,E).
 
-iaMinMax(Camp,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,E):-lanceRecherche(Camp,Blancs,Noirs,E,[Blancs2,Noirs2,ListeMouvement],5).
+iaMinMax6(Camp,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,E):-lanceRecherche(Camp,Blancs,Noirs,E,[Blancs2,Noirs2,ListeMouvement],6).
+iaMinMax5(Camp,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,E):-lanceRecherche(Camp,Blancs,Noirs,E,[Blancs2,Noirs2,ListeMouvement],5).
+iaMinMax4(Camp,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,E):-lanceRecherche(Camp,Blancs,Noirs,E,[Blancs2,Noirs2,ListeMouvement],4).
+iaMinMax3(Camp,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,E):-lanceRecherche(Camp,Blancs,Noirs,E,[Blancs2,Noirs2,ListeMouvement],3).
+iaMinMax2(Camp,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,E):-lanceRecherche(Camp,Blancs,Noirs,E,[Blancs2,Noirs2,ListeMouvement],2).
+iaMinMax1(Camp,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,E):-lanceRecherche(Camp,Blancs,Noirs,E,[Blancs2,Noirs2,ListeMouvement],1).
 
 
 
@@ -498,11 +503,21 @@ applyMoves(Blancs, Noirs) :- retractall(blancs(_)), retractall(noirs(_)),assert(
 
 
 
-play1(Player,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,Pion,Etat):- ia(Player,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement, Pion),
+play7(Player,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,Pion,Etat):- ia(Player,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement, Pion),
 		gameover(Blancs,Noirs,Blancs2,Noirs2,Etat).
-
-play2(Player,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,Pion,Etat):- iaMinMax(Player,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement, Pion),
+play1(Player,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,Pion,Etat):- iaMinMax6(Player,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement, Pion),
 		gameover(Blancs,Noirs,Blancs2,Noirs2,Etat).
+play2(Player,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,Pion,Etat):- iaMinMax5(Player,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement, Pion),
+		gameover(Blancs,Noirs,Blancs2,Noirs2,Etat).
+play3(Player,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,Pion,Etat):- iaMinMax4(Player,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement, Pion),
+		gameover(Blancs,Noirs,Blancs2,Noirs2,Etat).
+play4(Player,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,Pion,Etat):- iaMinMax3(Player,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement, Pion),
+		gameover(Blancs,Noirs,Blancs2,Noirs2,Etat).
+play5(Player,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,Pion,Etat):- iaMinMax2(Player,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement, Pion),
+		gameover(Blancs,Noirs,Blancs2,Noirs2,Etat).
+play6(Player,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,Pion,Etat):- iaMinMax1(Player,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement, Pion),
+		gameover(Blancs,Noirs,Blancs2,Noirs2,Etat).
+		
 
 %tests play
 % play(blanc,[[5,4,pion],[8,7,pion],[4,3,pion],[7,4,pion],[5,8,pion],[2,2,pion]],[[1,1,pion]],B,N,L,P,Winner).
@@ -545,8 +560,13 @@ init :-retractall(blancs(_)), retractall(noirs(_)), retractall(cptDraw(_)), cree
 
 % Surcharge des urls avec les méthodes appellées pour chacune
 :- http_handler(root(init), init_server, []).
-:- http_handler(root(play_franck), play_franck, []).
 :- http_handler(root(play_sheldon), play_sheldon, []).
+:- http_handler(root(play_amy), play_amy, []).
+:- http_handler(root(play_leonard), play_leonard, []).
+:- http_handler(root(play_raj), play_raj, []).
+:- http_handler(root(play_howard), play_howard, []).
+:- http_handler(root(play_zack), play_zack, []).
+:- http_handler(root(play_penny), play_penny, []).
 :- http_handler(root(moves_allowed), moves_allowed_server, []).
 :- http_handler(root(game_state), game_state, []).
 
@@ -578,19 +598,19 @@ init_server(_Request) :-	init,
 							build_reply_init(ListeBlancs,ListeNoirs, 0, JSON),
 							reply_json(JSON).
 
-% Prédicat play_franck qui est appellé quand on appelle l'url /play_franck
+% Prédicat play_amy qui est appellé quand on appelle l'url /play_franck
 % IA réduite
 % Le prédicat reconstruit la liste des blancs et des noirs
 % Le prédicat appelle le predicat ia qui va jouer un cout
 % Le prédicat renvoie la liste des pions blancs et noirs et le joueur qui doit jouer en format JSON
-play_franck(Request) :- http_read_json(Request, JsonIn,[json_object(term)]),
+play_amy(Request) :- http_read_json(Request, JsonIn,[json_object(term)]),
 						format(user_output,"JsonIn is: ~p~n",[JsonIn]),
 						json_to_prolog(JsonIn, Data), game_get_data_informations(Data, J, Blancs, Noirs),
 						format(user_output,"Data is: ~p~n",[Data]),
 						format(user_output,"J is: ~p~n",[J]),
 						format(user_output,"Blancs is: ~p~n",[Blancs]),
 						format(user_output,"Noirs is: ~p~n",[Noirs]),
-						play1(J,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,Pion,Etat),
+						play2(J,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,Pion,Etat),
 						format(user_output,"Blancs2 is: ~p~n",[Blancs2]),
 						format(user_output,"Noirs2 is: ~p~n",[Noirs2]),
 						format(user_output,"ListeMouvement is: ~p~n",[ListeMouvement]),
@@ -612,7 +632,7 @@ play_sheldon(Request) :- http_read_json(Request, JsonIn,[json_object(term)]),
 						format(user_output,"J is: ~p~n",[J]),
 						format(user_output,"Blancs is: ~p~n",[Blancs]),
 						format(user_output,"Noirs is: ~p~n",[Noirs]),
-						play2(J,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,Pion,Etat),
+						play1(J,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,Pion,Etat),
 						format(user_output,"Blancs2 is: ~p~n",[Blancs2]),
 						format(user_output,"Noirs2 is: ~p~n",[Noirs2]),
 						format(user_output,"ListeMouvement is: ~p~n",[ListeMouvement]),
@@ -621,6 +641,93 @@ play_sheldon(Request) :- http_read_json(Request, JsonIn,[json_object(term)]),
 						build_reply_play(Blancs2,Noirs2,J,Pion,ListeMouvement,Etat,JSON),
 						format(user_output,"JSON is: ~p~n",[JSON]),
 						reply_json(JSON).
+
+play_leonard(Request) :- http_read_json(Request, JsonIn,[json_object(term)]),
+						format(user_output,"JsonIn is: ~p~n",[JsonIn]),
+						json_to_prolog(JsonIn, Data), game_get_data_informations(Data, J, Blancs, Noirs),
+						format(user_output,"Data is: ~p~n",[Data]),
+						format(user_output,"J is: ~p~n",[J]),
+						format(user_output,"Blancs is: ~p~n",[Blancs]),
+						format(user_output,"Noirs is: ~p~n",[Noirs]),
+						play3(J,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,Pion,Etat),
+						format(user_output,"Blancs2 is: ~p~n",[Blancs2]),
+						format(user_output,"Noirs2 is: ~p~n",[Noirs2]),
+						format(user_output,"ListeMouvement is: ~p~n",[ListeMouvement]),
+						format(user_output,"Pion is: ~p~n",[Pion]),
+						format(user_output,"Etat is: ~p~n",[Etat]),
+						build_reply_play(Blancs2,Noirs2,J,Pion,ListeMouvement,Etat,JSON),
+						format(user_output,"JSON is: ~p~n",[JSON]),
+						reply_json(JSON).
+						
+play_raj(Request) :- http_read_json(Request, JsonIn,[json_object(term)]),
+						format(user_output,"JsonIn is: ~p~n",[JsonIn]),
+						json_to_prolog(JsonIn, Data), game_get_data_informations(Data, J, Blancs, Noirs),
+						format(user_output,"Data is: ~p~n",[Data]),
+						format(user_output,"J is: ~p~n",[J]),
+						format(user_output,"Blancs is: ~p~n",[Blancs]),
+						format(user_output,"Noirs is: ~p~n",[Noirs]),
+						play4(J,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,Pion,Etat),
+						format(user_output,"Blancs2 is: ~p~n",[Blancs2]),
+						format(user_output,"Noirs2 is: ~p~n",[Noirs2]),
+						format(user_output,"ListeMouvement is: ~p~n",[ListeMouvement]),
+						format(user_output,"Pion is: ~p~n",[Pion]),
+						format(user_output,"Etat is: ~p~n",[Etat]),
+						build_reply_play(Blancs2,Noirs2,J,Pion,ListeMouvement,Etat,JSON),
+						format(user_output,"JSON is: ~p~n",[JSON]),
+						reply_json(JSON).
+						
+play_howard(Request) :- http_read_json(Request, JsonIn,[json_object(term)]),
+						format(user_output,"JsonIn is: ~p~n",[JsonIn]),
+						json_to_prolog(JsonIn, Data), game_get_data_informations(Data, J, Blancs, Noirs),
+						format(user_output,"Data is: ~p~n",[Data]),
+						format(user_output,"J is: ~p~n",[J]),
+						format(user_output,"Blancs is: ~p~n",[Blancs]),
+						format(user_output,"Noirs is: ~p~n",[Noirs]),
+						play5(J,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,Pion,Etat),
+						format(user_output,"Blancs2 is: ~p~n",[Blancs2]),
+						format(user_output,"Noirs2 is: ~p~n",[Noirs2]),
+						format(user_output,"ListeMouvement is: ~p~n",[ListeMouvement]),
+						format(user_output,"Pion is: ~p~n",[Pion]),
+						format(user_output,"Etat is: ~p~n",[Etat]),
+						build_reply_play(Blancs2,Noirs2,J,Pion,ListeMouvement,Etat,JSON),
+						format(user_output,"JSON is: ~p~n",[JSON]),
+						reply_json(JSON).
+						
+play_penny(Request) :- http_read_json(Request, JsonIn,[json_object(term)]),
+						format(user_output,"JsonIn is: ~p~n",[JsonIn]),
+						json_to_prolog(JsonIn, Data), game_get_data_informations(Data, J, Blancs, Noirs),
+						format(user_output,"Data is: ~p~n",[Data]),
+						format(user_output,"J is: ~p~n",[J]),
+						format(user_output,"Blancs is: ~p~n",[Blancs]),
+						format(user_output,"Noirs is: ~p~n",[Noirs]),
+						play6(J,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,Pion,Etat),
+						format(user_output,"Blancs2 is: ~p~n",[Blancs2]),
+						format(user_output,"Noirs2 is: ~p~n",[Noirs2]),
+						format(user_output,"ListeMouvement is: ~p~n",[ListeMouvement]),
+						format(user_output,"Pion is: ~p~n",[Pion]),
+						format(user_output,"Etat is: ~p~n",[Etat]),
+						build_reply_play(Blancs2,Noirs2,J,Pion,ListeMouvement,Etat,JSON),
+						format(user_output,"JSON is: ~p~n",[JSON]),
+						reply_json(JSON).
+						
+play_zack(Request) :- http_read_json(Request, JsonIn,[json_object(term)]),
+						format(user_output,"JsonIn is: ~p~n",[JsonIn]),
+						json_to_prolog(JsonIn, Data), game_get_data_informations(Data, J, Blancs, Noirs),
+						format(user_output,"Data is: ~p~n",[Data]),
+						format(user_output,"J is: ~p~n",[J]),
+						format(user_output,"Blancs is: ~p~n",[Blancs]),
+						format(user_output,"Noirs is: ~p~n",[Noirs]),
+						play7(J,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,Pion,Etat),
+						format(user_output,"Blancs2 is: ~p~n",[Blancs2]),
+						format(user_output,"Noirs2 is: ~p~n",[Noirs2]),
+						format(user_output,"ListeMouvement is: ~p~n",[ListeMouvement]),
+						format(user_output,"Pion is: ~p~n",[Pion]),
+						format(user_output,"Etat is: ~p~n",[Etat]),
+						build_reply_play(Blancs2,Noirs2,J,Pion,ListeMouvement,Etat,JSON),
+						format(user_output,"JSON is: ~p~n",[JSON]),
+						reply_json(JSON).
+						
+
 
 
 moves_allowed_server(Request) :-	http_read_json(Request, JsonIn,[json_object(term)]),
