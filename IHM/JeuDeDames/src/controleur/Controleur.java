@@ -256,10 +256,7 @@ public class Controleur extends Application {
 		Coup coup = null;
 		coup = this.jeu.play(this.joueurCourant.getTypeJoueur(), this.joueurCourant.getId(), plateauClone.getBlanches(),
 				plateauClone.getNoires());
-		System.out.println(coup.getPiece());
-		System.out.println(coup.getPiece().getPosition());
-		System.out.println(coup.getDeplacement().get(coup.getDeplacement().size() - 1));
-		System.out.println("");
+
 		return coup;
 	}
 
@@ -308,16 +305,6 @@ public class Controleur extends Application {
 			for (Piece p : piecesMortes) {
 				this.plateau.supprimerPiece(p);
 			}
-
-			// for (Piece p : blanches) {
-			// System.out.println(">" + p.getPosition());
-			// }
-			//
-			// System.out.println();
-			// for (Piece p : this.plateau.getBlanches()) {
-			// System.out.println(">>" + p.getPosition());
-			// }
-			// System.out.println("==========================================");
 
 			int dureeDeplacement = this.calculDureeDeplacement(piece, deplacement, this.dureeUnDeplacement);
 			int dureeCoup = this.calculDureeCoup(dureeDeplacement, this.dureeUnDeplacement);
@@ -374,8 +361,7 @@ public class Controleur extends Application {
 		this.joueur2 = new Joueur(1, typeJoueur2, nomJoueur2, Couleur.NOIR);
 
 		this.plateau = new Plateau();
-		System.out.println("blanches=" + coup.getPiecesBlanches());
-		System.out.println("noires=" + coup.getPiecesNoires());
+
 		this.plateau.initPions(coup.getPiecesBlanches(), coup.getPiecesNoires());
 
 		this.joueurCourant = this.joueur1;
@@ -402,8 +388,6 @@ public class Controleur extends Application {
 					&& (this.joueur2.getTypeJoueur() != TypeJoueur.JOUEUR_REEL)
 					&& (this.joueur2.getTypeJoueur() != TypeJoueur.INCONNU));
 
-			System.out.println(this.joueur1);
-			System.out.println(this.joueur2);
 			if ((this.joueur1.getTypeJoueur() == TypeJoueur.JOUEUR_REEL)
 					|| (this.joueur2.getTypeJoueur() == TypeJoueur.JOUEUR_REEL)) {
 				this.dureeUnDeplacement /= 2;
@@ -448,9 +432,7 @@ public class Controleur extends Application {
 						try {
 							final int dureeUnDeplacement = Controleur.this.dureeUnDeplacement;
 							final Coup coup = Controleur.this.getCoupIA();
-							if (coup.getEtat() != 3) {
-								System.out.println(coup);
-							}
+
 							Platform.runLater(new Runnable() {
 								@Override
 								public void run() {
