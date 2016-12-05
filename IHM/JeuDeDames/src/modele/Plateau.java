@@ -62,6 +62,33 @@ public class Plateau {
 		}
 	}
 
+	public void initPions(List<Piece> blanches, List<Piece> noires) {
+
+		for (Piece piece : blanches) {
+			Piece newPiece;
+			Case c = this.cases[piece.getPosition().getLigne()][piece.getPosition().getColonne()];
+			if (piece.getClass().equals(Pion.class)) {
+				newPiece = new Pion(Couleur.BLANC, c);
+			} else {
+				newPiece = new Dame(Couleur.BLANC, c);
+			}
+			c.setPiece(newPiece);
+			this.blanches.add(newPiece);
+		}
+
+		for (Piece piece : noires) {
+			Piece newPiece;
+			Case c = this.cases[piece.getPosition().getLigne()][piece.getPosition().getColonne()];
+			if (piece.getClass().equals(Pion.class)) {
+				newPiece = new Pion(Couleur.NOIR, c);
+			} else {
+				newPiece = new Dame(Couleur.NOIR, c);
+			}
+			c.setPiece(newPiece);
+			this.noires.add(newPiece);
+		}
+	}
+
 	/**
 	 * Deplace la piece a la nouvelle position. Precondition, la piece et la
 	 * case doivent appartenir(references) au plateau

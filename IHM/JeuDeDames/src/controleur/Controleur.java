@@ -97,8 +97,6 @@ public class Controleur extends Application {
 			root = fxmlLoader.load();
 			this.vueMenu = (VueMenu) fxmlLoader.getController();
 			this.vueMenu.setControleur(this);
-			this.plateau = new Plateau();
-			this.plateau.initPions();
 			Scene scene = new Scene(root, this.stage.getWidth(), this.stage.getHeight());
 			this.stage.setTitle("Jeu De Dames");
 			this.stage.setScene(scene);
@@ -177,7 +175,6 @@ public class Controleur extends Application {
 				this.vueMenu = (VueMenu) fxmlLoader.getController();
 				this.vueMenu.setControleur(this);
 				this.plateau = new Plateau();
-				this.plateau.initPions();
 				Scene scene = new Scene(root, this.stage.getWidth(), this.stage.getHeight());
 				this.stage.setScene(scene);
 				this.stage.show();
@@ -362,7 +359,10 @@ public class Controleur extends Application {
 		this.joueur2 = new Joueur(1, typeJoueur2, nomJoueur2, Couleur.NOIR);
 
 		this.plateau = new Plateau();
-		this.plateau.initPions();
+		System.out.println("blanches=" + coup.getPiecesBlanches());
+		System.out.println("noires=" + coup.getPiecesNoires());
+		this.plateau.initPions(coup.getPiecesBlanches(), coup.getPiecesNoires());
+
 		this.joueurCourant = this.joueur1;
 
 		// Affichage
