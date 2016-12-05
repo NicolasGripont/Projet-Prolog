@@ -545,7 +545,8 @@ init :-retractall(blancs(_)), retractall(noirs(_)), retractall(cptDraw(_)), cree
 
 % Surcharge des urls avec les méthodes appellées pour chacune
 :- http_handler(root(init), init_server, []).
-:- http_handler(root(play), play_server, []).
+:- http_handler(root(play), play_franck, []).
+:- http_handler(root(play), play_sheldon, []).
 :- http_handler(root(moves_allowed), moves_allowed_server, []).
 :- http_handler(root(game_state), game_state, []).
 
@@ -577,18 +578,41 @@ init_server(_Request) :-	init,
 							build_reply_init(ListeBlancs,ListeNoirs, 0, JSON),
 							reply_json(JSON).
 
-% Prédicat play_server qui est appellé quand on appelle l'url //play
+% Prédicat play_franck qui est appellé quand on appelle l'url /play_franck
+% IA réduite
 % Le prédicat reconstruit la liste des blancs et des noirs
 % Le prédicat appelle le predicat ia qui va jouer un cout
 % Le prédicat renvoie la liste des pions blancs et noirs et le joueur qui doit jouer en format JSON
-play_server(Request) :- http_read_json(Request, JsonIn,[json_object(term)]),
+play_franck(Request) :- http_read_json(Request, JsonIn,[json_object(term)]),
 						format(user_output,"JsonIn is: ~p~n",[JsonIn]),
 						json_to_prolog(JsonIn, Data), game_get_data_informations(Data, J, Blancs, Noirs),
 						format(user_output,"Data is: ~p~n",[Data]),
 						format(user_output,"J is: ~p~n",[J]),
 						format(user_output,"Blancs is: ~p~n",[Blancs]),
 						format(user_output,"Noirs is: ~p~n",[Noirs]),
-						play(J,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,Pion,Etat),
+						play1(J,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,Pion,Etat),
+						format(user_output,"Blancs2 is: ~p~n",[Blancs2]),
+						format(user_output,"Noirs2 is: ~p~n",[Noirs2]),
+						format(user_output,"ListeMouvement is: ~p~n",[ListeMouvement]),
+						format(user_output,"Pion is: ~p~n",[Pion]),
+						format(user_output,"Etat is: ~p~n",[Etat]),
+						build_reply_play(Blancs2,Noirs2,J,Pion,ListeMouvement,Etat,JSON),
+						format(user_output,"JSON is: ~p~n",[JSON]),
+						reply_json(JSON).
+
+% Prédicat play_sheldon qui est appellé quand on appelle l'url /play_sheldon
+% IA Intelligente
+% Le prédicat reconstruit la liste des blancs et des noirs
+% Le prédicat appelle le predicat ia qui va jouer un cout
+% Le prédicat renvoie la liste des pions blancs et noirs et le joueur qui doit jouer en format JSON
+play_sheldon(Request) :- http_read_json(Request, JsonIn,[json_object(term)]),
+						format(user_output,"JsonIn is: ~p~n",[JsonIn]),
+						json_to_prolog(JsonIn, Data), game_get_data_informations(Data, J, Blancs, Noirs),
+						format(user_output,"Data is: ~p~n",[Data]),
+						format(user_output,"J is: ~p~n",[J]),
+						format(user_output,"Blancs is: ~p~n",[Blancs]),
+						format(user_output,"Noirs is: ~p~n",[Noirs]),
+						play2(J,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,Pion,Etat),
 						format(user_output,"Blancs2 is: ~p~n",[Blancs2]),
 						format(user_output,"Noirs2 is: ~p~n",[Noirs2]),
 						format(user_output,"ListeMouvement is: ~p~n",[ListeMouvement]),
