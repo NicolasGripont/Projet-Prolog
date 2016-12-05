@@ -4,6 +4,8 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import controleur.Controleur;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -62,7 +64,7 @@ public class VueMenu implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 
 		ObservableList<String> options = FXCollections.observableArrayList(FXCollections.observableArrayList(IA_ZACK,
-				IA_PENNY, IA_HOWARD, IA_RAJ, IA_LEONARD, IA_SHELDON, JOUEUR_REEL));
+				IA_PENNY, IA_HOWARD, IA_RAJ, IA_LEONARD, IA_AMY, IA_SHELDON, JOUEUR_REEL));
 		this.comboxJoueur1.setItems(options);
 		this.comboxJoueur1.setValue(this.comboxJoueur1.getItems().get(0));
 		this.comboxJoueur2.setItems(options);
@@ -86,6 +88,23 @@ public class VueMenu implements Initializable {
 			public void handle(MouseEvent event) {
 				// TODO Auto-generated method stub
 				VueMenu.this.textFieldNomJoueur2.selectAll();
+			}
+		});
+
+		this.textFieldNomJoueur1.setText(IA_ZACK + " 1");
+		this.textFieldNomJoueur2.setText(IA_ZACK + " 2");
+
+		this.comboxJoueur1.valueProperty().addListener(new ChangeListener<String>() {
+			@Override
+			public void changed(ObservableValue ov, String t, String t1) {
+				VueMenu.this.textFieldNomJoueur1.setText(t1 + " 1");
+			}
+		});
+
+		this.comboxJoueur2.valueProperty().addListener(new ChangeListener<String>() {
+			@Override
+			public void changed(ObservableValue ov, String t, String t1) {
+				VueMenu.this.textFieldNomJoueur2.setText(t1 + " 2");
 			}
 		});
 	}

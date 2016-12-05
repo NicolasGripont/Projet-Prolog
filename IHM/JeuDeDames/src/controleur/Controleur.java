@@ -34,7 +34,7 @@ import vue.VueMenu.VueMenu;
 
 public class Controleur extends Application {
 
-	private final int DUREE_UN_DEPLACEMENT_NORMAL = 1000 / 2;
+	private final int DUREE_UN_DEPLACEMENT_NORMAL = 1000;
 
 	private int dureeUnDeplacement = this.DUREE_UN_DEPLACEMENT_NORMAL;
 
@@ -218,25 +218,25 @@ public class Controleur extends Application {
 					public void run() {
 						Controleur.this.jouerCoup(coup.getPiecesBlanches(), coup.getPiecesNoires(), coup.getPiece(),
 								coup.getDeplacement());
-	
-							if (Controleur.this.joueurCourant == Controleur.this.joueur1) {
-								Controleur.this.joueurCourant = Controleur.this.joueur2;
-							} else {
-								Controleur.this.joueurCourant = Controleur.this.joueur1;
-							}
-						
+
+						if (Controleur.this.joueurCourant == Controleur.this.joueur1) {
+							Controleur.this.joueurCourant = Controleur.this.joueur2;
+						} else {
+							Controleur.this.joueurCourant = Controleur.this.joueur1;
+						}
+
 					}
 				});
 				try {
 					Thread.sleep(Controleur.this.calculDureeCoup(Controleur.this.calculDureeDeplacement(coup.getPiece(),
 							coup.getDeplacement(), Controleur.this.dureeUnDeplacement),
 							Controleur.this.dureeUnDeplacement));
-					
+
 					Platform.runLater(new Runnable() {
 						@Override
 						public void run() {
-							if(coup.getEtat() != 3) {
-								afficherPopupFin(coup.getEtat());
+							if (coup.getEtat() != 3) {
+								Controleur.this.afficherPopupFin(coup.getEtat());
 							}
 						}
 					});
@@ -244,7 +244,7 @@ public class Controleur extends Application {
 					// TODO Auto-generated catch block
 
 				}
-				if(coup.getEtat() == 3) {
+				if (coup.getEtat() == 3) {
 					Controleur.this.jouerUnCoup();
 				}
 
@@ -425,13 +425,13 @@ public class Controleur extends Application {
 
 	private void simulerPartie() {
 		if (this.threadSimulerPartie == null) {
-			final int dureeUnDeplacement = this.dureeUnDeplacement;
 			this.threadSimulerPartie = new Thread() {
 				@Override
 				public void run() {
 
 					while (Controleur.this.threadSimulerPartie.isInterrupted() == false) {
 						try {
+							final int dureeUnDeplacement = Controleur.this.dureeUnDeplacement;
 							final Coup coup = Controleur.this.getCoupIA();
 							if (coup.getEtat() != 3) {
 								System.out.println(coup);
