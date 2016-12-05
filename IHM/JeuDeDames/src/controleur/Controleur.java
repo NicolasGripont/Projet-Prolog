@@ -524,7 +524,6 @@ public class Controleur extends Application {
 		}
 
 		this.dureeUnDeplacement = this.DUREE_UN_DEPLACEMENT_NORMAL / this.coefVitesse;
-		this.stopThreadSimulerPartie();
 		this.simulerPartie();
 		this.vueJeu.setTextLabelVitesse("x" + this.coefVitesse);
 
