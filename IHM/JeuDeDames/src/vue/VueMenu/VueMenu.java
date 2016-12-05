@@ -18,8 +18,13 @@ import javafx.scene.input.MouseEvent;
 import modele.TypeJoueur;
 
 public class VueMenu implements Initializable {
-	private static final String IA_MIN_MAX = "IA Min Max";
-	private static final String IA_ALEATOIRE = "IA Aléatoire";
+	private static final String IA_ZACK = "IA Zack";
+	private static final String IA_PENNY = "IA Penny";
+	private static final String IA_HOWARD = "IA Howard";
+	private static final String IA_RAJ = "IA Raj";
+	private static final String IA_LEONARD = "IA Leonard";
+	private static final String IA_AMY = "IA Amy";
+	private static final String IA_SHELDON = "IA Sheldon";
 	private static final String JOUEUR_REEL = "Joueur Réel";
 
 	private final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
@@ -56,8 +61,8 @@ public class VueMenu implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 
-		ObservableList<String> options = FXCollections
-				.observableArrayList(FXCollections.observableArrayList(IA_ALEATOIRE, IA_MIN_MAX, JOUEUR_REEL));
+		ObservableList<String> options = FXCollections.observableArrayList(FXCollections.observableArrayList(IA_ZACK,
+				IA_PENNY, IA_HOWARD, IA_RAJ, IA_LEONARD, IA_SHELDON, JOUEUR_REEL));
 		this.comboxJoueur1.setItems(options);
 		this.comboxJoueur1.setValue(this.comboxJoueur1.getItems().get(0));
 		this.comboxJoueur2.setItems(options);
@@ -105,12 +110,22 @@ public class VueMenu implements Initializable {
 	}
 
 	private TypeJoueur getTypeJoueur(String type) {
-		if (type.equals(IA_ALEATOIRE)) {
-			return TypeJoueur.IA_ALEATOIRE;
+		if (type.equals(IA_ZACK)) {
+			return TypeJoueur.IA_ZACK;
+		} else if (type.equals(IA_PENNY)) {
+			return TypeJoueur.IA_PENNY;
+		} else if (type.equals(IA_HOWARD)) {
+			return TypeJoueur.IA_HOWARD;
+		} else if (type.equals(IA_RAJ)) {
+			return TypeJoueur.IA_RAJ;
+		} else if (type.equals(IA_LEONARD)) {
+			return TypeJoueur.IA_LEONARD;
+		} else if (type.equals(IA_AMY)) {
+			return TypeJoueur.IA_AMY;
+		} else if (type.equals(IA_SHELDON)) {
+			return TypeJoueur.IA_SHELDON;
 		} else if (type.equals(JOUEUR_REEL)) {
 			return TypeJoueur.JOUEUR_REEL;
-		} else if (type.equals(IA_MIN_MAX)) {
-			return TypeJoueur.IA_MIN_MAX;
 		}
 		return TypeJoueur.INCONNU;
 	}

@@ -257,12 +257,8 @@ public class Controleur extends Application {
 	public Coup getCoupIA() {
 		Plateau plateauClone = this.plateau.clone();
 		Coup coup = null;
-		if (this.joueurCourant.getTypeJoueur() == TypeJoueur.IA_ALEATOIRE) {
-			coup = this.jeu.play(0, this.joueurCourant.getId(), plateauClone.getBlanches(), plateauClone.getNoires());
-		} else if (this.joueurCourant.getTypeJoueur() == TypeJoueur.IA_MIN_MAX) {
-			coup = this.jeu.play(1, this.joueurCourant.getId(), plateauClone.getBlanches(), plateauClone.getNoires());
-		}
-
+		coup = this.jeu.play(this.joueurCourant.getTypeJoueur(), this.joueurCourant.getId(), plateauClone.getBlanches(),
+				plateauClone.getNoires());
 		return coup;
 	}
 

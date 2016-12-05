@@ -19,7 +19,12 @@ public class Jeu {
 	private String nameServer = "localhost";
 	private String portServer = "5000";
 	private static final String urlInit = "init";
-	private static final String urlPlayFranck = "play_franck";
+	private static final String urlPlayZack = "play_zack";
+	private static final String urlPlayPenny = "play_penny";
+	private static final String urlPlayHoward = "play_howard";
+	private static final String urlPlayRaj = "play_raj";
+	private static final String urlPlayLeonard = "play_leonard";
+	private static final String urlPlayAmy = "play_amy";
 	private static final String urlPlaySheldon = "play_sheldon";
 	private static final String urlMovesAllowed = "moves_allowed";
 	private static final String urlGameState = "game_state";
@@ -32,7 +37,7 @@ public class Jeu {
 		blancs = (ArrayList<Piece>) c.piecesBlanches;
 		noirs = (ArrayList<Piece>) c.piecesNoires;
 		blancs.add(new Dame(Couleur.BLANC, new Case(Couleur.NOIR, 0, 0)));
-		jeu.play(0, 1, blancs, noirs);
+		jeu.play(TypeJoueur.IA_ZACK, 1, blancs, noirs);
 		// Map<Piece, List<Coup>> res = jeu.movesAllowed(1, blancs, noirs);
 		ArrayList<Piece> noirs2 = noirs;
 		noirs2.remove(0);
@@ -78,7 +83,7 @@ public class Jeu {
 		}
 	}
 
-	public Coup play(int ia, int joueur, List<Piece> blancs, List<Piece> noirs) {
+	public Coup play(TypeJoueur ia, int joueur, List<Piece> blancs, List<Piece> noirs) {
 		try {
 			JsonArray blancsArray = this.buildObjectListPiece(blancs, "blancs");
 			JsonArray noirsArray = this.buildObjectListPiece(noirs, "noirs");
@@ -87,11 +92,25 @@ public class Jeu {
 			parameters.add("blancs", blancsArray);
 			parameters.add("noirs", noirsArray);
 			URL url;
-			if (ia == 0) {
-				url = new URL("http://" + this.nameServer + ":" + this.portServer + "/" + urlPlayFranck);
-			} else {
+
+			if (ia == TypeJoueur.IA_ZACK) {
+				url = new URL("http://" + this.nameServer + ":" + this.portServer + "/" + urlPlayZack);
+			} else if (ia == TypeJoueur.IA_PENNY) {
+				url = new URL("http://" + this.nameServer + ":" + this.portServer + "/" + urlPlayPenny);
+			} else if (ia == TypeJoueur.IA_HOWARD) {
+				url = new URL("http://" + this.nameServer + ":" + this.portServer + "/" + urlPlayHoward);
+			} else if (ia == TypeJoueur.IA_RAJ) {
+				url = new URL("http://" + this.nameServer + ":" + this.portServer + "/" + urlPlayRaj);
+			} else if (ia == TypeJoueur.IA_LEONARD) {
+				url = new URL("http://" + this.nameServer + ":" + this.portServer + "/" + urlPlayLeonard);
+			} else if (ia == TypeJoueur.IA_AMY) {
+				url = new URL("http://" + this.nameServer + ":" + this.portServer + "/" + urlPlayAmy);
+			} else if (ia == TypeJoueur.IA_SHELDON) {
 				url = new URL("http://" + this.nameServer + ":" + this.portServer + "/" + urlPlaySheldon);
+			} else {
+				url = new URL("http://" + this.nameServer + ":" + this.portServer + "/" + urlPlayZack);
 			}
+
 			HttpURLConnection request;
 			request = (HttpURLConnection) url.openConnection();
 			request.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
