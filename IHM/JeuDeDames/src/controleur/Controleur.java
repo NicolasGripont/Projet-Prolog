@@ -256,6 +256,10 @@ public class Controleur extends Application {
 		Coup coup = null;
 		coup = this.jeu.play(this.joueurCourant.getTypeJoueur(), this.joueurCourant.getId(), plateauClone.getBlanches(),
 				plateauClone.getNoires());
+		System.out.println(coup.getPiece());
+		System.out.println(coup.getPiece().getPosition());
+		System.out.println(coup.getDeplacement().get(coup.getDeplacement().size() - 1));
+		System.out.println("");
 		return coup;
 	}
 
@@ -305,6 +309,16 @@ public class Controleur extends Application {
 				this.plateau.supprimerPiece(p);
 			}
 
+			// for (Piece p : blanches) {
+			// System.out.println(">" + p.getPosition());
+			// }
+			//
+			// System.out.println();
+			// for (Piece p : this.plateau.getBlanches()) {
+			// System.out.println(">>" + p.getPosition());
+			// }
+			// System.out.println("==========================================");
+
 			int dureeDeplacement = this.calculDureeDeplacement(piece, deplacement, this.dureeUnDeplacement);
 			int dureeCoup = this.calculDureeCoup(dureeDeplacement, this.dureeUnDeplacement);
 			this.dureeTour = dureeCoup;
@@ -322,6 +336,7 @@ public class Controleur extends Application {
 
 				this.vueJeu.creerDame((Pion) piecePlateau, dame, dureeCoup);
 			}
+			this.plateau.trierPieces(blanches, noires);
 			this.nbCoups++;
 			this.vueJeu.setTextLabelNbCoups("" + this.nbCoups);
 		} catch (NullPointerException e) {

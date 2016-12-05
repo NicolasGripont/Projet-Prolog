@@ -11,9 +11,9 @@ public class Plateau {
 
 	private final Case[][] cases;
 
-	private final List<Piece> noires;
+	private List<Piece> noires;
 
-	private final List<Piece> blanches;
+	private List<Piece> blanches;
 
 	public Plateau() {
 		this.cases = new Case[NB_LIGNES][NB_COLONNES];
@@ -163,5 +163,32 @@ public class Plateau {
 			this.noires.add(dame);
 		}
 		return dame;
+	}
+
+	public void trierPieces(List<Piece> blanches, List<Piece> noires) {
+		List<Piece> newBlanches = new ArrayList<>();
+		List<Piece> newNoires = new ArrayList<>();
+		for (Piece p1 : blanches) {
+			for (Piece p2 : this.blanches) {
+				if ((p2.getPosition().getLigne() == p1.getPosition().getLigne())
+						&& (p2.getPosition().getColonne() == p1.getPosition().getColonne())) {
+					newBlanches.add(p2);
+					break;
+				}
+			}
+		}
+
+		for (Piece p1 : noires) {
+			for (Piece p2 : this.noires) {
+				if ((p2.getPosition().getLigne() == p1.getPosition().getLigne())
+						&& (p2.getPosition().getColonne() == p1.getPosition().getColonne())) {
+					newNoires.add(p2);
+					break;
+				}
+			}
+		}
+
+		this.blanches = newBlanches;
+		this.noires = newNoires;
 	}
 }
