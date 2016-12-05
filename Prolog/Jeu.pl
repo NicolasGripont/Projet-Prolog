@@ -107,7 +107,7 @@ chercheCaseVideHautGauche(X,Y,Blancs,Noirs, Manges, [[X1,Y1]|L]) :-
     X1 is X-1, Y1 is Y-1, X1>=0, Y1>=0,
     not(member([X1,Y1,_],Blancs)),
     not(member([X1,Y1,_],Noirs)),
-    not(member([X1,Y1],Manges)),
+    not(member([X1,Y1,_],Manges)),
     chercheCaseVideHautGauche(X1,Y1,Blancs,Noirs,Manges,L),!.
 chercheCaseVideHautGauche(_,_,_,_,_,[]).
 
@@ -115,7 +115,7 @@ chercheCaseVideHautDroite(X,Y,Blancs,Noirs, Manges, [[X1,Y1]|L]) :-
     X1 is X+1, Y1 is Y-1, X1=<9, Y1>=0,
     not(member([X1,Y1,_],Blancs)),
     not(member([X1,Y1,_],Noirs)),
-    not(member([X1,Y1],Manges)),
+    not(member([X1,Y1,_],Manges)),
     chercheCaseVideHautDroite(X1,Y1,Blancs,Noirs,Manges,L),!.
 chercheCaseVideHautDroite(_,_,_,_,_,[]).
 
@@ -123,7 +123,7 @@ chercheCaseVideBasGauche(X,Y,Blancs,Noirs, Manges, [[X1,Y1]|L]) :-
     X1 is X-1, Y1 is Y+1, X1>=0, Y1=<9,
     not(member([X1,Y1,_],Blancs)),
     not(member([X1,Y1,_],Noirs)),
-    not(member([X1,Y1],Manges)),
+    not(member([X1,Y1,_],Manges)),
     chercheCaseVideBasGauche(X1,Y1,Blancs,Noirs,Manges,L),!.
 chercheCaseVideBasGauche(_,_,_,_,_,[]).
 
@@ -131,7 +131,7 @@ chercheCaseVideBasDroite(X,Y,Blancs,Noirs, Manges, [[X1,Y1]|L]) :-
     X1 is X+1, Y1 is Y+1, X1=<9, Y1=<9,
     not(member([X1,Y1,_],Blancs)),
     not(member([X1,Y1,_],Noirs)),
-    not(member([X1,Y1],Manges)),
+    not(member([X1,Y1,_],Manges)),
     chercheCaseVideBasDroite(X1,Y1,Blancs,Noirs,Manges,L),!.
 chercheCaseVideBasDroite(_,_,_,_,_,[]).
 
@@ -192,34 +192,34 @@ mangeSuite(_,_,_,[],_,[]).
 
 %dame
 mangeHautGauche([X,Y,dame],blanc,Blancs,Noirs,Manges,Retour):- cherchePionHautGauche(X,Y,blanc,Blancs,Noirs,[X2,Y2,T],Manges),
-		chercheCaseVideHautGauche(X2,Y2,Blancs,Noirs, [], R),R \== [],!, delete(Noirs,[X2,Y2,T],Noirs2),
+		chercheCaseVideHautGauche(X2,Y2,Blancs,Noirs, Manges, R),R \== [],!, delete(Noirs,[X2,Y2,T],Noirs2),
 		delete(Blancs,[X,Y,dame],Blancs2),mangeSuite(blanc,Blancs2,Noirs2,R,[[X2,Y2,T]|Manges],Retour).
 mangeHautGauche([X,Y,dame],noir,Blancs,Noirs,Manges,Retour):- cherchePionHautGauche(X,Y,noir,Blancs,Noirs,[X2,Y2,T],Manges),
-		chercheCaseVideHautGauche(X2,Y2,Blancs,Noirs, [], R),R \== [],!, delete(Blancs,[X2,Y2,T],Blancs2),
+		chercheCaseVideHautGauche(X2,Y2,Blancs,Noirs, Manges, R),R \== [],!, delete(Blancs,[X2,Y2,T],Blancs2),
 		delete(Noirs,[X,Y,dame],Noirs2),mangeSuite(noir,Blancs2,Noirs2,R,[[X2,Y2,T]|Manges],Retour).
 mangeHautGauche(_,_,_,_,_,[]).
 
 mangeHautDroite([X,Y,dame],blanc,Blancs,Noirs,Manges,Retour):- cherchePionHautDroite(X,Y,blanc,Blancs,Noirs,[X2,Y2,T],Manges),
-		chercheCaseVideHautDroite(X2,Y2,Blancs,Noirs, [], R),R \== [],!, delete(Noirs,[X2,Y2,T],Noirs2),
+		chercheCaseVideHautDroite(X2,Y2,Blancs,Noirs, Manges, R),R \== [],!, delete(Noirs,[X2,Y2,T],Noirs2),
 		delete(Blancs,[X,Y,dame],Blancs2),mangeSuite(blanc,Blancs2,Noirs2,R,[[X2,Y2,T]|Manges],Retour).
 mangeHautDroite([X,Y,dame],noir,Blancs,Noirs,Manges,Retour):- cherchePionHautDroite(X,Y,noir,Blancs,Noirs,[X2,Y2,T],Manges),
-		chercheCaseVideHautDroite(X2,Y2,Blancs,Noirs, [], R),R \== [],!, delete(Blancs,[X2,Y2,T],Blancs2),
+		chercheCaseVideHautDroite(X2,Y2,Blancs,Noirs, Manges, R),R \== [],!, delete(Blancs,[X2,Y2,T],Blancs2),
 		delete(Noirs,[X,Y,dame],Noirs2),mangeSuite(noir,Blancs2,Noirs2,R,[[X2,Y2,T]|Manges],Retour).
 mangeHautDroite(_,_,_,_,_,[]).
 
 mangeBasDroite([X,Y,dame],blanc,Blancs,Noirs,Manges,Retour):- cherchePionBasDroite(X,Y,blanc,Blancs,Noirs,[X2,Y2,T],Manges),
-		chercheCaseVideBasDroite(X2,Y2,Blancs,Noirs, [], R),R \== [],!, delete(Noirs,[X2,Y2,T],Noirs2),
+		chercheCaseVideBasDroite(X2,Y2,Blancs,Noirs, Manges, R),R \== [],!, delete(Noirs,[X2,Y2,T],Noirs2),
 		delete(Blancs,[X,Y,dame],Blancs2),mangeSuite(blanc,Blancs2,Noirs2,R,[[X2,Y2,T]|Manges],Retour).
 mangeBasDroite([X,Y,dame],noir,Blancs,Noirs,Manges,Retour):- cherchePionBasDroite(X,Y,noir,Blancs,Noirs,[X2,Y2,T],Manges),
-		chercheCaseVideBasDroite(X2,Y2,Blancs,Noirs, [], R),R \== [],!, delete(Blancs,[X2,Y2,T],Blancs2),
+		chercheCaseVideBasDroite(X2,Y2,Blancs,Noirs, Manges, R),R \== [],!, delete(Blancs,[X2,Y2,T],Blancs2),
 		delete(Noirs,[X,Y,dame],Noirs2),mangeSuite(noir,Blancs2,Noirs2,R,[[X2,Y2,T]|Manges],Retour).
 mangeBasDroite(_,_,_,_,_,[]).
 
 mangeBasGauche([X,Y,dame],blanc,Blancs,Noirs,Manges,Retour):- cherchePionBasGauche(X,Y,blanc,Blancs,Noirs,[X2,Y2,T],Manges),
-		chercheCaseVideBasGauche(X2,Y2,Blancs,Noirs, [], R),R \== [],!, delete(Noirs,[X2,Y2,T],Noirs2),
+		chercheCaseVideBasGauche(X2,Y2,Blancs,Noirs, Manges, R),R \== [],!, delete(Noirs,[X2,Y2,T],Noirs2),
 		delete(Blancs,[X,Y,dame],Blancs2),mangeSuite(blanc,Blancs2,Noirs2,R,[[X2,Y2,T]|Manges],Retour).
 mangeBasGauche([X,Y,dame],noir,Blancs,Noirs,Manges,Retour):- cherchePionBasGauche(X,Y,noir,Blancs,Noirs,[X2,Y2,T],Manges),
-		chercheCaseVideBasGauche(X2,Y2,Blancs,Noirs, [], R),R \== [],!, delete(Blancs,[X2,Y2,T],Blancs2),
+		chercheCaseVideBasGauche(X2,Y2,Blancs,Noirs, Manges, R),R \== [],!, delete(Blancs,[X2,Y2,T],Blancs2),
 		delete(Noirs,[X,Y,dame],Noirs2),mangeSuite(noir,Blancs2,Noirs2,R,[[X2,Y2,T]|Manges],Retour).
 mangeBasGauche(_,_,_,_,_,[]).
 
@@ -547,6 +547,10 @@ initConsole(L1,L2):- retractall(blancs(_)), retractall(noirs(_)), retractall(cpt
 
 % ATTENTION : play est commenté pour pouvoir utiliser l'IHM
 init :-retractall(blancs(_)), retractall(noirs(_)), retractall(cptDraw(_)), creerListe(noir,L1),creerListe(blanc,L2),assert(noirs(L1)),assert(blancs(L2)), assert(cptDraw(0)).%, play(blanc).
+%init du coup du tiroir
+%init :-retractall(blancs(_)), retractall(noirs(_)), retractall(cptDraw(_)),assert(noirs([[0,3,pion],[1,4,pion],[2,3,pion],[3,2,pion],[4,1,pion],[4,3,pion],[6,3,pion],[7,2,pion]])),assert(blancs([[0,5,pion],[2,5,pion],[4,5,pion],[3,6,pion],[2,7,pion],[1,8,pion],[2,9,pion]])), assert(cptDraw(0)).
+%init du coup suisse
+%init :-retractall(blancs(_)), retractall(noirs(_)), retractall(cptDraw(_)),assert(noirs([[2,7,pion],[2,3,pion],[2,5,pion],[6,7,pion],[7,0,pion],[4,1,pion],[6,1,pion],[8,1,pion]])),assert(blancs([[2,9,pion],[4,9,pion],[4,7,pion],[5,8,pion],[7,6,pion],[8,5,pion],[8,7,pion]])), assert(cptDraw(0)).
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -609,20 +613,9 @@ init_server(_Request) :-	init,
 % Le prédicat appelle le predicat ia qui va jouer un cout
 % Le prédicat renvoie la liste des pions blancs et noirs et le joueur qui doit jouer en format JSON
 play_amy(Request) :- http_read_json(Request, JsonIn,[json_object(term)]),
-						format(user_output,"JsonIn is: ~p~n",[JsonIn]),
 						json_to_prolog(JsonIn, Data), game_get_data_informations(Data, J, Blancs, Noirs),
-						format(user_output,"Data is: ~p~n",[Data]),
-						format(user_output,"J is: ~p~n",[J]),
-						format(user_output,"Blancs is: ~p~n",[Blancs]),
-						format(user_output,"Noirs is: ~p~n",[Noirs]),
 						play2(J,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,Pion,Etat),
-						format(user_output,"Blancs2 is: ~p~n",[Blancs2]),
-						format(user_output,"Noirs2 is: ~p~n",[Noirs2]),
-						format(user_output,"ListeMouvement is: ~p~n",[ListeMouvement]),
-						format(user_output,"Pion is: ~p~n",[Pion]),
-						format(user_output,"Etat is: ~p~n",[Etat]),
 						build_reply_play(Blancs2,Noirs2,J,Pion,ListeMouvement,Etat,JSON),
-						format(user_output,"JSON is: ~p~n",[JSON]),
 						reply_json(JSON).
 
 % Prédicat play_sheldon qui est appellé quand on appelle l'url /play_sheldon
@@ -631,125 +624,50 @@ play_amy(Request) :- http_read_json(Request, JsonIn,[json_object(term)]),
 % Le prédicat appelle le predicat ia qui va jouer un cout
 % Le prédicat renvoie la liste des pions blancs et noirs et le joueur qui doit jouer en format JSON
 play_sheldon(Request) :- http_read_json(Request, JsonIn,[json_object(term)]),
-						format(user_output,"JsonIn is: ~p~n",[JsonIn]),
 						json_to_prolog(JsonIn, Data), game_get_data_informations(Data, J, Blancs, Noirs),
-						format(user_output,"Data is: ~p~n",[Data]),
-						format(user_output,"J is: ~p~n",[J]),
-						format(user_output,"Blancs is: ~p~n",[Blancs]),
-						format(user_output,"Noirs is: ~p~n",[Noirs]),
 						play1(J,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,Pion,Etat),
-						format(user_output,"Blancs2 is: ~p~n",[Blancs2]),
-						format(user_output,"Noirs2 is: ~p~n",[Noirs2]),
-						format(user_output,"ListeMouvement is: ~p~n",[ListeMouvement]),
-						format(user_output,"Pion is: ~p~n",[Pion]),
-						format(user_output,"Etat is: ~p~n",[Etat]),
 						build_reply_play(Blancs2,Noirs2,J,Pion,ListeMouvement,Etat,JSON),
-						format(user_output,"JSON is: ~p~n",[JSON]),
 						reply_json(JSON).
 
 play_leonard(Request) :- http_read_json(Request, JsonIn,[json_object(term)]),
-						%format(user_output,"JsonIn is: ~p~n",[JsonIn]),
 						json_to_prolog(JsonIn, Data), game_get_data_informations(Data, J, Blancs, Noirs),
-						%format(user_output,"Data is: ~p~n",[Data]),
-						%format(user_output,"J is: ~p~n",[J]),
-						format(user_output,"Blancs is: ~p~n",[Blancs]),
-						format(user_output,"Noirs is: ~p~n",[Noirs]),
 						play3(J,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,Pion,Etat),
-						format(user_output,"Blancs2 is: ~p~n",[Blancs2]),
-						format(user_output,"Noirs2 is: ~p~n",[Noirs2]),
-						%format(user_output,"ListeMouvement is: ~p~n",[ListeMouvement]),
-						%format(user_output,"Pion is: ~p~n",[Pion]),
-						%format(user_output,"Etat is: ~p~n",[Etat]),
 						build_reply_play(Blancs2,Noirs2,J,Pion,ListeMouvement,Etat,JSON),
-						%format(user_output,"JSON is: ~p~n",[JSON]),
 						cptDraw(CptDraw),
-						format(user_output,"cpt is: ~p~n",[CptDraw]),
 						reply_json(JSON).
 						
 play_raj(Request) :- http_read_json(Request, JsonIn,[json_object(term)]),
-						format(user_output,"JsonIn is: ~p~n",[JsonIn]),
 						json_to_prolog(JsonIn, Data), game_get_data_informations(Data, J, Blancs, Noirs),
-						format(user_output,"Data is: ~p~n",[Data]),
-						format(user_output,"J is: ~p~n",[J]),
-						format(user_output,"Blancs is: ~p~n",[Blancs]),
-						format(user_output,"Noirs is: ~p~n",[Noirs]),
 						play4(J,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,Pion,Etat),
-						format(user_output,"Blancs2 is: ~p~n",[Blancs2]),
-						format(user_output,"Noirs2 is: ~p~n",[Noirs2]),
-						format(user_output,"ListeMouvement is: ~p~n",[ListeMouvement]),
-						format(user_output,"Pion is: ~p~n",[Pion]),
-						format(user_output,"Etat is: ~p~n",[Etat]),
 						build_reply_play(Blancs2,Noirs2,J,Pion,ListeMouvement,Etat,JSON),
-						format(user_output,"JSON is: ~p~n",[JSON]),
 						reply_json(JSON).
 						
 play_howard(Request) :- http_read_json(Request, JsonIn,[json_object(term)]),
-						%format(user_output,"JsonIn is: ~p~n",[JsonIn]),
 						json_to_prolog(JsonIn, Data), game_get_data_informations(Data, J, Blancs, Noirs),
-						%format(user_output,"Data is: ~p~n",[Data]),
-						%format(user_output,"J is: ~p~n",[J]),
-						%format(user_output,"Blancs is: ~p~n",[Blancs]),
-						%format(user_output,"Noirs is: ~p~n",[Noirs]),
 						play5(J,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,Pion,Etat),
-						%format(user_output,"Blancs2 is: ~p~n",[Blancs2]),
-						%format(user_output,"Noirs2 is: ~p~n",[Noirs2]),
-						%format(user_output,"ListeMouvement is: ~p~n",[ListeMouvement]),
-						%format(user_output,"Pion is: ~p~n",[Pion]),
-						%format(user_output,"Etat is: ~p~n",[Etat]),
 						build_reply_play(Blancs2,Noirs2,J,Pion,ListeMouvement,Etat,JSON),
-						%format(user_output,"JSON is: ~p~n",[JSON]),
 						cptDraw(CptDraw),
-						format(user_output,"cpt is: ~p~n",[CptDraw]),
 						reply_json(JSON).
 						
 play_penny(Request) :- http_read_json(Request, JsonIn,[json_object(term)]),
-						format(user_output,"JsonIn is: ~p~n",[JsonIn]),
 						json_to_prolog(JsonIn, Data), game_get_data_informations(Data, J, Blancs, Noirs),
-						format(user_output,"Data is: ~p~n",[Data]),
-						format(user_output,"J is: ~p~n",[J]),
-						format(user_output,"Blancs is: ~p~n",[Blancs]),
-						format(user_output,"Noirs is: ~p~n",[Noirs]),
 						play6(J,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,Pion,Etat),
-						format(user_output,"Blancs2 is: ~p~n",[Blancs2]),
-						format(user_output,"Noirs2 is: ~p~n",[Noirs2]),
-						format(user_output,"ListeMouvement is: ~p~n",[ListeMouvement]),
-						format(user_output,"Pion is: ~p~n",[Pion]),
-						format(user_output,"Etat is: ~p~n",[Etat]),
 						build_reply_play(Blancs2,Noirs2,J,Pion,ListeMouvement,Etat,JSON),
-						format(user_output,"JSON is: ~p~n",[JSON]),
 						reply_json(JSON).
 						
 play_zack(Request) :- http_read_json(Request, JsonIn,[json_object(term)]),
-						format(user_output,"JsonIn is: ~p~n",[JsonIn]),
 						json_to_prolog(JsonIn, Data), game_get_data_informations(Data, J, Blancs, Noirs),
-						format(user_output,"Data is: ~p~n",[Data]),
-						format(user_output,"J is: ~p~n",[J]),
-						format(user_output,"Blancs is: ~p~n",[Blancs]),
-						format(user_output,"Noirs is: ~p~n",[Noirs]),
 						play7(J,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,Pion,Etat),
-						format(user_output,"Blancs2 is: ~p~n",[Blancs2]),
-						format(user_output,"Noirs2 is: ~p~n",[Noirs2]),
-						format(user_output,"ListeMouvement is: ~p~n",[ListeMouvement]),
-						format(user_output,"Pion is: ~p~n",[Pion]),
-						format(user_output,"Etat is: ~p~n",[Etat]),
 						build_reply_play(Blancs2,Noirs2,J,Pion,ListeMouvement,Etat,JSON),
-						format(user_output,"JSON is: ~p~n",[JSON]),
 						reply_json(JSON).
 						
 
 
 
 moves_allowed_server(Request) :-	http_read_json(Request, JsonIn,[json_object(term)]),
-									%format(user_output,"JsonIn is: ~p~n",[JsonIn]),
 									json_to_prolog(JsonIn, Data), game_get_data_informations(Data, J, Blancs, Noirs),
-									%format(user_output,"Data is: ~p~n",[Data]),
-									%format(user_output,"J is: ~p~n",[J]),
-									%format(user_output,"Blancs is: ~p~n",[Blancs]),
-									%format(user_output,"Noirs is: ~p~n",[Noirs]),
 									call_movePossiblePlayer(J,Blancs, Noirs,S),
-									%format(user_output,"S is: ~p~n",[S]),
 									build_reply_moves_allowed(S,Json),
-									%format(user_output,"json is: ~p~n",[Json]),
 									reply_json(Json).
 
 
