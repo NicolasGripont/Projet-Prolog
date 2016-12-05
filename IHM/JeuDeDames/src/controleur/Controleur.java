@@ -249,7 +249,13 @@ public class Controleur extends Application {
 
 	public Coup getCoupIA() {
 		Plateau plateauClone = this.plateau.clone();
-		Coup coup = this.jeu.play(this.joueurCourant.getId(), plateauClone.getBlanches(), plateauClone.getNoires());
+		Coup coup = null;
+		if (this.joueurCourant.getTypeJoueur() == TypeJoueur.IA_ALEATOIRE) {
+			coup = this.jeu.play(0, this.joueurCourant.getId(), plateauClone.getBlanches(), plateauClone.getNoires());
+		} else if (this.joueurCourant.getTypeJoueur() == TypeJoueur.IA_MIN_MAX) {
+			coup = this.jeu.play(1, this.joueurCourant.getId(), plateauClone.getBlanches(), plateauClone.getNoires());
+		}
+
 		return coup;
 	}
 
@@ -338,7 +344,8 @@ public class Controleur extends Application {
 	public void lancerPartie(TypeJoueur typeJoueur1, String nomJoueur1, TypeJoueur typeJoueur2, String nomJoueur2) {
 		// Initialisation du jeu
 		this.jeu = new Jeu("localhost", "5000");
-		if (this.jeu.init(new ArrayList<>(), new ArrayList<>()).getEtat() == -1) {
+		Coup coup = this.jeu.init(new ArrayList<>(), new ArrayList<>());
+		if ((coup == null) || (coup.getEtat() == -1)) {
 			this.jeu = null;
 			Alert alert = new Alert(AlertType.ERROR);
 			alert.setTitle("Erreur");
@@ -415,68 +422,62 @@ public class Controleur extends Application {
 
 	private void simulerPartie() {
 		if (this.threadSimulerPartie == null) {
-			try {
-				this.sem.acquire();
-				final int dureeUnDeplacement = this.dureeUnDeplacement;
-				this.threadSimulerPartie = new Thread() {
-					@Override
-					public void run() {
+			final int dureeUnDeplacement = this.dureeUnDeplacement;
+			this.threadSimulerPartie = new Thread() {
+				@Override
+				public void run() {
 
-						while (Controleur.this.threadSimulerPartie.isInterrupted() == false) {
-							try {
-								final Coup coup = Controleur.this.getCoupIA();
-								if (coup.getEtat() != 3) {
-									System.out.println(coup);
+					while (Controleur.this.threadSimulerPartie.isInterrupted() == false) {
+						try {
+							final Coup coup = Controleur.this.getCoupIA();
+							if (coup.getEtat() != 3) {
+								System.out.println(coup);
+							}
+							Platform.runLater(new Runnable() {
+								@Override
+								public void run() {
+									try {
+										Controleur.this.sem.acquire();
+										Controleur.this.jouerCoup(coup.getPiecesBlanches(), coup.getPiecesNoires(),
+												coup.getPiece(), coup.getDeplacement());
+										if (Controleur.this.joueurCourant == Controleur.this.joueur1) {
+											Controleur.this.joueurCourant = Controleur.this.joueur2;
+										} else {
+											Controleur.this.joueurCourant = Controleur.this.joueur1;
+										}
+										Controleur.this.sem.release();
+									} catch (InterruptedException e) {
+
+									}
+
 								}
+							});
+
+							int dureeDeplacement = Controleur.this.calculDureeDeplacement(coup.getPiece(),
+									coup.getDeplacement(), dureeUnDeplacement);
+							int dureeCoup = Controleur.this.calculDureeCoup(dureeDeplacement, dureeUnDeplacement);
+							Thread.sleep(dureeCoup + (dureeUnDeplacement / 2));
+							if (coup.getEtat() != 3) {
 								Platform.runLater(new Runnable() {
 									@Override
 									public void run() {
-										try {
-											Controleur.this.sem.acquire();
-											Controleur.this.jouerCoup(coup.getPiecesBlanches(), coup.getPiecesNoires(),
-													coup.getPiece(), coup.getDeplacement());
-											if (Controleur.this.joueurCourant == Controleur.this.joueur1) {
-												Controleur.this.joueurCourant = Controleur.this.joueur2;
-											} else {
-												Controleur.this.joueurCourant = Controleur.this.joueur1;
-											}
-											Controleur.this.sem.release();
-										} catch (InterruptedException e) {
-
-										}
-
+										Controleur.this.finSimulation();
+										Controleur.this.vueJeu.setImageViewPlayDisable(true);
+										Controleur.this.vueJeu.setImageViewFastForwardDisable(true);
+										Controleur.this.vueJeu.setImageViewPauseDisable(true);
+										Controleur.this.afficherPopupFin(coup.getEtat());
 									}
 								});
-
-								int dureeDeplacement = Controleur.this.calculDureeDeplacement(coup.getPiece(),
-										coup.getDeplacement(), dureeUnDeplacement);
-								int dureeCoup = Controleur.this.calculDureeCoup(dureeDeplacement, dureeUnDeplacement);
-								Thread.sleep(dureeCoup + (dureeUnDeplacement / 2));
-								if (coup.getEtat() != 3) {
-									Platform.runLater(new Runnable() {
-										@Override
-										public void run() {
-											Controleur.this.finSimulation();
-											Controleur.this.vueJeu.setImageViewPlayDisable(true);
-											Controleur.this.vueJeu.setImageViewFastForwardDisable(true);
-											Controleur.this.vueJeu.setImageViewPauseDisable(true);
-											Controleur.this.afficherPopupFin(coup.getEtat());
-										}
-									});
-									break;// fin simulation
-								}
-							} catch (InterruptedException e) {
-								return;
+								break;// fin simulation
 							}
+						} catch (InterruptedException e) {
+							return;
 						}
 					}
-				};
-				this.threadSimulerPartie.setDaemon(true);
-				this.threadSimulerPartie.start();
-				this.sem.release();
-			} catch (InterruptedException e) {
-
-			}
+				}
+			};
+			this.threadSimulerPartie.setDaemon(true);
+			this.threadSimulerPartie.start();
 		}
 	}
 
@@ -498,7 +499,6 @@ public class Controleur extends Application {
 	public void playSimulation() {
 		this.coefVitesse = 1;
 		this.dureeUnDeplacement = this.DUREE_UN_DEPLACEMENT_NORMAL;
-		this.pauseSimulation();
 		this.vueJeu.setTextLabelVitesse("x" + this.coefVitesse);
 		this.simulerPartie();
 		this.vueJeu.setImageViewPlayDisable(true);
@@ -524,8 +524,10 @@ public class Controleur extends Application {
 		}
 
 		this.dureeUnDeplacement = this.DUREE_UN_DEPLACEMENT_NORMAL / this.coefVitesse;
+		this.stopThreadSimulerPartie();
+		this.simulerPartie();
 		this.vueJeu.setTextLabelVitesse("x" + this.coefVitesse);
-		// this.simulerPartie();
+
 		this.vueJeu.setImageViewPlayDisable(false);
 		this.vueJeu.setImageViewPauseDisable(false);
 	}
