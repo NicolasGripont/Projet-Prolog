@@ -34,7 +34,7 @@ import vue.VueMenu.VueMenu;
 
 public class Controleur extends Application {
 
-	private final int DUREE_UN_DEPLACEMENT_NORMAL = 1000;
+	private final int DUREE_UN_DEPLACEMENT_NORMAL = 1000 / 2;
 
 	private int dureeUnDeplacement = this.DUREE_UN_DEPLACEMENT_NORMAL;
 
@@ -67,6 +67,8 @@ public class Controleur extends Application {
 	private boolean mouvementEnCours = false;
 
 	private int coefVitesse = 1;
+
+	private final int coefVitesseTmp = 1;
 
 	private int nbCoups = 0;
 
@@ -230,8 +232,9 @@ public class Controleur extends Application {
 					}
 				});
 				try {
-					Thread.sleep(Controleur.this.calculDureeCoup(
-							Controleur.this.calculDureeDeplacement(coup.getPiece(), coup.getDeplacement())));
+					Thread.sleep(Controleur.this.calculDureeCoup(Controleur.this.calculDureeDeplacement(coup.getPiece(),
+							coup.getDeplacement(), Controleur.this.dureeUnDeplacement),
+							Controleur.this.dureeUnDeplacement));
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 
@@ -263,57 +266,61 @@ public class Controleur extends Application {
 	 * 
 	 */
 	private void jouerCoup(List<Piece> blanches, List<Piece> noires, Piece piece, List<Case> deplacement) {
-		Case positionInitiale = this.plateau.getCases()[piece.getPosition().getLigne()][piece.getPosition()
-				.getColonne()];
-		Piece piecePlateau = positionInitiale.getPiece();
-		List<Piece> piecesMortes = new ArrayList<>();
+		try {
+			Case positionInitiale = this.plateau.getCases()[piece.getPosition().getLigne()][piece.getPosition()
+					.getColonne()];
+			Piece piecePlateau = positionInitiale.getPiece();
+			List<Piece> piecesMortes = new ArrayList<>();
 
-		// on check les pieces mortes
-		if (piecePlateau.getCouleur() == Couleur.NOIR) {
-			for (Piece p : this.plateau.getBlanches()) {
-				if (!this.contains(blanches, p)) {
-					piecesMortes.add(p);
+			// on check les pieces mortes
+			if (piecePlateau.getCouleur() == Couleur.NOIR) {
+				for (Piece p : this.plateau.getBlanches()) {
+					if (!this.contains(blanches, p)) {
+						piecesMortes.add(p);
+					}
+				}
+			} else {
+				for (Piece p : this.plateau.getNoires()) {
+					if (!this.contains(noires, p)) {
+						piecesMortes.add(p);
+					}
 				}
 			}
-		} else {
-			for (Piece p : this.plateau.getNoires()) {
-				if (!this.contains(noires, p)) {
-					piecesMortes.add(p);
-				}
+
+			// recuperation de la case destination
+			Case nouvelleCase = this.plateau.getCases()[deplacement.get(deplacement.size() - 1).getLigne()][deplacement
+					.get(deplacement.size() - 1).getColonne()];
+
+			// on set la nouvelle position de la piece qui bouge
+			this.plateau.deplacerPiece(piecePlateau, nouvelleCase);
+
+			// supprimer piece de l'objet plateau et fire le deplacement 2 sens
+			for (Piece p : piecesMortes) {
+				this.plateau.supprimerPiece(p);
 			}
+
+			int dureeDeplacement = this.calculDureeDeplacement(piece, deplacement, this.dureeUnDeplacement);
+			int dureeCoup = this.calculDureeCoup(dureeDeplacement, this.dureeUnDeplacement);
+			this.dureeTour = dureeCoup;
+			// appelle vue
+			this.vueJeu.deplacerPiece(piecePlateau, deplacement, dureeDeplacement);
+			this.vueJeu.tuerPieces(piecesMortes, dureeCoup);
+
+			// Creation dame si besoin TODO : a mettre dans plateau
+			if (piecePlateau.getClass().equals(Pion.class)
+					&& (((piecePlateau.getPosition().getLigne() == 0) && (piecePlateau.getCouleur() == Couleur.BLANC))
+							|| ((piecePlateau.getPosition().getLigne() == (Plateau.NB_LIGNES - 1))
+									&& (piecePlateau.getCouleur() == Couleur.NOIR)))) {
+
+				Dame dame = this.plateau.promouvoirPion((Pion) piecePlateau);
+
+				this.vueJeu.creerDame((Pion) piecePlateau, dame, dureeCoup);
+			}
+			this.nbCoups++;
+			this.vueJeu.setTextLabelNbCoups("" + this.nbCoups);
+		} catch (NullPointerException e) {
+
 		}
-
-		// recuperation de la case destination
-		Case nouvelleCase = this.plateau.getCases()[deplacement.get(deplacement.size() - 1).getLigne()][deplacement
-				.get(deplacement.size() - 1).getColonne()];
-
-		// on set la nouvelle position de la piece qui bouge
-		this.plateau.deplacerPiece(piecePlateau, nouvelleCase);
-
-		// supprimer piece de l'objet plateau et fire le deplacement 2 sens
-		for (Piece p : piecesMortes) {
-			this.plateau.supprimerPiece(p);
-		}
-
-		int dureeDeplacement = this.calculDureeDeplacement(piece, deplacement);
-		int dureeCoup = this.calculDureeCoup(dureeDeplacement);
-		this.dureeTour = dureeCoup;
-		// appelle vue
-		this.vueJeu.deplacerPiece(piecePlateau, deplacement, dureeDeplacement);
-		this.vueJeu.tuerPieces(piecesMortes, dureeCoup);
-
-		// Creation dame si besoin TODO : a mettre dans plateau
-		if (piecePlateau.getClass().equals(Pion.class)
-				&& (((piecePlateau.getPosition().getLigne() == 0) && (piecePlateau.getCouleur() == Couleur.BLANC))
-						|| ((piecePlateau.getPosition().getLigne() == (Plateau.NB_LIGNES - 1))
-								&& (piecePlateau.getCouleur() == Couleur.NOIR)))) {
-
-			Dame dame = this.plateau.promouvoirPion((Pion) piecePlateau);
-
-			this.vueJeu.creerDame((Pion) piecePlateau, dame, dureeCoup);
-		}
-		this.nbCoups++;
-		this.vueJeu.setTextLabelNbCoups("" + this.nbCoups);
 	}
 
 	private boolean contains(List<Piece> pieces, Piece piece) {
@@ -410,7 +417,7 @@ public class Controleur extends Application {
 		if (this.threadSimulerPartie == null) {
 			try {
 				this.sem.acquire();
-
+				final int dureeUnDeplacement = this.dureeUnDeplacement;
 				this.threadSimulerPartie = new Thread() {
 					@Override
 					public void run() {
@@ -442,9 +449,9 @@ public class Controleur extends Application {
 								});
 
 								int dureeDeplacement = Controleur.this.calculDureeDeplacement(coup.getPiece(),
-										coup.getDeplacement());
-								int dureeCoup = Controleur.this.calculDureeCoup(dureeDeplacement);
-								Thread.sleep(dureeCoup + (Controleur.this.dureeUnDeplacement / 2));
+										coup.getDeplacement(), dureeUnDeplacement);
+								int dureeCoup = Controleur.this.calculDureeCoup(dureeDeplacement, dureeUnDeplacement);
+								Thread.sleep(dureeCoup + (dureeUnDeplacement / 2));
 								if (coup.getEtat() != 3) {
 									Platform.runLater(new Runnable() {
 										@Override
@@ -499,8 +506,8 @@ public class Controleur extends Application {
 	}
 
 	public void fastForwardSimulation() {
-		this.stopThreadSimulerPartie();
-
+		// TODO modifier coefVitesseTmpLa et a chaque iteration du while de
+		// simuler, prendre la valeur de coef vitesse tmp dans le normal
 		switch (this.coefVitesse) {
 		case 1:
 			this.coefVitesse = 2;
@@ -518,7 +525,7 @@ public class Controleur extends Application {
 
 		this.dureeUnDeplacement = this.DUREE_UN_DEPLACEMENT_NORMAL / this.coefVitesse;
 		this.vueJeu.setTextLabelVitesse("x" + this.coefVitesse);
-		this.simulerPartie();
+		// this.simulerPartie();
 		this.vueJeu.setImageViewPlayDisable(false);
 		this.vueJeu.setImageViewPauseDisable(false);
 	}
@@ -559,17 +566,17 @@ public class Controleur extends Application {
 	 *            : les cases constituant le trajet
 	 * @return
 	 */
-	private int calculDureeDeplacement(Piece piece, List<Case> deplacement) {
+	private int calculDureeDeplacement(Piece piece, List<Case> deplacement, int dureeUnDeplacement) {
 		int coefDeplacement = Math.abs(deplacement.get(0).getColonne() - piece.getPosition().getColonne());
 
 		for (int i = 1; i < deplacement.size(); i++) {
 			coefDeplacement += Math.abs(deplacement.get(i - 1).getColonne() - deplacement.get(i).getColonne());
 		}
-		return (coefDeplacement * this.dureeUnDeplacement);
+		return (coefDeplacement * dureeUnDeplacement);
 	}
 
-	private int calculDureeCoup(int dureeDeplacement) {
-		return dureeDeplacement + (this.dureeUnDeplacement / 2);
+	private int calculDureeCoup(int dureeDeplacement, int dureeUnDeplacement) {
+		return dureeDeplacement + (dureeUnDeplacement / 2);
 	}
 
 	public void debuterCoupJoueeurReel() {
@@ -633,8 +640,8 @@ public class Controleur extends Application {
 		List<Case> tmpDeplacement = new ArrayList<>();
 		tmpDeplacement.add(nouvelleCase);
 
-		int dureeDeplacement = this.calculDureeDeplacement(this.pieceCourante, tmpDeplacement);
-		int dureeCoup = this.calculDureeCoup(dureeDeplacement);
+		int dureeDeplacement = this.calculDureeDeplacement(this.pieceCourante, tmpDeplacement, this.dureeUnDeplacement);
+		int dureeCoup = this.calculDureeCoup(dureeDeplacement, this.dureeUnDeplacement);
 
 		// On check s'il y a une pieces mortes
 		Piece pieceATuer = this.getPieceATuer(this.pieceCourante.getPosition(), nouvelleCase);

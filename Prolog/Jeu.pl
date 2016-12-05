@@ -498,7 +498,7 @@ applyMoves(Blancs, Noirs) :- retractall(blancs(_)), retractall(noirs(_)),assert(
 
 
 %lancement du jeu
-play(Player,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,Pion,Etat):- ia(Player,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement, Pion),
+play(Player,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,Pion,Etat):- iaMinMax(Player,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement, Pion),
 		gameover(Blancs,Noirs,Blancs2,Noirs2,Etat).
 
 %tests play
