@@ -175,7 +175,7 @@ public class Controleur extends Application {
 				this.vueMenu = (VueMenu) fxmlLoader.getController();
 				this.vueMenu.setControleur(this);
 				this.plateau = new Plateau();
-				Scene scene = new Scene(root, this.stage.getWidth(), this.stage.getHeight());
+				Scene scene = new Scene(root, this.stage.getScene().getWidth(), this.stage.getScene().getHeight());
 				this.stage.setScene(scene);
 				this.stage.show();
 			} catch (IOException e) {
