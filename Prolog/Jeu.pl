@@ -498,7 +498,10 @@ applyMoves(Blancs, Noirs) :- retractall(blancs(_)), retractall(noirs(_)),assert(
 
 
 %lancement du jeu
-play(Player,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,Pion,Etat):- ia(Player,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement, Pion),
+play1(Player,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,Pion,Etat):- ia(Player,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement, Pion),
+		gameover(Blancs,Noirs,Blancs2,Noirs2,Etat).
+
+play2(Player,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,Pion,Etat):- iaMinMax(Player,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement, Pion),
 		gameover(Blancs,Noirs,Blancs2,Noirs2,Etat).
 
 %tests play
@@ -507,17 +510,17 @@ play(Player,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,Pion,Etat):- ia(Player,Bl
 % play(noir,[[2,7,pion],[7,8,pion]],[[2,5,pion],[2,1,pion],[6,1,pion],[8,3,pion],[8,1,pion],[1,2,pion],[8,9,pion],[5,2,pion],[6,3,pion],[5,4,pion],[5,6,pion],[9,4,pion]]]
 
 
-%play(Player):-  write('New turn for: '), ((Player==blanc, writeln('Blancs'));(Player==noir, writeln('Noirs'))),
-%		noirs(Noirs),
-%		blancs(Blancs),
-%		display1(0,10,_),
-%		writeln(" "),
-%		iaMinMax(Player,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement, E),
-%		applyMoves(Blancs2, Noirs2),
-%		changePlayer(Player,NextPlayer), % Change the player before next turn
-%		sleep(1),
-%		play(NextPlayer). % next turn!
- 
+play(Player):-  write('New turn for: '), ((Player==blanc, writeln('Blancs'));(Player==noir, writeln('Noirs'))),
+		noirs(Noirs),
+		blancs(Blancs),
+		display1(0,10,_),
+		writeln(" "),
+		iaMinMax(Player,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement, E),
+		applyMoves(Blancs2, Noirs2),
+		changePlayer(Player,NextPlayer), % Change the player before next turn
+		sleep(1),
+		play(NextPlayer). % next turn!
+
 initConsole(L1,L2):- retractall(blancs(_)), retractall(noirs(_)), retractall(cptDraw(_)),assert(noirs(L2)),assert(blancs(L1)), assert(cptDraw(0)), play(blanc).
 
 % initConsole([[0,5,pion],[2,5,pion],[4,5,pion],[3,6,pion],[2,7,pion],[1,8,pion],[2,9,pion]],[[0,3,pion],[1,4,pion],[2,3,pion],[3,2,pion],[4,1,pion],[4,3,pion],[6,3,pion],[7,2,pion]]).
