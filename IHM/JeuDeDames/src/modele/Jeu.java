@@ -15,9 +15,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import controleur.Controleur;
-import javafx.application.Platform;
-
 public class Jeu {
 	private String nameServer = "localhost";
 	private String portServer = "5000";
@@ -35,19 +32,18 @@ public class Jeu {
 	public static void main(String[] args) {
 		Jeu jeu = new Jeu("localhost", "5000");
 		jeu.stats();
-		/*ArrayList<Piece> blancs = new ArrayList<>();
-		ArrayList<Piece> noirs = new ArrayList<>();
-		Coup c = jeu.init(blancs, noirs);
-		blancs = (ArrayList<Piece>) c.piecesBlanches;
-		noirs = (ArrayList<Piece>) c.piecesNoires;
-		blancs.add(new Dame(Couleur.BLANC, new Case(Couleur.NOIR, 0, 0)));
-		jeu.play(TypeJoueur.IA_ZACK, 1, blancs, noirs);
-		// Map<Piece, List<Coup>> res = jeu.movesAllowed(1, blancs, noirs);
-		ArrayList<Piece> noirs2 = noirs;
-		noirs2.remove(0);
-		int r = jeu.gameState(blancs, noirs, blancs, noirs2);
-		System.out.print("State : " + r);*/
-		
+		/*
+		 * ArrayList<Piece> blancs = new ArrayList<>(); ArrayList<Piece> noirs =
+		 * new ArrayList<>(); Coup c = jeu.init(blancs, noirs); blancs =
+		 * (ArrayList<Piece>) c.piecesBlanches; noirs = (ArrayList<Piece>)
+		 * c.piecesNoires; blancs.add(new Dame(Couleur.BLANC, new
+		 * Case(Couleur.NOIR, 0, 0))); jeu.play(TypeJoueur.IA_ZACK, 1, blancs,
+		 * noirs); // Map<Piece, List<Coup>> res = jeu.movesAllowed(1, blancs,
+		 * noirs); ArrayList<Piece> noirs2 = noirs; noirs2.remove(0); int r =
+		 * jeu.gameState(blancs, noirs, blancs, noirs2);
+		 * System.out.print("State : " + r);
+		 */
+
 	}
 
 	public Jeu(String nameServer, String portServer) {
@@ -56,43 +52,44 @@ public class Jeu {
 	}
 
 	public void stats() {
-		System.out.println("IA1;IA2;Nb de gagné;Nb d'égalité;Nb de défaite;Nb de coup moyen;Temps moyen d'une partie en s");
+		System.out.println(
+				"IA1;IA2;Nb de gagné;Nb d'égalité;Nb de défaite;Nb de coup moyen;Temps moyen d'une partie en s");
 		int[][][] gameover = new int[50][7][7];
 		int[][][] coup = new int[50][7][7];
 		long[][][] tps = new long[50][7][7];
 		int partieMax = 10;
 		int nbIa = 7;
-		for(int ia=4;ia<nbIa;ia++) {
-			for(int ia2=0;ia2<nbIa;ia2++) {
-				 if(ia == 0 || ia2 == 0) {
+		for (int ia = 6; ia < nbIa; ia++) {
+			for (int ia2 = 0; ia2 < nbIa; ia2++) {
+				if ((ia == 0) || (ia2 == 0)) {
 					partieMax = 10;
 				} else {
 					partieMax = 1;
 				}
-				for(int partie = 0;partie<partieMax;partie++) {
+				for (int partie = 0; partie < partieMax; partie++) {
 					gameover[partie][ia][ia2] = 0;
 					coup[partie][ia][ia2] = 0;
 					tps[partie][ia][ia2] = 0;
 					ArrayList<Piece> blancs = new ArrayList<>();
 					ArrayList<Piece> noirs = new ArrayList<>();
-					Coup c = init(blancs,noirs);
+					Coup c = this.init(blancs, noirs);
 					blancs = (ArrayList<Piece>) c.getPiecesBlanches();
 					noirs = (ArrayList<Piece>) c.getPiecesNoires();
-					long begin = java.lang.System.currentTimeMillis() ;
+					long begin = java.lang.System.currentTimeMillis();
 					int j = 0;
 					int co = 0;
 					do {
-						if(j == 0) {
-							c = play(getIAFromInt(ia), j, blancs, noirs);
+						if (j == 0) {
+							c = this.play(this.getIAFromInt(ia), j, blancs, noirs);
 							j = 1;
 						} else {
-							c = play(getIAFromInt(ia2), j, blancs, noirs);
+							c = this.play(this.getIAFromInt(ia2), j, blancs, noirs);
 							j = 0;
 						}
 						co++;
 						blancs = (ArrayList<Piece>) c.getPiecesBlanches();
 						noirs = (ArrayList<Piece>) c.getPiecesNoires();
-					}while(c.getEtat() == 3);
+					} while (c.getEtat() == 3);
 					coup[partie][ia][ia2] = co;
 					gameover[partie][ia][ia2] = c.getEtat();
 					tps[partie][ia][ia2] = java.lang.System.currentTimeMillis() - begin;
@@ -102,10 +99,10 @@ public class Jeu {
 				int G = 0;
 				int D = 0;
 				int E = 0;
-				for(int p = 0;p<partieMax;p++) {
-					if(gameover[p][ia][ia2] == 0) {
+				for (int p = 0; p < partieMax; p++) {
+					if (gameover[p][ia][ia2] == 0) {
 						G++;
-					} else if(gameover[p][ia][ia2] == 1) {
+					} else if (gameover[p][ia][ia2] == 1) {
 						D++;
 					} else {
 						E++;
@@ -113,11 +110,12 @@ public class Jeu {
 					C += coup[p][ia][ia2];
 					T += tps[p][ia][ia2];
 				}
-				System.out.println(getIAFromInt(ia) + ";" + getIAFromInt(ia2) + ";" + G + ";" + E + ";" + D + ";" + (C/partieMax) + ";" + ((T/partieMax)/1000) );
+				System.out.println(this.getIAFromInt(ia) + ";" + this.getIAFromInt(ia2) + ";" + G + ";" + E + ";" + D
+						+ ";" + (C / partieMax) + ";" + ((T / partieMax) / 1000));
 			}
 		}
 	}
-	
+
 	public TypeJoueur getIAFromInt(int ia) {
 		if (ia == 0) {
 			return TypeJoueur.IA_ZACK;
@@ -136,7 +134,7 @@ public class Jeu {
 		}
 		return TypeJoueur.INCONNU;
 	}
-	
+
 	/*
 	 * 
 	 * { "joueur":0, "blancs": [ {"x":1, "y":2, "type":"dame"} ], "noirs": [

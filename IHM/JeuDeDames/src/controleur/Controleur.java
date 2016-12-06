@@ -430,6 +430,18 @@ public class Controleur extends Application {
 
 					while (Controleur.this.threadSimulerPartie.isInterrupted() == false) {
 						try {
+							Platform.runLater(new Runnable() {
+								@Override
+								public void run() {
+									if (Controleur.this.joueurCourant.getCouleur() == Couleur.BLANC) {
+										Controleur.this.vueJeu.setBorderColorJoueur1(true);
+										Controleur.this.vueJeu.setBorderColorJoueur2(false);
+									} else {
+										Controleur.this.vueJeu.setBorderColorJoueur1(false);
+										Controleur.this.vueJeu.setBorderColorJoueur2(true);
+									}
+								}
+							});
 							final int dureeUnDeplacement = Controleur.this.dureeUnDeplacement;
 							final Coup coup = Controleur.this.getCoupIA();
 
@@ -437,6 +449,7 @@ public class Controleur extends Application {
 								@Override
 								public void run() {
 									try {
+
 										Controleur.this.sem.acquire();
 										Controleur.this.jouerCoup(coup.getPiecesBlanches(), coup.getPiecesNoires(),
 												coup.getPiece(), coup.getDeplacement());
@@ -581,7 +594,13 @@ public class Controleur extends Application {
 	}
 
 	public void debuterCoupJoueeurReel() {
-
+		if (Controleur.this.joueurCourant.getCouleur() == Couleur.BLANC) {
+			Controleur.this.vueJeu.setBorderColorJoueur1(true);
+			Controleur.this.vueJeu.setBorderColorJoueur2(false);
+		} else {
+			Controleur.this.vueJeu.setBorderColorJoueur1(false);
+			Controleur.this.vueJeu.setBorderColorJoueur2(true);
+		}
 		if (this.joueurCourant.getCouleur() == Couleur.BLANC) {
 			this.vueJeu.setPiecesBlanchesClickable(true);
 			this.vueJeu.setPiecesNoiresClickable(false);
@@ -707,6 +726,13 @@ public class Controleur extends Application {
 							if (etat == 3) {
 								Controleur.this.dureeTour = dureeCoup;
 								Controleur.this.jouerUnCoup();
+								if (Controleur.this.joueurCourant.getCouleur() == Couleur.BLANC) {
+									Controleur.this.vueJeu.setBorderColorJoueur1(true);
+									Controleur.this.vueJeu.setBorderColorJoueur2(false);
+								} else {
+									Controleur.this.vueJeu.setBorderColorJoueur1(false);
+									Controleur.this.vueJeu.setBorderColorJoueur2(true);
+								}
 							} else {
 								Controleur.this.vueJeu.setPiecesBlanchesClickable(false);
 								Controleur.this.vueJeu.setPiecesNoiresClickable(false);
