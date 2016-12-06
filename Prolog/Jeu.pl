@@ -432,12 +432,14 @@ trouverSolMax(_,L2,_,Cout3,L2,Cout3).
 
 rechercheMouvement(Camp,[[Blancs,Noirs,_]|Suite],Cout,Cpt):- !,rechercheJoueur(Camp,Blancs,Noirs,CoutContraire,Cpt),
 		Cout2 is 0-CoutContraire,
+		%writeln("Recherche mouv "+Cpt),writeln(Cout2),
 		rechercheMouvement(Camp,Suite,Cout3,Cpt),
 		max_list([Cout2,Cout3],Cout).
 rechercheMouvement(_,[], -21,_).
 
 
-recherchePion(Camp,[[_,Solutions]|Suite],Cout,Cpt):-!,rechercheMouvement(Camp,Solutions,Cout2,Cpt),
+recherchePion(Camp,[[Pion,Solutions]|Suite],Cout,Cpt):-!,%writeln("Recherche pion "+Cpt),writeln(Pion),
+		rechercheMouvement(Camp,Solutions,Cout2,Cpt),
 		recherchePion(Camp,Suite,Cout3,Cpt),
 		max_list([Cout2,Cout3],Cout).
 recherchePion(_,[], -21,_).
@@ -452,19 +454,21 @@ rechercheJoueur(Camp,Blancs,Noirs,Cout,Cpt):-Cpt>0,!,Cpt2 is Cpt-1,
 		recherchePion(Camp2,S,Cout,Cpt2).
 rechercheJoueur(Camp,Blancs,Noirs,Cout,_):-changePlayer(Camp, Camp2),calculCout(Camp2,Blancs,Noirs,Cout).
 
+% rechercheJoueur(noir,[[0,7,dame],[5,6,pion],[6,5,pion],[7,4,pion],[0,9,pion],[8,3,pion],[7,6,pion],[1,8,pion]],[[9,2,pion],[0,5,pion],[4,7,pion]],CoutContraire,2).
+
 % permet de parcourir la liste de mouvement et de trouver le meilleur coup de la liste de mouvement
 parcoursMouvement(Camp,[[Blancs,Noirs,L]|Suite],Solution,Cout,Cpt):- !,rechercheJoueur(Camp,Blancs,Noirs,CoutContraire,Cpt),
 		Cout2 is 0-CoutContraire,
 		parcoursMouvement(Camp,Suite,Solution2,Cout3,Cpt),
 		trouverSolMax([Blancs,Noirs,L],Solution2,Cout2,Cout3,Solution,Cout).
-parcoursMouvement(_,[],[], -21,_).
+parcoursMouvement(_,[],[], -22,_).
 
 
 % permet de parcourir les pions et de trouver le meilleur coup a jouer
 parcoursPion(Camp,[[Pion,Liste]|Suite],RetourPion,RetourSolution,Cout,Cpt):-!,parcoursMouvement(Camp,Liste,Solution,Cout2,Cpt),
 		parcoursPion(Camp,Suite,ResPion,ResSolution,Cout3,Cpt),
 		solutionMax(Pion,ResPion,Solution,ResSolution,Cout2,Cout3,RetourPion,RetourSolution,Cout).
-parcoursPion(_,[],[],[], -21,_).
+parcoursPion(_,[],[],[], -22,_).
 
 %lance la recherche du meilleur coup a jouer
 lanceRecherche(Camp,Blancs,Noirs,Pion,Solution,Cpt):-returnPionsCamp(Camp, Blancs, Noirs, Pions),
@@ -475,8 +479,7 @@ lanceRecherche(Camp,Blancs,Noirs,Pion,Solution,Cpt):-returnPionsCamp(Camp, Blanc
 %tests lancerecherche
 % lanceRecherche(noir,[[1,3,pion],[3,3,pion]],[[2,0,pion],[3,1,pion]],Pion,Solution,4).
 % test coup du tiroir
-% lanceRecherche(blanc,[[0,5,pion],[2,5,pion],[4,5,pion],[3,6,pion],[2,7,pion],[1,8,pion],[2,9,pion]],[[0,3,pion],[1,4,pion],[2,3,pion],[3,2,pion],[4,1,pion],[4,3,pion],[6,3,pion],[7,2,pion]],Pion,Solution,6).
-
+% lanceRecherche(noir,[[0,7,dame],[5,6,pion],[6,5,pion],[7,4,pion],[0,9,pion],[8,3,pion],[7,6,pion],[1,8,pion]],[[3,6,pion],[9,2,pion],[0,5,pion]],Pion,Solution,5),writeln(Solution).
 
 ia(blanc,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,E):-movePossiblePlayer(blanc, Blancs, Noirs, Blancs, Liste,_),length(Liste,X),X>0,!,choixMove(X,Liste,Blancs2,Noirs2,ListeMouvement,E).
 ia(noir,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement,E):-movePossiblePlayer(noir, Blancs, Noirs, Noirs, Liste,_),length(Liste,X),X>0,choixMove(X,Liste,Blancs2,Noirs2,ListeMouvement,E).
@@ -535,7 +538,7 @@ play(Player):-  write('New turn for: '), ((Player==blanc, writeln('Blancs'));(Pl
 		blancs(Blancs),
 		display1(0,10,_),
 		writeln(" "),
-		iaMinMax(Player,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement, E),
+		iaMinMax2(Player,Blancs,Noirs,Blancs2,Noirs2,ListeMouvement, E),
 		applyMoves(Blancs2, Noirs2),
 		changePlayer(Player,NextPlayer), % Change the player before next turn
 		sleep(1),
@@ -607,7 +610,7 @@ init_server(_Request) :-	init,
 							build_reply_init(ListeBlancs,ListeNoirs, 0, JSON),
 							reply_json(JSON).
 
-% Prédicat play_amy qui est appellé quand on appelle l'url /play_franck
+% Prédicat play_amy qui est appellé quand on appelle l'url //play_franck
 % IA réduite
 % Le prédicat reconstruit la liste des blancs et des noirs
 % Le prédicat appelle le predicat ia qui va jouer un cout
@@ -618,7 +621,7 @@ play_amy(Request) :- http_read_json(Request, JsonIn,[json_object(term)]),
 						build_reply_play(Blancs2,Noirs2,J,Pion,ListeMouvement,Etat,JSON),
 						reply_json(JSON).
 
-% Prédicat play_sheldon qui est appellé quand on appelle l'url /play_sheldon
+% Prédicat play_sheldon qui est appellé quand on appelle l'url //play_sheldon
 % IA Intelligente
 % Le prédicat reconstruit la liste des blancs et des noirs
 % Le prédicat appelle le predicat ia qui va jouer un cout
