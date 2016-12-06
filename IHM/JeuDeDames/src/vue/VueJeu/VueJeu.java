@@ -100,6 +100,12 @@ public class VueJeu implements Initializable {
 	@FXML
 	private Label labelDamesNoires;
 
+	@FXML
+	private VBox vBoxJoueur1;
+
+	@FXML
+	private VBox vBoxJoueur2;
+
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 
@@ -324,5 +330,21 @@ public class VueJeu implements Initializable {
 		this.labelDamesNoires.setText("" + nbDamesNoires);
 		this.labelPionsBlancs.setText("" + nbPionsBlancs);
 		this.labelDamesBlanches.setText("" + nbDamesBlanches);
+	}
+
+	public void setBorderColorJoueur1(boolean activ) {
+		if (activ) {
+			this.vBoxJoueur1.setStyle("-fx-border-color: red; -fx-border-width: 2px;");
+		} else {
+			this.vBoxJoueur1.setStyle("-fx-border-color: red; -fx-border-width: 0px;");
+		}
+	}
+
+	public void setBorderColorJoueur2(boolean activ) {
+		if (activ) {
+			this.vBoxJoueur2.setStyle("-fx-border-color: red; -fx-border-width: 2px;");
+		} else {
+			this.vBoxJoueur2.setStyle("-fx-border-color: red; -fx-border-width: 0px;");
+		}
 	}
 }
