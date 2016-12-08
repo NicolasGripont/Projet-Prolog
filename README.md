@@ -17,7 +17,7 @@ Lancer le serveur prolog :
 Lancer l’IHM depuis « Eclipse » :
 ---------------------------------
 * « Eclipse »:
-- Avoir la dernière version d’ « Eclipse » est conseillé (« Eclipse Neon »).
+** Avoir la dernière version d’ « Eclipse » est conseillé (« Eclipse Neon »).
 * Importer le projet dans « Eclipse » :
 - Lancer « Eclipse »
 - Dans la barre d’outils, cliquer sur « File > Import… »
