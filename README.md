@@ -16,9 +16,13 @@ Lancer le serveur prolog :
 
 Lancer l’IHM depuis « Eclipse » :
 ---------------------------------
+
 « Eclipse »:
+
 - Avoir la dernière version d’ « Eclipse » est conseillé (« Eclipse Neon »).
+
 Importer le projet dans « Eclipse » :
+
 - Lancer « Eclipse »
 - Dans la barre d’outils, cliquer sur « File > Import… »
 - Choisir « Import projects from Folder or Archive »
@@ -26,7 +30,9 @@ Importer le projet dans « Eclipse » :
 - Sélectionnez le dossier « ./IHM » contenant les sources du projet
 - Cochez la case devant « JeuDeDames »
 - Cliquez sur « Finish »
+
 JRE :
+
 - Vérifiez que vous utilisez Java 8.
 - Installation du plugins JavaFX : 
 - Dans la barre d’outils, cliquez sur « Help > Eclipse Marketplace… »
