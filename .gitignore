@@ -13,3 +13,5 @@ IHM/.settings/
 # Package Files #
 *.war
 *.ear
+
+Prolog/Jeu.pl

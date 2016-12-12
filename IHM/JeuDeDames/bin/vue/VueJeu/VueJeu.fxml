@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="600.0" prefHeight="580.0" prefWidth="728.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="vue.VueJeu.VueJeu">
+   <top>
+      <Label text="Jeu de Dames" textAlignment="CENTER" BorderPane.alignment="CENTER">
+         <font>
+            <Font size="30.0" />
+         </font>
+      </Label>
+   </top>
+   <right>
+      <VBox fx:id="vBox" alignment="CENTER" prefHeight="363.0" prefWidth="165.0" spacing="30.0" BorderPane.alignment="CENTER">
+         <children>
+            <HBox fx:id="hBoxSimulation" alignment="CENTER" prefHeight="42.0" prefWidth="165.0">
+               <children>
+                  <ImageView fx:id="imageViewPlay" fitHeight="32.0" fitWidth="32.0" onMouseClicked="#onImageViewPlayClicked" onMouseEntered="#onImageViewPlayEntered" onMouseExited="#onImageViewPlayExited" pickOnBounds="true" preserveRatio="true">
+                     <HBox.margin>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </HBox.margin>
+                  </ImageView>
+                  <ImageView fx:id="imageViewFastForward" fitHeight="32.0" fitWidth="32.0" onMouseClicked="#onImageViewFastForwardClicked" onMouseEntered="#onImageViewFastForwardEntered" onMouseExited="#onImageViewFastForwardExited" pickOnBounds="true" preserveRatio="true">
+                     <HBox.margin>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </HBox.margin>
+                  </ImageView>
+                  <ImageView fx:id="imageViewPause" fitHeight="32.0" fitWidth="32.0" onMouseClicked="#onImageViewPauseClicked" onMouseEntered="#onImageViewPauseEntered" onMouseExited="#onImageViewPauseExited" pickOnBounds="true" preserveRatio="true">
+                     <HBox.margin>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </HBox.margin>
+                  </ImageView>
+               </children>
+            </HBox>
+            <HBox fx:id="hBoxVitesse" prefHeight="17.0" prefWidth="165.0">
+               <children>
+                  <Label prefHeight="17.0" text="Vitesse : " />
+                  <Label fx:id="labelVitesse" text="x0" />
+               </children>
+            </HBox>
+            <HBox prefHeight="20.0" prefWidth="165.0">
+               <children>
+                  <Label text="Nombres de coups : " />
+                  <Label fx:id="labelNbCoups" text="0" />
+               </children>
+            </HBox>
+            <VBox fx:id="vBoxJoueur1" prefHeight="59.0" prefWidth="165.0">
+               <children>
+                  <HBox prefHeight="20.0" prefWidth="165.0">
+                     <children>
+                        <Label text="Joueur 1 : " />
+                        <Label fx:id="labelJoueur1" text="J1" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="20.0" prefWidth="165.0">
+                     <children>
+                        <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
+                           <children>
+                              <ImageView fx:id="imageViewPionsJoueur1" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
+                                 <VBox.margin>
+                                    <Insets top="5.0" />
+                                 </VBox.margin></ImageView>
+                              <Label fx:id="labelPionsBlancs" text="Pions" />
+                           </children>
+                        </VBox>
+                        <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
+                           <children>
+                              <ImageView fx:id="imageViewDamesJoueur1" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
+                                 <VBox.margin>
+                                    <Insets top="5.0" />
+                                 </VBox.margin></ImageView>
+                              <Label fx:id="labelDamesBlanches" text="Dames" />
+                           </children>
+                        </VBox>
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+            <VBox fx:id="vBoxJoueur2" alignment="CENTER" prefHeight="59.0" prefWidth="165.0">
+               <children>
+                  <HBox prefHeight="20.0" prefWidth="165.0">
+                     <children>
+                        <Label text="Joueur 2 : " />
+                        <Label fx:id="labelJoueur2" text="J2" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="20.0" prefWidth="165.0">
+                     <children>
+                        <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
+                           <children>
+                              <ImageView fx:id="imageViewPionsJoueur2" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
+                                 <VBox.margin>
+                                    <Insets top="5.0" />
+                                 </VBox.margin></ImageView>
+                              <Label fx:id="labelPionsNoirs" text="Pions" />
+                           </children>
+                        </VBox>
+                        <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
+                           <children>
+                              <ImageView fx:id="imageViewDamesJoueur2" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
+                                 <VBox.margin>
+                                    <Insets top="5.0" />
+                                 </VBox.margin></ImageView>
+                              <Label fx:id="labelDamesNoires" text="Dames" />
+                           </children>
+                        </VBox>
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+            <Button fx:id="buttonQuitterPartie" alignment="BOTTOM_RIGHT" contentDisplay="CENTER" mnemonicParsing="false" onMouseClicked="#onButtonQuitterPartieClicked" text="Quitter Partie" textAlignment="CENTER" />
+         </children>
+         <padding>
+            <Insets top="10.0" />
+         </padding>
+      </VBox>
+   </right>
+   <center>
+      <StackPane fx:id="stackPanePlateau" minHeight="363.0" minWidth="391.0" prefHeight="363.0" prefWidth="391.0" BorderPane.alignment="CENTER">
+         <BorderPane.margin>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </BorderPane.margin></StackPane>
+   </center>
+   <padding>
+      <Insets right="10.0" />
+   </padding>
+</BorderPane>

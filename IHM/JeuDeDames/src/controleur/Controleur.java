@@ -740,6 +740,17 @@ public class Controleur extends Application {
 							}
 
 						} else {
+							List<Coup> coups = new ArrayList<>();
+							for (Coup coup : Controleur.this.coupsPossiblesCourants) {
+								if ((coup.getDeplacement().get(Controleur.this.indiceCoup - 1).getLigne() == c
+										.getLigne())
+										&& (coup.getDeplacement().get(Controleur.this.indiceCoup - 1).getColonne() == c
+												.getColonne())) {
+									coups.add(coup);
+
+								}
+							}
+							Controleur.this.coupsPossiblesCourants = coups;
 							List<Case> coupsPossiblesCourantsTmp = new ArrayList<>();
 							for (Coup coup : Controleur.this.coupsPossiblesCourants) {
 								Case caseTmp = coup.getDeplacement().get(Controleur.this.indiceCoup - 1);
@@ -747,6 +758,7 @@ public class Controleur extends Application {
 									coupsPossiblesCourantsTmp.add(caseTmp);
 								}
 							}
+
 							List<Case> cases = new ArrayList<>();
 							for (Coup coup : Controleur.this.coupsPossiblesCourants) {
 								cases.add(coup.getDeplacement().get(Controleur.this.indiceCoup));
